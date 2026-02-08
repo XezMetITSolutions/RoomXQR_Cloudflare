@@ -10,22 +10,22 @@ export async function login(req: Request, res: Response) {
     const { email, password } = req.body
 
     if (!email || !password) {
-      res.status(400).json({ 
-        message: 'Email/Username ve şifre gerekli' 
+      res.status(400).json({
+        message: 'Email/Username ve şifre gerekli'
       })
       return
     }
 
     console.log('🔍 Login attempt:', { email, tenant: req.tenant?.slug })
 
-    // Sadece demo tenant'ına giriş izni ver
-    if (!req.tenant || req.tenant.slug !== 'demo') {
-      console.log('❌ Login denied - Only demo tenant allowed:', { 
+    // Sadece demo ve system-admin tenant'larına giriş izni ver
+    if (!req.tenant || (req.tenant.slug !== 'demo' && req.tenant.slug !== 'system-admin')) {
+      console.log('❌ Login denied - Restricted tenant access:', {
         tenantSlug: req.tenant?.slug,
-        allowedTenant: 'demo'
+        allowedTenants: ['demo', 'system-admin']
       })
-      res.status(403).json({ 
-        message: 'Giriş sadece demo hesabı için izinlidir' 
+      res.status(403).json({
+        message: 'Giriş bu işletme hesabı için izinli değildir'
       })
       return
     }
@@ -64,63 +64,63 @@ export async function login(req: Request, res: Response) {
     console.log('👤 User found:', user ? { id: user.id, email: user.email, role: user.role, tenantId: user.tenantId } : 'NOT FOUND')
 
     if (!user) {
-      res.status(401).json({ 
-        message: 'Geçersiz email veya şifre' 
+      res.status(401).json({
+        message: 'Geçersiz email veya şifre'
       })
       return
     }
 
     if (!user.isActive) {
-      res.status(403).json({ 
-        message: 'Hesabınız aktif değil' 
+      res.status(403).json({
+        message: 'Hesabınız aktif değil'
       })
       return
     }
 
     // Tenant kontrolü
     if (!user.tenant) {
-      res.status(403).json({ 
-        message: 'Kullanıcı tenant bilgisi bulunamadı' 
+      res.status(403).json({
+        message: 'Kullanıcı tenant bilgisi bulunamadı'
       })
       return
     }
 
     if (!user.tenant.isActive) {
-      res.status(403).json({ 
-        message: 'İşletme hesabı aktif değil' 
+      res.status(403).json({
+        message: 'İşletme hesabı aktif değil'
       })
       return
     }
 
-    // Kullanıcının tenant'ının demo olduğunu kontrol et
-    if (user.tenant.slug !== 'demo') {
-      console.log('❌ User not from demo tenant:', { 
+    // Kullanıcının tenant'ının demo veya system-admin olduğunu kontrol et
+    if (user.tenant.slug !== 'demo' && user.tenant.slug !== 'system-admin') {
+      console.log('❌ User not from allowed tenant:', {
         userTenant: user.tenant.slug,
         userEmail: user.email
       })
-      res.status(403).json({ 
-        message: 'Giriş sadece demo hesabı için izinlidir' 
+      res.status(403).json({
+        message: 'Giriş bu işletme hesabı için izinli değildir'
       })
       return
     }
 
     // Kullanıcının tenant'ının, request'teki tenant ile eşleşip eşleşmediğini kontrol et
     if (req.tenant && user.tenant.slug !== req.tenant.slug) {
-      console.log('❌ Tenant mismatch:', { 
-        userTenant: user.tenant.slug, 
+      console.log('❌ Tenant mismatch:', {
+        userTenant: user.tenant.slug,
         requestTenant: req.tenant.slug,
         userEmail: user.email
       })
-      res.status(403).json({ 
-        message: 'Bu kullanıcı bu işletmeye ait değil' 
+      res.status(403).json({
+        message: 'Bu kullanıcı bu işletmeye ait değil'
       })
       return
     }
 
     // Hotel kontrolü (opsiyonel - super admin için olmayabilir)
     if (user.hotel && !user.hotel.isActive) {
-      res.status(403).json({ 
-        message: 'Otel hesabı aktif değil' 
+      res.status(403).json({
+        message: 'Otel hesabı aktif değil'
       })
       return
     }
@@ -128,8 +128,8 @@ export async function login(req: Request, res: Response) {
     // Şifreyi kontrol et
     const isPasswordValid = await bcrypt.compare(password, user.password)
     if (!isPasswordValid) {
-      res.status(401).json({ 
-        message: 'Geçersiz email veya şifre' 
+      res.status(401).json({
+        message: 'Geçersiz email veya şifre'
       })
       return
     }
@@ -178,7 +178,7 @@ export async function login(req: Request, res: Response) {
       body: req.body,
       tenant: req.tenant?.slug
     })
-    res.status(500).json({ 
+    res.status(500).json({
       message: 'Sunucu hatası',
       error: error instanceof Error ? error.message : String(error),
       details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.stack : undefined) : undefined
@@ -189,8 +189,8 @@ export async function login(req: Request, res: Response) {
 export async function getCurrentUser(req: Request, res: Response) {
   try {
     if (!req.user) {
-      res.status(401).json({ 
-        message: 'Kullanıcı bilgisi bulunamadı' 
+      res.status(401).json({
+        message: 'Kullanıcı bilgisi bulunamadı'
       })
       return
     }
@@ -217,8 +217,8 @@ export async function getCurrentUser(req: Request, res: Response) {
     })
 
     if (!user) {
-      res.status(404).json({ 
-        message: 'Kullanıcı bulunamadı' 
+      res.status(404).json({
+        message: 'Kullanıcı bulunamadı'
       })
       return
     }
