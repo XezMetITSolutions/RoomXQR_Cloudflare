@@ -46,6 +46,7 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
                     className="relative w-full max-w-xl bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-slate-100"
                 >
                     {/* Header Image/Pattern */}
+                    {/* Header Image/Pattern */}
                     <div className="h-32 bg-gradient-to-br from-blue-600 to-indigo-700 relative flex items-center justify-center">
                         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
                         <button
@@ -54,7 +55,7 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
                         >
                             <FaTimes />
                         </button>
-                        <h2 className="text-3xl font-black text-white tracking-tight">DEMO REQUEST</h2>
+                        <h2 className="text-3xl font-black text-white tracking-tight uppercase">{t('demoFormTitle')}</h2>
                     </div>
 
                     <div className="p-8 md:p-12">
@@ -62,32 +63,34 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="space-y-4 text-center mb-8">
                                     <p className="text-slate-500 font-medium">
-                                        Please fill out the form below and our team will contact you shortly to schedule a live demo.
+                                        {t('demoFormDesc')}
                                     </p>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Full Name</label>
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">{t('demoFullName')}</label>
                                         <div className="relative group">
                                             <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors" />
                                             <input
                                                 required
                                                 type="text"
-                                                placeholder="John Doe"
+                                                name="fullName"
+                                                placeholder={t('demoFullNamePlaceholder')}
                                                 className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-slate-900"
                                             />
                                         </div>
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Email Address</label>
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">{t('demoEmail')}</label>
                                         <div className="relative group">
                                             <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors" />
                                             <input
                                                 required
                                                 type="email"
-                                                placeholder="john@example.com"
+                                                name="email"
+                                                placeholder={t('demoEmailPlaceholder')}
                                                 className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-slate-900"
                                             />
                                         </div>
@@ -95,13 +98,14 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Hotel / Business Name</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">{t('demoHotelName')}</label>
                                     <div className="relative group">
                                         <FaHotel className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors" />
                                         <input
                                             required
                                             type="text"
-                                            placeholder="Royal Grand Hotel"
+                                            name="hotelName"
+                                            placeholder={t('demoHotelNamePlaceholder')}
                                             className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-slate-900"
                                         />
                                     </div>
@@ -117,10 +121,11 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
                                         <div className="w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
                                     ) : (
                                         <>
-                                            <FaPaperPlane /> SEND REQUEST
+                                            <FaPaperPlane /> {t('demoSubmit')}
                                         </>
                                     )}
                                 </button>
+                                <p className="text-[10px] text-center text-slate-400 font-medium">Bu form verileri güvenle office@xezmet.at adresine iletilmektedir.</p>
                             </form>
                         ) : (
                             <motion.div
@@ -132,16 +137,16 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
                                     <FaCheckCircle />
                                 </div>
                                 <div className="space-y-2">
-                                    <h3 className="text-3xl font-black text-slate-900">Thank You!</h3>
+                                    <h3 className="text-3xl font-black text-slate-900">{t('demoSuccessTitle')}</h3>
                                     <p className="text-slate-500 font-medium">
-                                        Your request has been received. Our team will contact you within 24 hours.
+                                        {t('demoSuccessDesc')}
                                     </p>
                                 </div>
                                 <button
                                     onClick={onClose}
                                     className="px-10 py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-slate-800 transition-all"
                                 >
-                                    CLOSE
+                                    {t('demoClose')}
                                 </button>
                             </motion.div>
                         )}
