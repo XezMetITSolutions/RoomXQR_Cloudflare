@@ -25,16 +25,16 @@ export function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
-    // Check if pathname already has a locale
+    // Check if pathname already has a locale and redirect to root
     const pathnameHasLocale = supportedLocales.some(
         (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
     );
 
     if (pathnameHasLocale) {
-        return NextResponse.next();
+        return NextResponse.redirect(new URL('/', request.url));
     }
 
-    // Root page and all other pages should stay as they are, no redirect needed
+    // Root page and all other pages should stay as they are
     return NextResponse.next();
 }
 
