@@ -54,7 +54,7 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
                         >
                             <FaTimes />
                         </button>
-                        <h2 className="text-3xl font-black text-white tracking-tight">{t('demoModalTitle')}</h2>
+                        <h2 className="text-3xl font-black text-white tracking-tight">DEMO REQUEST</h2>
                     </div>
 
                     <div className="p-8 md:p-12">
@@ -62,13 +62,13 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div className="space-y-4 text-center mb-8">
                                     <p className="text-slate-500 font-medium">
-                                        {t('demoModalDesc')}
+                                        Please fill out the form below and our team will contact you shortly to schedule a live demo.
                                     </p>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">{t('demoModalNameLabel')}</label>
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Full Name</label>
                                         <div className="relative group">
                                             <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors" />
                                             <input
@@ -81,7 +81,7 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">{t('demoModalEmailLabel')}</label>
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Email Address</label>
                                         <div className="relative group">
                                             <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors" />
                                             <input
@@ -95,7 +95,7 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">{t('demoModalHotelLabel')}</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Hotel / Business Name</label>
                                     <div className="relative group">
                                         <FaHotel className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors" />
                                         <input
@@ -117,7 +117,7 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
                                         <div className="w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
                                     ) : (
                                         <>
-                                            <FaPaperPlane /> {t('demoModalSubmit')}
+                                            <FaPaperPlane /> SEND REQUEST
                                         </>
                                     )}
                                 </button>
@@ -132,16 +132,16 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
                                     <FaCheckCircle />
                                 </div>
                                 <div className="space-y-2">
-                                    <h3 className="text-3xl font-black text-slate-900">{t('demoModalSuccessTitle')}</h3>
+                                    <h3 className="text-3xl font-black text-slate-900">Thank You!</h3>
                                     <p className="text-slate-500 font-medium">
-                                        {t('demoModalSuccessDesc')}
+                                        Your request has been received. Our team will contact you within 24 hours.
                                     </p>
                                 </div>
                                 <button
                                     onClick={onClose}
                                     className="px-10 py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-slate-800 transition-all"
                                 >
-                                    {t('demoModalClose')}
+                                    CLOSE
                                 </button>
                             </motion.div>
                         )}
