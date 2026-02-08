@@ -362,18 +362,10 @@ export default function HomePage() {
             <section className="py-16 md:py-24 bg-white">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-16 px-4">
-                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight leading-tight">
+                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-8 tracking-tight leading-tight">
                             {t('marketingSectionTitle')}
                         </h2>
-                        <h3 className="text-xl md:text-3xl font-black text-blue-600 mb-6 tracking-tight">
-                            {t('marketingSectionTitle2')}
-                        </h3>
-                        {t('marketingSectionSubtitle') && (
-                            <p className="text-slate-500 font-medium text-lg md:text-xl max-w-3xl mx-auto mb-8">
-                                {t('marketingSectionSubtitle')}
-                            </p>
-                        )}
-                        <div className="h-1.5 w-24 bg-gradient-to-r from-blue-600 to-indigo-600 mx-auto rounded-full shadow-lg"></div>
+                        <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-indigo-600 mx-auto rounded-full shadow-lg"></div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
