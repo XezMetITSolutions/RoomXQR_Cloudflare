@@ -14,6 +14,82 @@ import { useLanguageStore } from '@/store/languageStore';
 import LandingLanguageToggle from '@/components/LandingLanguageToggle';
 import DemoRequestModal from '@/components/DemoRequestModal';
 
+interface MarketingCardProps {
+    key?: number | string;
+    feature: any;
+    t: (key: string) => string;
+    index: number;
+}
+
+const MarketingCard = ({ feature, t, index }: MarketingCardProps) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const hasLongDesc = feature.desc && feature.desc.length > 100;
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.05, duration: 0.4 }}
+            viewport={{ once: true, margin: "-50px" }}
+            className="group relative bg-white p-6 md:p-8 rounded-[2.5rem] shadow-lg hover:shadow-xl transition-all border border-slate-50 flex flex-col h-full"
+        >
+            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 
+                ${feature.color === 'blue' ? 'bg-blue-50 text-blue-600' :
+                    feature.color === 'emerald' ? 'bg-emerald-50 text-emerald-600' :
+                        feature.color === 'purple' ? 'bg-purple-50 text-purple-600' :
+                            feature.color === 'orange' ? 'bg-orange-50 text-orange-600' : 'bg-pink-50 text-pink-600'
+                } transition-transform group-hover:scale-110 shadow-sm`}>
+                <feature.icon className="text-2xl" />
+            </div>
+            <div className="mb-4">
+                <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full 
+                    ${feature.color === 'blue' ? 'bg-blue-100 text-blue-700' :
+                        feature.color === 'emerald' ? 'bg-emerald-100 text-emerald-700' :
+                            feature.color === 'purple' ? 'bg-purple-100 text-purple-700' :
+                                feature.color === 'orange' ? 'bg-orange-100 text-orange-700' : 'bg-pink-100 text-pink-700'
+                    }`}>
+                    {feature.badge}
+                </span>
+            </div>
+            <h3 className={`text-lg md:text-xl font-black mb-4 tracking-tight leading-tight 
+                ${feature.color === 'blue' ? 'text-blue-600' :
+                    feature.color === 'emerald' ? 'text-emerald-600' :
+                        feature.color === 'purple' ? 'text-purple-600' :
+                            feature.color === 'orange' ? 'text-orange-600' : 'text-pink-600'
+                }`}>
+                {feature.title}
+            </h3>
+            <div className="flex-grow overflow-hidden relative">
+                <p className={`text-slate-500 font-medium text-sm md:text-base leading-relaxed mb-4 ${!isExpanded && hasLongDesc ? 'line-clamp-3' : ''}`}>
+                    {feature.desc}
+                </p>
+                {hasLongDesc && (
+                    <button
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className={`text-xs font-black uppercase tracking-widest transition-colors mb-6 flex items-center gap-1
+                            ${feature.color === 'blue' ? 'text-blue-500 hover:text-blue-700' :
+                                feature.color === 'emerald' ? 'text-emerald-500 hover:text-emerald-700' :
+                                    feature.color === 'purple' ? 'text-purple-500 hover:text-purple-700' :
+                                        feature.color === 'orange' ? 'text-orange-500 hover:text-orange-700' : 'text-pink-500 hover:text-pink-700'
+                            }`}
+                    >
+                        {isExpanded ? t('showLess') : t('showMore')}
+                        <FaChevronDown className={`transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+                    </button>
+                )}
+            </div>
+            <button className="flex items-center gap-2 font-black text-xs md:text-sm text-slate-800 group-hover:gap-4 transition-all uppercase tracking-widest mt-auto border-t border-slate-50 pt-6">
+                {t('learnMore')} <FaArrowRight className={`
+                    ${feature.color === 'blue' ? 'text-blue-500' :
+                        feature.color === 'emerald' ? 'text-emerald-500' :
+                            feature.color === 'purple' ? 'text-purple-500' :
+                                feature.color === 'orange' ? 'text-orange-500' : 'text-pink-500'
+                    }`} />
+            </button>
+        </motion.div>
+    );
+};
+
 export default function HomePage() {
     const { getTranslation: t, currentLanguage } = useLanguageStore();
 
@@ -268,19 +344,22 @@ export default function HomePage() {
             {/* Marketing Grid */}
             <section className="py-16 md:py-24 bg-white">
                 <div className="container mx-auto px-4">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
+                    <div className="text-center mb-16 px-4">
+                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight leading-tight">
                             {t('marketingSectionTitle')}
                         </h2>
+                        <h3 className="text-xl md:text-3xl font-black text-blue-600 mb-6 tracking-tight">
+                            {t('marketingSectionTitle2')}
+                        </h3>
                         {t('marketingSectionSubtitle') && (
-                            <p className="text-slate-500 font-medium text-lg md:text-xl max-w-3xl mx-auto mb-6 px-4">
+                            <p className="text-slate-500 font-medium text-lg md:text-xl max-w-3xl mx-auto mb-8">
                                 {t('marketingSectionSubtitle')}
                             </p>
                         )}
-                        <div className="h-1.5 w-20 bg-blue-600 mx-auto rounded-full"></div>
+                        <div className="h-1.5 w-24 bg-gradient-to-r from-blue-600 to-indigo-600 mx-auto rounded-full shadow-lg"></div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {[
                             { icon: FaUtensils, title: t('kitchenStatTitle'), desc: t('kitchenStatDesc'), color: "blue", badge: "Advanced" },
                             { icon: FaCreditCard, title: t('splitPaymentTitle'), desc: t('splitPaymentDesc'), color: "emerald", badge: "Exclusive" },
@@ -288,52 +367,7 @@ export default function HomePage() {
                             { icon: FaLayerGroup, title: t('multiBranchTitle'), desc: t('multiBranchDesc'), color: "purple", badge: "Enterprise" },
                             { icon: FaMagic, title: t('aiTitle'), desc: t('aiDesc'), color: "pink", badge: "AI Powered" }
                         ].map((feature, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ delay: i * 0.05, duration: 0.4 }}
-                                viewport={{ once: true, margin: "-50px" }}
-                                className="group relative bg-white p-6 md:p-8 rounded-[2.5rem] shadow-lg hover:shadow-xl transition-all border border-slate-50 flex flex-col h-full"
-                            >
-                                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 
-                                    ${feature.color === 'blue' ? 'bg-blue-50 text-blue-600' :
-                                        feature.color === 'emerald' ? 'bg-emerald-50 text-emerald-600' :
-                                            feature.color === 'purple' ? 'bg-purple-50 text-purple-600' :
-                                                feature.color === 'orange' ? 'bg-orange-50 text-orange-600' : 'bg-pink-50 text-pink-600'
-                                    } transition-transform group-hover:scale-110 shadow-sm`}>
-                                    <feature.icon className="text-2xl" />
-                                </div>
-                                <div className="mb-4">
-                                    <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full 
-                                        ${feature.color === 'blue' ? 'bg-blue-100 text-blue-700' :
-                                            feature.color === 'emerald' ? 'bg-emerald-100 text-emerald-700' :
-                                                feature.color === 'purple' ? 'bg-purple-100 text-purple-700' :
-                                                    feature.color === 'orange' ? 'bg-orange-100 text-orange-700' : 'bg-pink-100 text-pink-700'
-                                        }`}>
-                                        {feature.badge}
-                                    </span>
-                                </div>
-                                <h3 className={`text-lg md:text-xl font-black mb-4 tracking-tight leading-tight 
-                                    ${feature.color === 'blue' ? 'text-blue-600' :
-                                        feature.color === 'emerald' ? 'text-emerald-600' :
-                                            feature.color === 'purple' ? 'text-purple-600' :
-                                                feature.color === 'orange' ? 'text-orange-600' : 'text-pink-600'
-                                    }`}>
-                                    {feature.title}
-                                </h3>
-                                <p className="text-slate-500 font-medium text-sm md:text-base leading-relaxed mb-8 flex-grow">
-                                    {feature.desc}
-                                </p>
-                                <button className="flex items-center gap-2 font-black text-xs md:text-sm text-slate-800 group-hover:gap-4 transition-all uppercase tracking-widest">
-                                    {t('learnMore')} <FaArrowRight className={`
-                                        ${feature.color === 'blue' ? 'text-blue-500' :
-                                            feature.color === 'emerald' ? 'text-emerald-500' :
-                                                feature.color === 'purple' ? 'text-purple-500' :
-                                                    feature.color === 'orange' ? 'text-orange-500' : 'text-pink-500'
-                                        }`} />
-                                </button>
-                            </motion.div>
+                            <MarketingCard key={i} feature={feature} t={t} index={i} />
                         ))}
                     </div>
                 </div>
