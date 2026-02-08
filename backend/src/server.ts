@@ -117,7 +117,7 @@ const corsOptions: cors.CorsOptions = {
     console.log(`🔍 CORS: Checking origin: ${normalizedOrigin}`)
 
     // Check if origin contains allowed domains
-    const allowedDomains = ['roomxqr.com', 'roomxr.com', 'onrender.com', 'netlify.app', 'localhost']
+    const allowedDomains = ['roomxqr.com', 'roomxr.com', 'onrender.com', 'netlify.app', 'vercel.app', 'localhost']
 
     for (const domain of allowedDomains) {
       if (normalizedOrigin.includes(domain)) {
@@ -148,7 +148,7 @@ app.use(cors(corsOptions))
 app.options('*', (req: Request, res: Response) => {
   const origin = req.headers.origin || '*'
   const normalizedOrigin = origin.replace(/\/$/, '')
-  const allowedDomains = ['roomxqr.com', 'roomxr.com', 'onrender.com', 'netlify.app', 'localhost']
+  const allowedDomains = ['roomxqr.com', 'roomxr.com', 'onrender.com', 'netlify.app', 'vercel.app', 'localhost']
 
   let isAllowed = false
   if (origin === '*') {

@@ -47,7 +47,7 @@ async function main() {
   console.log('✅ Hotel created:', hotel.name);
 
   // Demo tenant için mevcut tüm menu item'ları sil (tekrar eden ürünleri önlemek için)
-  console.log('🗑️  Mevcut demo menu item'ları siliniyor...');
+  console.log('🗑️  Mevcut demo menu itemları siliniyor...');
   const deletedCount = await prisma.menuItem.deleteMany({
     where: {
       tenantId: tenant.id
@@ -652,6 +652,28 @@ async function main() {
     }
   });
   console.log('✅ Super Admin created: roomxqr-admin@roomxqr.com');
+
+  // Second Super Admin for office@xezmet.at
+  await prisma.user.upsert({
+    where: { email: 'office@xezmet.at' },
+    update: {
+      password: superAdminPassword,
+      role: 'SUPER_ADMIN' as const,
+      tenantId: systemTenant.id,
+      hotelId: systemHotel.id
+    },
+    create: {
+      email: 'office@xezmet.at',
+      password: superAdminPassword,
+      firstName: 'Xezal',
+      lastName: 'Admin',
+      role: 'SUPER_ADMIN' as const,
+      tenantId: systemTenant.id,
+      hotelId: systemHotel.id,
+      isActive: true
+    }
+  });
+  console.log('✅ Super Admin created: office@xezmet.at');
 
   console.log('🎉 Seeding completed!');
 }
