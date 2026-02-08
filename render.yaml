@@ -14,13 +14,9 @@ services:
       - key: PORT
         value: 3001
       - key: DATABASE_URL
-        fromDatabase:
-          name: roomapp-db
-          property: connectionString
+        value: "postgresql://roomxqr_database_user:BDnU6U13eW124KDpKF1fSJoCvWFxuHxQ@dpg-d64hapshg0os73d7hutg-a.oregon-postgres.render.com/roomxqr_database"
       - key: DIRECT_URL
-        fromDatabase:
-          name: roomapp-db
-          property: connectionString
+        value: "postgresql://roomxqr_database_user:BDnU6U13eW124KDpKF1fSJoCvWFxuHxQ@dpg-d64hapshg0os73d7hutg-a.oregon-postgres.render.com/roomxqr_database"
       - key: JWT_SECRET
         generateValue: true
       - key: FRONTEND_URL
