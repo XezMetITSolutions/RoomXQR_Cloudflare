@@ -272,6 +272,11 @@ export default function HomePage() {
                         <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
                             {t('marketingSectionTitle')}
                         </h2>
+                        {t('marketingSectionSubtitle') && (
+                            <p className="text-slate-500 font-medium text-lg md:text-xl max-w-3xl mx-auto mb-6 px-4">
+                                {t('marketingSectionSubtitle')}
+                            </p>
+                        )}
                         <div className="h-1.5 w-20 bg-blue-600 mx-auto rounded-full"></div>
                     </div>
 
