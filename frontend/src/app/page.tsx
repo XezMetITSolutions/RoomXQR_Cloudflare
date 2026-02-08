@@ -34,11 +34,11 @@ export default function HomePage() {
     };
 
     const faqs = [
-        { icon: FaQrcode, color: "orange-500", question: t('faq1Q'), answer: t('faq1A') },
-        { icon: FaRocket, color: "blue-500", question: t('faq2Q'), answer: t('faq2A') },
-        { icon: FaShieldAlt, color: "green-500", question: t('faq3Q'), answer: t('faq3A') },
-        { icon: FaShoppingCart, color: "purple-500", question: t('faq4Q'), answer: t('faq4A') },
-        { icon: FaPhone, color: "red-500", question: t('faq5Q'), answer: t('faq5A') },
+        { icon: FaQrcode, color: "blue-500", question: t('faq1Q'), answer: t('faq1A') },
+        { icon: FaMagic, color: "purple-500", question: t('faq2Q'), answer: t('faq2A') },
+        { icon: FaGlobe, color: "emerald-500", question: t('faq3Q'), answer: t('faq3A') },
+        { icon: FaCreditCard, color: "orange-500", question: t('faq4Q'), answer: t('faq4A') },
+        { icon: FaCogs, color: "blue-500", question: t('faq5Q'), answer: t('faq5A') },
         { icon: FaClock, color: "yellow-500", question: t('faq6Q'), answer: t('faq6A') },
         { icon: FaUtensils, color: "indigo-500", question: t('faq7Q'), answer: t('faq7A') },
         { icon: FaChartLine, color: "pink-500", question: t('faq8Q'), answer: t('faq8A') },
