@@ -503,7 +503,7 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* Pricing Section */}
+            {/* Consultative Pricing Section */}
             <section className="py-24 bg-white overflow-hidden">
                 <div className="container mx-auto px-4 max-w-7xl">
                     <div className="text-center mb-16 px-4">
@@ -519,100 +519,87 @@ export default function HomePage() {
                             {t('pricingTitle')}
                         </h2>
                         <div className="h-1.5 w-24 bg-blue-600 mx-auto rounded-full mb-8"></div>
-                        <p className="text-lg md:text-xl text-slate-500 font-bold max-w-2xl mx-auto mb-4 italic">
-                            🚀 {t('devTeamPromise')}
-                        </p>
-                        <p className="text-sm font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 w-fit mx-auto px-6 py-2 rounded-full border border-emerald-100 shadow-sm">
-                            {t('annualGift')}
+                        <p className="text-lg md:text-2xl text-slate-500 font-medium max-w-4xl mx-auto leading-relaxed">
+                            {t('customPricingDesc')}
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
-                        {[
-                            {
-                                title: t('planBasicTitle'),
-                                price: t('planBasicPrice'),
-                                desc: t('planBasicDesc'),
-                                features: [t('planBasicFeat1'), t('planBasicFeat2'), t('planBasicFeat3')],
-                                color: "blue",
-                                badge: "POPULAR"
-                            },
-                            {
-                                title: t('planProTitle'),
-                                price: t('planProPrice'),
-                                desc: t('planProDesc'),
-                                features: [t('planProFeat1'), t('planProFeat2'), t('planProFeat3')],
-                                color: "emerald",
-                                badge: "BEST VALUE",
-                                featured: true
-                            },
-                            {
-                                title: t('planEntTitle'),
-                                price: t('planEntPrice'),
-                                desc: t('planEntDesc'),
-                                features: [t('planEntFeat1'), t('planEntFeat2'), t('planEntFeat3')],
-                                color: "slate",
-                                badge: "CORPORATE"
-                            }
-                        ].map((plan, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true, margin: "-50px" }}
-                                transition={{ delay: i * 0.05, duration: 0.4 }}
-                                className={`relative group p-8 md:p-12 rounded-[3rem] border transition-all h-full flex flex-col ${plan.featured
-                                    ? 'bg-slate-900 text-white border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.3)] scale-105 z-10'
-                                    : 'bg-white text-slate-900 border-slate-100 hover:border-blue-200 shadow-xl'
-                                    }`}
-                            >
-                                {plan.badge && (
-                                    <div className={`absolute -top-4 right-8 px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase ${plan.featured ? 'bg-emerald-500 text-white' : 'bg-blue-600 text-white'}`}>
-                                        {plan.badge}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16 px-4">
+                        {/* Plans & Benefits Card */}
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true, margin: "-50px" }}
+                            className="bg-slate-50 rounded-[3rem] p-10 md:p-14 border border-slate-100 shadow-xl"
+                        >
+                            <h3 className="text-2xl md:text-3xl font-black text-slate-900 mb-8 flex items-center gap-4">
+                                <div className="p-3 bg-blue-600 text-white rounded-2xl shadow-lg"><FaLayerGroup /></div>
+                                {t('salesTermsTitle')}
+                            </h3>
+                            <div className="space-y-6 mb-12">
+                                {[
+                                    { text: t('term6Months'), icon: FaCheckCircle },
+                                    { text: t('term1Year'), icon: FaCheckCircle },
+                                    { text: t('term2Years'), icon: FaCheckCircle }
+                                ].map((term, i) => (
+                                    <div key={i} className="flex items-center gap-6 p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                                        <term.icon className="text-blue-600 text-2xl shrink-0" />
+                                        <span className="text-lg md:text-xl font-bold text-slate-800">{term.text}</span>
                                     </div>
-                                )}
-                                <h3 className="text-2xl font-black mb-4 uppercase tracking-tighter">{plan.title}</h3>
-                                <div className="mb-6">
-                                    <span className="text-4xl md:text-5xl font-black">{plan.price}</span>
-                                    {plan.price !== 'Custom' && plan.price !== 'Özel' && <span className="text-sm font-bold opacity-60 ml-2">TL</span>}
+                                ))}
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-emerald-500 text-white p-6 rounded-2xl shadow-lg text-center">
+                                    <div className="text-[10px] font-black uppercase tracking-widest mb-2 opacity-80">FREE TRIAL</div>
+                                    <div className="text-lg font-black leading-tight">{t('benefit15Days')}</div>
                                 </div>
-                                <p className={`mb-8 font-medium italic ${plan.featured ? 'text-slate-400' : 'text-slate-500'}`}>{plan.desc}</p>
-                                <div className="space-y-4 mb-12 flex-grow">
-                                    {plan.features.map((feat, fi) => (
-                                        <div key={fi} className="flex items-center gap-3">
-                                            <FaCheckCircle className={plan.featured ? 'text-emerald-400' : 'text-blue-600'} />
-                                            <span className="font-bold text-sm md:text-base">{feat}</span>
-                                        </div>
-                                    ))}
+                                <div className="bg-slate-900 text-white p-6 rounded-2xl shadow-lg text-center">
+                                    <div className="text-[10px] font-black uppercase tracking-widest mb-2 opacity-80">24/7 LIVE</div>
+                                    <div className="text-lg font-black leading-tight">{t('benefit247')}</div>
                                 </div>
-                                <button
-                                    onClick={() => setShowDemoModal(true)}
-                                    className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all ${plan.featured
-                                        ? 'bg-white text-slate-900 hover:bg-emerald-400 hover:text-white'
-                                        : 'bg-slate-900 text-white hover:bg-blue-600'
-                                        }`}
-                                >
-                                    {t('startNow')}
-                                </button>
-                            </motion.div>
-                        ))}
+                            </div>
+                        </motion.div>
+
+                        {/* Evolution & Technology Card */}
+                        <motion.div
+                            initial={{ opacity: 0, x: 20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true, margin: "-50px" }}
+                            className="bg-blue-600 text-white rounded-[3rem] p-10 md:p-14 shadow-2xl relative overflow-hidden flex flex-col justify-center"
+                        >
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-[80px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
+                            <div className="relative z-10">
+                                <h3 className="text-2xl md:text-4xl font-black mb-8 leading-tight">
+                                    {t('systemEvolutionTitle')}
+                                </h3>
+                                <p className="text-lg md:text-xl text-blue-50 font-medium leading-relaxed mb-10 opacity-90">
+                                    {t('systemEvolutionDesc')}
+                                </p>
+                                <div className="p-8 bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] mb-10">
+                                    <p className="text-xl md:text-2xl font-black italic mb-6">
+                                        🚀 {t('pricingContactLead')}
+                                    </p>
+                                    <button
+                                        onClick={() => setShowDemoModal(true)}
+                                        className="w-full py-5 bg-white text-blue-600 rounded-2xl font-black text-xl uppercase tracking-widest shadow-2xl transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-4"
+                                    >
+                                        <FaPhone className="animate-bounce" /> {t('getQuoteBtn')}
+                                    </button>
+                                </div>
+                                <div className="flex items-center gap-4 text-blue-100 font-bold italic">
+                                    <FaStar className="text-yellow-400" /> {t('refundNote')}
+                                </div>
+                            </div>
+                        </motion.div>
                     </div>
 
-                    <div className="mt-16 text-center space-y-6">
+                    <div className="mt-16 text-center">
                         <div className="inline-flex flex-wrap justify-center items-center gap-6 px-4">
                             <div className="flex items-center gap-4 bg-blue-50 border border-blue-100 px-8 py-4 rounded-[2rem] shadow-sm group hover:scale-105 transition-transform duration-300">
                                 <FaLayerGroup className="text-blue-600 text-3xl" />
                                 <p className="text-blue-900 font-black text-sm md:text-base">
                                     {t('branchDiscountNote')}
                                 </p>
-                            </div>
-                            <div className="flex flex-col md:flex-row items-center gap-4 bg-slate-50 border border-slate-200 px-8 py-4 rounded-[2rem] shadow-sm group hover:scale-105 transition-transform duration-300">
-                                <div className="flex items-center gap-4">
-                                    <FaStar className="text-yellow-500 text-3xl animate-pulse" />
-                                    <p className="text-slate-700 font-extrabold text-sm md:text-base">
-                                        {t('refundNote')}
-                                    </p>
-                                </div>
                             </div>
                         </div>
                     </div>
