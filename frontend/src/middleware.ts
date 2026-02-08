@@ -20,6 +20,7 @@ export function middleware(request: NextRequest) {
         pathname.startsWith('/kitchen') ||
         pathname.startsWith('/reception') ||
         pathname.startsWith('/qr-menu') ||
+        pathname.startsWith('/admin-login') ||
         pathname.startsWith('/paneller')
     ) {
         return NextResponse.next();

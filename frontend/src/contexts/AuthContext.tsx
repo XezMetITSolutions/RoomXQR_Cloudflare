@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       setIsLoading(true);
-      
+
       // URL'den tenant slug'ını al
       let tenantSlug = 'demo'; // Varsayılan
       if (typeof window !== 'undefined') {
@@ -64,9 +64,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 saniye timeout
 
-      console.log('🔍 Attempting login:', { 
-        email, 
-        tenantSlug, 
+      console.log('🔍 Attempting login:', {
+        email,
+        tenantSlug,
         apiUrl: `${API_BASE_URL}/api/auth/login`
       });
 
@@ -111,35 +111,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Token ve kullanıcı bilgilerini kaydet
         const tokenValue = data.token;
         const userValue = data.user;
-        
+
         // State'i güncelle
         setToken(tokenValue);
         setUser(userValue);
-        
+
         // LocalStorage'a kaydet
         localStorage.setItem('auth_token', tokenValue);
         localStorage.setItem('user_data', JSON.stringify(userValue));
-        
-        console.log('✅ Login successful, token and user saved:', { 
-          hasToken: !!tokenValue, 
+
+        console.log('✅ Login successful, token and user saved:', {
+          hasToken: !!tokenValue,
           hasUser: !!userValue,
-          userEmail: userValue.email 
+          userEmail: userValue.email
         });
-        
+
         setIsLoading(false);
         return true;
       } catch (fetchError: any) {
         clearTimeout(timeoutId);
         console.error('❌ Fetch error:', fetchError);
-        
+
         if (fetchError.name === 'AbortError') {
           throw new Error('Bağlantı zaman aşımına uğradı. Backend yanıt vermiyor. Lütfen tekrar deneyin.');
         }
-        
+
         if (fetchError.message && fetchError.message.includes('Failed to fetch')) {
           throw new Error('Backend\'e bağlanılamıyor. Lütfen internet bağlantınızı kontrol edin veya daha sonra tekrar deneyin.');
         }
-        
+
         throw fetchError;
       }
     } catch (error: any) {
@@ -164,7 +164,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const savedToken = localStorage.getItem('auth_token');
         const savedUser = localStorage.getItem('user_data');
-        
+
         if (savedToken && savedUser) {
           // Token'ı doğrula (backend'den mevcut kullanıcı bilgilerini al)
           try {

@@ -5,7 +5,7 @@ import path from 'path';
 
 const DATA_DIR = path.join(process.cwd(), '.data');
 const MENU_FILE = path.join(DATA_DIR, 'menu.json');
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomapp-backend.onrender.com';
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
 
 async function loadFallbackMenu() {
   try {

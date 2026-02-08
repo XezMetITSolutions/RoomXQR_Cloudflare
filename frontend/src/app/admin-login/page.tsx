@@ -49,7 +49,7 @@ export default function AdminLogin() {
         // Token'ı localStorage'a kaydet
         localStorage.setItem('admin_token', data.token);
         localStorage.setItem('admin_user', JSON.stringify(data.user));
-        
+
         // Admin paneline yönlendir
         router.push('/system-admin/tenants');
       } else {
@@ -192,8 +192,8 @@ export default function AdminLogin() {
             <div className="mt-6 bg-gray-50 rounded-md p-4">
               <div className="text-sm text-gray-600">
                 <p className="font-medium mb-2">Test Hesabı:</p>
-                <p><strong>Email:</strong> admin@roomxr.com</p>
-                <p><strong>Şifre:</strong> admin123</p>
+                <p><strong>Email:</strong> roomxqr-admin@roomxqr.com</p>
+                <p><strong>Şifre:</strong> 01528797Mb##</p>
               </div>
             </div>
           </div>
