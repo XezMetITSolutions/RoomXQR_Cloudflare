@@ -164,17 +164,34 @@ export default function HomePage() {
                         <br /><span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">{t('heroTitle3')}</span>
                     </motion.h1>
 
-                    <motion.p
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ delay: 0.4 }}
-                        className="text-base md:text-xl mb-10 md:mb-12 text-slate-300 leading-relaxed max-w-3xl mx-auto font-medium px-4"
+                        className="max-w-4xl mx-auto mb-10 md:mb-12 px-4"
                     >
-                        🚀 <span className="text-white font-bold">{t('heroSubtitle1')}</span>
-                        <br className="hidden md:block" />
-                        <span className="text-slate-400 text-sm md:text-lg">{t('heroSubtitle2')}</span>
-                    </motion.p>
+                        <div className="flex flex-wrap justify-center gap-3 md:gap-4 mb-8">
+                            <motion.div
+                                whileHover={{ scale: 1.05 }}
+                                className="bg-blue-500/10 backdrop-blur-md text-blue-400 px-5 md:px-8 py-3 rounded-2xl border border-blue-500/20 text-xs md:text-lg font-black shadow-xl"
+                            >
+                                ⚡ %35 OPERASYONEL HIZ
+                            </motion.div>
+                            <motion.div
+                                whileHover={{ scale: 1.05 }}
+                                className="bg-emerald-500/10 backdrop-blur-md text-emerald-400 px-5 md:px-8 py-3 rounded-2xl border border-emerald-500/20 text-xs md:text-lg font-black shadow-xl"
+                            >
+                                📈 %40 CİRO ARTIŞI
+                            </motion.div>
+                        </div>
+                        <p className="text-lg md:text-2xl text-white font-bold leading-relaxed mb-4">
+                            {t('heroSubtitle1')}
+                        </p>
+                        <p className="text-slate-400 text-sm md:text-xl font-medium leading-relaxed">
+                            {t('heroSubtitle2')}
+                        </p>
+                    </motion.div>
 
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -345,18 +362,15 @@ export default function HomePage() {
             <section className="py-16 md:py-24 bg-white">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-16 px-4">
-                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight leading-tight">
+                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight leading-tight">
                             {t('marketingSectionTitle')}
                         </h2>
-                        <h3 className="text-xl md:text-3xl font-black text-blue-600 mb-6 tracking-tight">
-                            {t('marketingSectionTitle2')}
-                        </h3>
                         {t('marketingSectionSubtitle') && (
-                            <p className="text-slate-500 font-medium text-lg md:text-xl max-w-3xl mx-auto mb-8">
+                            <p className="text-slate-500 font-medium text-lg md:text-xl max-w-3xl mx-auto mb-10">
                                 {t('marketingSectionSubtitle')}
                             </p>
                         )}
-                        <div className="h-1.5 w-24 bg-gradient-to-r from-blue-600 to-indigo-600 mx-auto rounded-full shadow-lg"></div>
+                        <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-indigo-600 mx-auto rounded-full shadow-lg"></div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -365,6 +379,7 @@ export default function HomePage() {
                             { icon: FaCreditCard, title: t('splitPaymentTitle'), desc: t('splitPaymentDesc'), color: "emerald", badge: "Exclusive" },
                             { icon: FaStar, title: t('socialGrowthTitle'), desc: t('socialGrowthDesc'), color: "orange", badge: "Growth" },
                             { icon: FaLayerGroup, title: t('multiBranchTitle'), desc: t('multiBranchDesc'), color: "purple", badge: "Enterprise" },
+                            { icon: FaGlobe, title: t('marketingMultiLangTitle'), desc: t('marketingMultiLangDesc'), color: "blue", badge: "Global" },
                             { icon: FaMagic, title: t('aiTitle'), desc: t('aiDesc'), color: "pink", badge: "AI Powered" }
                         ].map((feature, i) => (
                             <MarketingCard key={i} feature={feature} t={t} index={i} />
