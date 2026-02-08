@@ -39,7 +39,6 @@ export default function HomePage() {
         { icon: FaGlobe, color: "emerald-500", question: t('faq3Q'), answer: t('faq3A') },
         { icon: FaCreditCard, color: "orange-500", question: t('faq4Q'), answer: t('faq4A') },
         { icon: FaCogs, color: "blue-500", question: t('faq5Q'), answer: t('faq5A') },
-        { icon: FaClock, color: "yellow-500", question: t('faq6Q'), answer: t('faq6A') },
         { icon: FaUtensils, color: "indigo-500", question: t('faq7Q'), answer: t('faq7A') },
         { icon: FaChartLine, color: "pink-500", question: t('faq8Q'), answer: t('faq8A') },
         { icon: FaStar, color: "yellow-500", question: t('referralFaqQ'), answer: t('referralFaqA') }
