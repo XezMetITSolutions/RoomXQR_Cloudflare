@@ -472,18 +472,34 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* Trust Section */}
-            <section className="py-16 md:py-24 bg-slate-50 overflow-hidden">
-                <div className="container mx-auto px-4 max-w-6xl">
-                    <div className="bg-gradient-to-br from-blue-700 to-indigo-900 rounded-[3rem] p-10 md:p-20 text-white text-center relative shadow-2xl">
-                        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
-                        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.5 }} className="relative z-10">
-                            <span className="text-blue-200 font-black tracking-[0.3em] text-[10px] md:text-xs uppercase block mb-6">{t('noChangeTitle')}</span>
-                            <h2 className="text-3xl md:text-6xl font-black mb-6 md:mb-8 leading-tight">{t('noChangeSubtitle')}</h2>
-                            <p className="text-lg md:text-2xl text-blue-100/80 mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed">{t('noChangeDesc')}</p>
-                            <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl text-lg md:text-xl font-black italic"><FaRocket className="text-emerald-400" /> "{t('noChangeFooter')}"</div>
-                        </motion.div>
-                    </div>
+            {/* Fast Setup / Trust Section */}
+            <section className="py-16 md:py-24 bg-blue-600 relative overflow-hidden">
+                <div className="container mx-auto px-4 max-w-4xl relative z-10">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true, margin: "-50px" }}
+                        className="bg-white rounded-[2.5rem] md:rounded-[3.5rem] p-8 md:p-16 shadow-2xl"
+                    >
+                        <div className="mx-auto max-w-2xl text-center">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-[10px] md:text-xs font-black tracking-widest uppercase mb-6">
+                                <FaRocket />
+                                {t('noChangeTitle')}
+                            </div>
+                            <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight leading-tight">
+                                {t('noChangeSubtitle')}
+                            </h2>
+                            <p className="text-lg md:text-xl text-slate-500 font-medium leading-relaxed mb-10">
+                                {t('noChangeDesc')}
+                            </p>
+                            <button
+                                onClick={() => setShowDemoModal(true)}
+                                className="px-10 py-4 bg-blue-600 text-white rounded-2xl font-black text-lg uppercase tracking-widest shadow-xl transition-all hover:scale-105 active:scale-95 shadow-blue-500/20"
+                            >
+                                {t('noChangeFooter')}
+                            </button>
+                        </div>
+                    </motion.div>
                 </div>
             </section>
 
@@ -603,33 +619,6 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* Fast Setup */}
-            <section className="py-16 bg-blue-600 relative overflow-hidden">
-                <div className="container mx-auto px-4 max-w-4xl relative z-10">
-                    <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-2xl">
-                        <div className="mx-auto max-w-2xl text-center">
-                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black tracking-widest uppercase mb-4">
-                                <FaRocket />
-                                {t('instantSetupTitle')}
-                            </div>
-                            <h2 className="text-2xl md:text-4xl font-black text-slate-900 mb-4 tracking-tight leading-tight">
-                                {t('instantSetupTitle')}
-                            </h2>
-                            <p className="text-base text-slate-600 font-medium leading-relaxed mb-8">
-                                {t('instantSetupDesc')}
-                            </p>
-                            <div className="flex flex-wrap justify-center gap-3">
-                                <button
-                                    onClick={() => setShowDemoModal(true)}
-                                    className="px-6 py-3 bg-blue-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg"
-                                >
-                                    {t('startNow')}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             {/* FAQ */}
             <section className="py-24 bg-white px-4">
