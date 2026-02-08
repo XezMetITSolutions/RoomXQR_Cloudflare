@@ -39,6 +39,7 @@ export default function HomePage() {
         { icon: FaGlobe, color: "emerald-500", question: t('faq3Q'), answer: t('faq3A') },
         { icon: FaCreditCard, color: "orange-500", question: t('faq4Q'), answer: t('faq4A') },
         { icon: FaCogs, color: "blue-500", question: t('faq5Q'), answer: t('faq5A') },
+        { icon: FaStar, color: "yellow-500", question: t('faq6Q'), answer: t('faq6A') },
         { icon: FaUtensils, color: "indigo-500", question: t('faq7Q'), answer: t('faq7A') },
         { icon: FaChartLine, color: "pink-500", question: t('faq8Q'), answer: t('faq8A') },
         { icon: FaStar, color: "yellow-500", question: t('referralFaqQ'), answer: t('referralFaqA') }
@@ -298,7 +299,8 @@ export default function HomePage() {
                                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 
                                     ${feature.color === 'blue' ? 'bg-blue-50 text-blue-600' :
                                         feature.color === 'emerald' ? 'bg-emerald-50 text-emerald-600' :
-                                            feature.color === 'purple' ? 'bg-purple-50 text-purple-600' : 'bg-pink-50 text-pink-600'
+                                            feature.color === 'purple' ? 'bg-purple-50 text-purple-600' :
+                                                feature.color === 'orange' ? 'bg-orange-50 text-orange-600' : 'bg-pink-50 text-pink-600'
                                     } transition-transform group-hover:scale-110 shadow-sm`}>
                                     <feature.icon className="text-2xl" />
                                 </div>
@@ -306,7 +308,8 @@ export default function HomePage() {
                                     <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full 
                                         ${feature.color === 'blue' ? 'bg-blue-100 text-blue-700' :
                                             feature.color === 'emerald' ? 'bg-emerald-100 text-emerald-700' :
-                                                feature.color === 'purple' ? 'bg-purple-100 text-purple-700' : 'bg-pink-100 text-pink-700'
+                                                feature.color === 'purple' ? 'bg-purple-100 text-purple-700' :
+                                                    feature.color === 'orange' ? 'bg-orange-100 text-orange-700' : 'bg-pink-100 text-pink-700'
                                         }`}>
                                         {feature.badge}
                                     </span>
@@ -314,7 +317,8 @@ export default function HomePage() {
                                 <h3 className={`text-lg md:text-xl font-black mb-4 tracking-tight leading-tight 
                                     ${feature.color === 'blue' ? 'text-blue-600' :
                                         feature.color === 'emerald' ? 'text-emerald-600' :
-                                            feature.color === 'purple' ? 'text-purple-600' : 'text-pink-600'
+                                            feature.color === 'purple' ? 'text-purple-600' :
+                                                feature.color === 'orange' ? 'text-orange-600' : 'text-pink-600'
                                     }`}>
                                     {feature.title}
                                 </h3>
@@ -325,7 +329,8 @@ export default function HomePage() {
                                     {t('learnMore')} <FaArrowRight className={`
                                         ${feature.color === 'blue' ? 'text-blue-500' :
                                             feature.color === 'emerald' ? 'text-emerald-500' :
-                                                feature.color === 'purple' ? 'text-purple-500' : 'text-pink-500'
+                                                feature.color === 'purple' ? 'text-purple-500' :
+                                                    feature.color === 'orange' ? 'text-orange-500' : 'text-pink-500'
                                         }`} />
                                 </button>
                             </motion.div>
