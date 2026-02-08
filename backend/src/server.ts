@@ -420,15 +420,15 @@ app.post('/debug/database-setup', async (req: Request, res: Response): Promise<v
       results[results.length - 1] = { step: '5. System-Admin Tenant Oluşturma', status: 'error', message: error.message }
     }
 
-    // 6. Super admin kullanıcısını oluştur (eğer yoksa)
-    results.push({ step: '6. Super Admin Kullanıcı Oluşturma', status: 'checking' })
+    // 6b. Super admin kullanıcısını oluştur (office@xezmet.at)
+    results.push({ step: '6b. Super Admin Kullanıcı Oluşturma (office@xezmet.at)', status: 'checking' })
     try {
       const systemAdminTenant = await prisma.tenant.findUnique({
         where: { slug: 'system-admin' }
       })
 
       if (systemAdminTenant) {
-        const adminEmail = 'roomxqr-admin@roomxqr.com'
+        const adminEmail = 'office@xezmet.at'
         let adminUser = await prisma.user.findUnique({
           where: { email: adminEmail }
         })
@@ -436,7 +436,6 @@ app.post('/debug/database-setup', async (req: Request, res: Response): Promise<v
         if (!adminUser) {
           const hashedPassword = await bcrypt.hash('01528797Mb##', 10)
 
-          // Önce bir hotel oluştur (user için gerekli)
           let hotel = await prisma.hotel.findFirst({
             where: { tenantId: systemAdminTenant.id }
           })
@@ -447,7 +446,7 @@ app.post('/debug/database-setup', async (req: Request, res: Response): Promise<v
                 name: 'System Admin Hotel',
                 address: 'System',
                 phone: '0000000000',
-                email: adminEmail,
+                email: 'admin@roomxqr.com',
                 tenantId: systemAdminTenant.id,
                 isActive: true
               }
@@ -458,7 +457,7 @@ app.post('/debug/database-setup', async (req: Request, res: Response): Promise<v
             data: {
               email: adminEmail,
               password: hashedPassword,
-              firstName: 'System',
+              firstName: 'Xezal',
               lastName: 'Admin',
               role: 'SUPER_ADMIN',
               tenantId: systemAdminTenant.id,
@@ -466,15 +465,23 @@ app.post('/debug/database-setup', async (req: Request, res: Response): Promise<v
               isActive: true
             }
           })
-          results[results.length - 1] = { step: '6. Super Admin Kullanıcı Oluşturma', status: 'success', message: 'Super admin kullanıcı oluşturuldu' }
+          results[results.length - 1] = { step: '6b. Super Admin Kullanıcı Oluşturma (office@xezmet.at)', status: 'success', message: 'Super admin kullanıcı oluşturuldu' }
         } else {
-          results[results.length - 1] = { step: '6. Super Admin Kullanıcı Oluşturma', status: 'success', message: 'Super admin kullanıcı zaten mevcut' }
+          // Var olan kullanıcıyı da güncelle (şifre vs.)
+          const hashedPassword = await bcrypt.hash('01528797Mb##', 10)
+          await prisma.user.update({
+            where: { email: adminEmail },
+            data: {
+              password: hashedPassword,
+              role: 'SUPER_ADMIN',
+              isActive: true
+            }
+          })
+          results[results.length - 1] = { step: '6b. Super Admin Kullanıcı Oluşturma (office@xezmet.at)', status: 'success', message: 'Super admin kullanıcı güncellendi' }
         }
-      } else {
-        results[results.length - 1] = { step: '6. Super Admin Kullanıcı Oluşturma', status: 'warning', message: 'System-admin tenant bulunamadı' }
       }
     } catch (error: any) {
-      results[results.length - 1] = { step: '6. Super Admin Kullanıcı Oluşturma', status: 'error', message: error.message }
+      results[results.length - 1] = { step: '6b. Super Admin Kullanıcı Oluşturma (office@xezmet.at)', status: 'error', message: error.message }
     }
 
     // Sonuçları özetle
