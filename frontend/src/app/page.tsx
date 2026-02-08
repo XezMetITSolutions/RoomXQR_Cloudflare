@@ -247,7 +247,7 @@ export default function HomePage() {
                         {[
                             { icon: FaQrcode, title: t('qrMenuSystem'), color: "bg-orange-500", desc: t('valPropDigital') },
                             { icon: FaShoppingCart, title: t('orderManagement'), color: "bg-blue-500", desc: t('valPropSpeed') },
-                            { icon: FaBrain, title: t('aiTitle'), color: "bg-purple-500", desc: t('valPropSatisfy') },
+                            { icon: FaUtensils, title: t('aiTitle'), color: "bg-purple-500", desc: t('valPropSatisfy') },
                             { icon: FaChartLine, title: t('detailedReporting'), color: "bg-green-500", desc: t('valPropProfit') },
                             { icon: FaGlobe, title: t('multiLangTitle'), color: "bg-indigo-500", desc: t('valPropTrust') },
                             { icon: FaBell, title: t('marketingAdsTitle'), color: "bg-yellow-500", desc: t('adIncomeTitle') },
@@ -380,7 +380,7 @@ export default function HomePage() {
                             { icon: FaStar, title: t('socialGrowthTitle'), desc: t('socialGrowthDesc'), color: "orange", badge: "Growth" },
                             { icon: FaLayerGroup, title: t('multiBranchTitle'), desc: t('multiBranchDesc'), color: "purple", badge: "Enterprise" },
                             { icon: FaGlobe, title: t('marketingMultiLangTitle'), desc: t('marketingMultiLangDesc'), color: "blue", badge: "Global" },
-                            { icon: FaMagic, title: t('aiTitle'), desc: t('aiDesc'), color: "pink", badge: "AI Powered" }
+                            { icon: FaRocket, title: t('aiTitle'), desc: t('aiDesc'), color: "pink", badge: "PROFIT BOOST" }
                         ].map((feature, i) => (
                             <MarketingCard key={i} feature={feature} t={t} index={i} />
                         ))}
