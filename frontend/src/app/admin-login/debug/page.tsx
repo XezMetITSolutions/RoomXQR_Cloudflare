@@ -3,28 +3,28 @@
 import React, { useEffect, useState } from 'react';
 
 export default function AdminLoginDebug() {
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr.onrender.com';
   const [results, setResults] = useState<Array<{ name: string; ok: boolean; status?: number; data?: any; error?: string; warning?: boolean }>>([]);
   const [isRunning, setIsRunning] = useState(false);
 
   const push = (r: { name: string; ok: boolean; status?: number; data?: any; error?: string; warning?: boolean }) => {
-        setResults(prev => [...prev, r]);
-      };
+    setResults(prev => [...prev, r]);
+  };
 
   const runTests = async () => {
     setIsRunning(true);
     setResults([]);
 
-      // 0) ENV bilgileri
-      push({
-        name: 'ENV & Config',
-        ok: true,
-        data: {
-          NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || null,
-          UsingAPIBase: API_BASE_URL,
-          LocationOrigin: typeof window !== 'undefined' ? window.location.origin : 'n/a'
-        }
-      });
+    // 0) ENV bilgileri
+    push({
+      name: 'ENV & Config',
+      ok: true,
+      data: {
+        NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || null,
+        UsingAPIBase: API_BASE_URL,
+        LocationOrigin: typeof window !== 'undefined' ? window.location.origin : 'n/a'
+      }
+    });
 
     // 1) Root endpoint testi
     try {
@@ -37,39 +37,39 @@ export default function AdminLoginDebug() {
     await new Promise(resolve => setTimeout(resolve, 300));
 
     // 2) Health testi (veritabanı bağlantısı dahil)
-        try {
-          const res = await fetch(`${API_BASE_URL}/health`, { method: 'GET' });
-          const data = await res.json().catch(() => ({}));
+    try {
+      const res = await fetch(`${API_BASE_URL}/health`, { method: 'GET' });
+      const data = await res.json().catch(() => ({}));
       const dbConnected = data.database === 'Connected';
-      push({ 
-        name: 'GET /health (Veritabanı Bağlantısı)', 
-        ok: res.ok && dbConnected, 
-        status: res.status, 
+      push({
+        name: 'GET /health (Veritabanı Bağlantısı)',
+        ok: res.ok && dbConnected,
+        status: res.status,
         data,
         warning: res.ok && !dbConnected
       });
-        } catch (e: any) {
+    } catch (e: any) {
       push({ name: 'GET /health (Veritabanı Bağlantısı)', ok: false, error: e?.message || String(e) });
-        }
+    }
     await new Promise(resolve => setTimeout(resolve, 300));
 
     // 3) Preflight (OPTIONS) testi
-        try {
-          const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
-            method: 'OPTIONS',
-            headers: {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        method: 'OPTIONS',
+        headers: {
           'Origin': typeof window !== 'undefined' ? window.location.origin : 'https://roomxqr.com',
-              'Access-Control-Request-Method': 'POST',
+          'Access-Control-Request-Method': 'POST',
           'Access-Control-Request-Headers': 'x-tenant,content-type',
-            } as any,
-          } as RequestInit);
+        } as any,
+      } as RequestInit);
       const allowedHeaders = res.headers.get('access-control-allow-headers');
       const hasXTenant = allowedHeaders?.toLowerCase().includes('x-tenant') || allowedHeaders?.toLowerCase().includes('tenant');
-          push({
+      push({
         name: 'OPTIONS /api/auth/login (CORS Preflight)',
         ok: res.ok && hasXTenant,
-            status: res.status,
-            data: {
+        status: res.status,
+        data: {
           'access-control-allow-origin': res.headers.get('access-control-allow-origin'),
           'access-control-allow-methods': res.headers.get('access-control-allow-methods'),
           'access-control-allow-headers': allowedHeaders,
@@ -87,16 +87,16 @@ export default function AdminLoginDebug() {
     try {
       const res = await fetch(`${API_BASE_URL}/debug/database-setup`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json'
         }
       });
       const data = await res.json().catch(() => ({}));
       const setupSuccess = res.ok && data.success;
-      push({ 
-        name: 'POST /debug/database-setup (Kapsamlı Setup)', 
-        ok: setupSuccess, 
-        status: res.status, 
+      push({
+        name: 'POST /debug/database-setup (Kapsamlı Setup)',
+        ok: setupSuccess,
+        status: res.status,
         data: {
           message: data.message,
           summary: data.summary,
@@ -117,17 +117,17 @@ export default function AdminLoginDebug() {
     try {
       const res = await fetch(`${API_BASE_URL}/debug/migrate`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json'
         }
       });
       const data = await res.json().catch(() => ({}));
       const migrationSuccess = res.ok && data.success;
-      push({ 
-        name: 'POST /debug/migrate (Migration Çalıştır)', 
-        ok: migrationSuccess, 
-        status: res.status, 
-        data: migrationSuccess ? { 
+      push({
+        name: 'POST /debug/migrate (Migration Çalıştır)',
+        ok: migrationSuccess,
+        status: res.status,
+        data: migrationSuccess ? {
           message: data.message,
           output: data.output ? 'Migration çıktısı alındı ✅' : 'Çıktı yok'
         } : data,
@@ -142,7 +142,7 @@ export default function AdminLoginDebug() {
     try {
       const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'x-tenant': 'system-admin'
         },
@@ -151,45 +151,45 @@ export default function AdminLoginDebug() {
       const data = await res.json().catch(() => ({}));
       // 400 = tenant bulunamadı, 401 = şifre yanlış (tenant bulundu), 500 = sunucu hatası
       const isTenantOk = res.status === 401; // Şifre yanlış ama tenant bulundu
-      push({ 
-        name: 'POST /api/auth/login (Tenant Kontrolü)', 
-        ok: isTenantOk, 
-        status: res.status, 
+      push({
+        name: 'POST /api/auth/login (Tenant Kontrolü)',
+        ok: isTenantOk,
+        status: res.status,
         data,
         warning: res.status === 400 || res.status === 500
-          });
-        } catch (e: any) {
+      });
+    } catch (e: any) {
       push({ name: 'POST /api/auth/login (Tenant Kontrolü)', ok: false, error: e?.message || String(e) });
-        }
+    }
     await new Promise(resolve => setTimeout(resolve, 300));
 
     // 5) Login endpoint'e POST (doğru şifre - gerçek login testi)
-        try {
-          const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
-            method: 'POST',
-        headers: { 
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
           'Content-Type': 'application/json',
           'x-tenant': 'system-admin'
         },
         body: JSON.stringify({ email: 'roomxqr-admin@roomxqr.com', password: '01528797Mb##' })
-          });
-          const data = await res.json().catch(() => ({}));
+      });
+      const data = await res.json().catch(() => ({}));
       const loginSuccess = res.ok && data.token;
-      push({ 
-        name: 'POST /api/auth/login (Gerçek Login)', 
-        ok: loginSuccess, 
-        status: res.status, 
-        data: loginSuccess ? { 
+      push({
+        name: 'POST /api/auth/login (Gerçek Login)',
+        ok: loginSuccess,
+        status: res.status,
+        data: loginSuccess ? {
           token: data.token ? 'Token alındı ✅' : 'Token yok ❌',
           user: data.user ? { email: data.user.email, role: data.user.role } : null
         } : data
       });
-        } catch (e: any) {
+    } catch (e: any) {
       push({ name: 'POST /api/auth/login (Gerçek Login)', ok: false, error: e?.message || String(e) });
-        }
+    }
 
     setIsRunning(false);
-    };
+  };
 
   useEffect(() => {
     runTests();

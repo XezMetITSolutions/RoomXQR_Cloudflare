@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr.onrender.com';
 
       // Timeout ile fetch isteği
       const controller = new AbortController();
@@ -168,7 +168,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (savedToken && savedUser) {
           // Token'ı doğrula (backend'den mevcut kullanıcı bilgilerini al)
           try {
-            const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
+            const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr.onrender.com';
             let tenantSlug = 'demo';
             if (typeof window !== 'undefined') {
               const hostname = window.location.hostname;

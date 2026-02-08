@@ -9,7 +9,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: NEXT_PUBLIC_API_URL
-        value: https://roomapp-backend-1.onrender.com
+        value: https://roomxqr.onrender.com
       - key: NEXT_PUBLIC_BASE_DOMAIN
         value: roomxqr.com
       - key: NEXT_PUBLIC_FRONTEND_URL

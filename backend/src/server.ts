@@ -146,30 +146,34 @@ app.use(cors(corsOptions))
 
 // Explicitly handle preflight requests for all routes
 app.options('*', (req: Request, res: Response) => {
-  // CORS preflight için özel handler
-  const origin = req.headers.origin
-  if (origin) {
-    const normalizedOrigin = origin.replace(/\/$/, '')
-    const allowedDomains = ['roomxqr.com', 'roomxr.com', 'onrender.com', 'netlify.app', 'localhost']
+  const origin = req.headers.origin || '*'
+  const normalizedOrigin = origin.replace(/\/$/, '')
+  const allowedDomains = ['roomxqr.com', 'roomxr.com', 'onrender.com', 'netlify.app', 'localhost']
 
+  let isAllowed = false
+  if (origin === '*') {
+    isAllowed = true
+  } else {
     for (const domain of allowedDomains) {
       if (normalizedOrigin.includes(domain)) {
-        res.setHeader('Access-Control-Allow-Origin', origin)
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, x-tenant, X-Tenant')
-        res.setHeader('Access-Control-Allow-Credentials', 'true')
-        res.setHeader('Access-Control-Max-Age', '86400')
-        res.status(200).end()
-        return
+        isAllowed = true
+        break
       }
     }
   }
 
-  // CORS middleware'i de uygula
-  cors(corsOptions)(req, res, () => {
+  if (isAllowed) {
+    res.setHeader('Access-Control-Allow-Origin', origin)
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, x-tenant, X-Tenant')
+    res.setHeader('Access-Control-Allow-Credentials', 'true')
+    res.setHeader('Access-Control-Max-Age', '86400')
+    console.log(`✅ CORS Preflight: Allowed origin: ${origin}`)
     res.status(200).end()
-  })
-  return
+  } else {
+    console.log(`❌ CORS Preflight: Denied origin: ${origin}`)
+    res.status(204).end()
+  }
 })
 
 // Rate limiting
@@ -3722,7 +3726,7 @@ app.options('/api/admin/seed', (req: Request, res: Response) => {
   if (origin) {
     const normalizedOrigin = origin.replace(/\/$/, '')
     const allowedDomains = ['roomxqr.com', 'roomxr.com', 'onrender.com', 'netlify.app', 'localhost']
-    
+
     for (const domain of allowedDomains) {
       if (normalizedOrigin.includes(domain)) {
         res.setHeader('Access-Control-Allow-Origin', origin)
@@ -3745,9 +3749,9 @@ app.post('/api/admin/seed', async (req: Request, res: Response) => {
     // Güvenlik: Sadece production'da ve secret key ile çalışsın
     const secretKey = req.headers['x-seed-secret'] as string;
     const expectedSecret = process.env.SEED_SECRET || 'demo-seed-secret-key-change-in-production';
-    
+
     if (secretKey !== expectedSecret) {
-      res.status(401).json({ 
+      res.status(401).json({
         message: 'Unauthorized - Secret key required',
         hint: 'Set x-seed-secret header with SEED_SECRET environment variable value'
       });
@@ -3755,7 +3759,7 @@ app.post('/api/admin/seed', async (req: Request, res: Response) => {
     }
 
     console.log('🌱 Seed script başlatılıyor...');
-    
+
     // Seed script'ini çalıştır
     const { execSync } = require('child_process');
     try {
@@ -3764,11 +3768,11 @@ app.post('/api/admin/seed', async (req: Request, res: Response) => {
         cwd: process.cwd(),
         encoding: 'utf8'
       });
-      
+
       console.log('✅ Seed script başarıyla çalıştırıldı');
       console.log('Seed output:', output);
-      
-      res.json({ 
+
+      res.json({
         success: true,
         message: 'Seed script başarıyla çalıştırıldı',
         output: output.substring(0, 1000) // İlk 1000 karakter
@@ -3776,7 +3780,7 @@ app.post('/api/admin/seed', async (req: Request, res: Response) => {
       return;
     } catch (seedError: any) {
       console.error('❌ Seed script hatası:', seedError);
-      res.status(500).json({ 
+      res.status(500).json({
         success: false,
         message: 'Seed script çalıştırılırken hata oluştu',
         error: seedError.message,
@@ -3786,7 +3790,7 @@ app.post('/api/admin/seed', async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.error('❌ Seed endpoint hatası:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
       message: 'Seed endpoint hatası',
       error: error instanceof Error ? error.message : String(error)

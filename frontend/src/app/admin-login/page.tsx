@@ -13,7 +13,7 @@ export default function AdminLogin() {
   const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr.onrender.com';
 
   useEffect(() => {
     const remembered = localStorage.getItem('admin_remembered_email');
