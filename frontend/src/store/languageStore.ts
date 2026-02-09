@@ -529,7 +529,7 @@ export const translations: Record<string, Translations> = {
     'aiTitle': 'QR Menü & Odaya Sipariş',
     'detailedReporting': 'Detaylı Raporlama',
     'multiLangTitle': '9+ Dil Desteği',
-    'marketingAdsTitle': 'QR Menü & Sipariş',
+    'marketingAdsTitle': 'Anlık Talep İletimi',
     'allInOneTitle': 'Ek Gelir Modeli',
     'support247': '7/24 Teknik Destek',
     'valPropDigital': 'Operasyonel yükü azaltan çözüm',

@@ -18,6 +18,7 @@ import bcrypt from 'bcryptjs'
 import fs from 'fs'
 import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
+import nodemailer from 'nodemailer'
 
 // Load environment variables
 dotenv.config()
@@ -239,6 +240,7 @@ app.get('/health', async (req: Request, res: Response) => {
   })
 
 // Demo Request endpoint (public, no auth required)
+// Demo Request endpoint (public, no auth required)
 app.post('/api/demo-request', async (req, res) => {
   try {
     const { fullName, email, hotelName } = req.body
@@ -259,9 +261,78 @@ app.post('/api/demo-request', async (req, res) => {
     console.log('  Hotel:', hotelName)
     console.log('  Timestamp:', new Date().toISOString())
 
-    // TODO: Send email to office@xezmet.at
-    // For now, we just log it and return success
-    // In production, you would use nodemailer or similar to send the email
+    // Email content
+    const mailOptions = {
+      from: process.env.SMTP_FROM || '"RoomXQR Demo Request" <noreply@roomxqr.com>', // Sender address
+      to: 'office@xezmet.at', // Receiver address
+      subject: `🚀 Yeni Demo Talebi: ${hotelName}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+          <h2 style="color: #2563EB;">Yeni Demo Talebi Alındı</h2>
+          <p>Web sitesinden yeni bir demo talebi geldi.</p>
+          
+          <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <tr style="background-color: #f8f9fa;">
+              <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Ad Soyad</td>
+              <td style="padding: 10px; border: 1px solid #ddd;">${fullName}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Email</td>
+              <td style="padding: 10px; border: 1px solid #ddd;"><a href="mailto:${email}">${email}</a></td>
+            </tr>
+            <tr style="background-color: #f8f9fa;">
+              <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Otel Adı</td>
+              <td style="padding: 10px; border: 1px solid #ddd;">${hotelName}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Tarih</td>
+              <td style="padding: 10px; border: 1px solid #ddd;">${new Date().toLocaleString('tr-TR')}</td>
+            </tr>
+          </table>
+          
+          <div style="margin-top: 30px; text-align: center; color: #666; font-size: 12px;">
+            <p>Bu email RoomXQR web sitesi iletişim formundan gönderilmiştir.</p>
+          </div>
+        </div>
+      `
+    }
+
+    // Check if SMTP credentials are configured
+    if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+      try {
+        // Create transporter
+        const transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST,
+          port: parseInt(process.env.SMTP_PORT || '587'),
+          secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+          },
+        })
+
+        // Verify connection configuration
+        await transporter.verify()
+        console.log('✅ SMTP connection established')
+
+        // Send email
+        const info = await transporter.sendMail(mailOptions)
+        console.log('✅ Email sent: %s', info.messageId)
+
+        res.status(200).json({
+          success: true,
+          message: 'Demo talebiniz başarıyla alındı ve iletildi.'
+        })
+        return
+      } catch (emailError) {
+        console.error('❌ Failed to send email:', emailError)
+        // Fallback to success response but log error
+        // We still return success to frontend because the request was logged to DB/Console
+      }
+    } else {
+      console.log('⚠️ SMTP credentials not found. Email not sent, but request logged.')
+      console.log('Please configure SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS in .env')
+    }
 
     res.status(200).json({
       success: true,

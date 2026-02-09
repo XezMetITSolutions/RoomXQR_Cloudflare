@@ -19,9 +19,10 @@ interface MarketingCardProps {
     feature: any;
     t: (key: string) => string;
     index: number;
+    onLearnMore: () => void;
 }
 
-const MarketingCard = ({ feature, t, index }: MarketingCardProps) => {
+const MarketingCard = ({ feature, t, index, onLearnMore }: MarketingCardProps) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const hasLongDesc = feature.desc && feature.desc.length > 100;
 
@@ -78,7 +79,10 @@ const MarketingCard = ({ feature, t, index }: MarketingCardProps) => {
                     </button>
                 )}
             </div>
-            <button className="flex items-center gap-2 font-black text-xs md:text-sm text-slate-800 group-hover:gap-4 transition-all uppercase tracking-widest mt-auto border-t border-slate-50 pt-6">
+            <button
+                onClick={onLearnMore}
+                className="flex items-center gap-2 font-black text-xs md:text-sm text-slate-800 group-hover:gap-4 transition-all uppercase tracking-widest mt-auto border-t border-slate-50 pt-6"
+            >
                 {t('learnMore')} <FaArrowRight className={`
                     ${feature.color === 'blue' ? 'text-blue-500' :
                         feature.color === 'emerald' ? 'text-emerald-500' :
@@ -377,7 +381,7 @@ export default function HomePage() {
                             { icon: FaGlobe, title: t('marketingMultiLangTitle'), desc: t('marketingMultiLangDesc'), color: "blue", badge: "Global" },
                             { icon: FaRocket, title: t('aiTitle'), desc: t('aiDesc'), color: "pink", badge: "PROFIT BOOST" }
                         ].map((feature, i) => (
-                            <MarketingCard key={i} feature={feature} t={t} index={i} />
+                            <MarketingCard key={i} feature={feature} t={t} index={i} onLearnMore={() => setShowDemoModal(true)} />
                         ))}
                     </div>
                 </div>
