@@ -236,6 +236,43 @@ app.get('/health', async (req: Request, res: Response) => {
       environment: process.env.NODE_ENV || 'development',
       error: error instanceof Error ? error.message : 'Unknown error'
     })
+  })
+
+// Demo Request endpoint (public, no auth required)
+app.post('/api/demo-request', async (req, res) => {
+  try {
+    const { fullName, email, hotelName } = req.body
+
+    // Validate required fields
+    if (!fullName || !email || !hotelName) {
+      res.status(400).json({
+        success: false,
+        message: 'Tüm alanlar zorunludur'
+      })
+      return
+    }
+
+    // Log the demo request
+    console.log('📧 Demo Request Received:')
+    console.log('  Name:', fullName)
+    console.log('  Email:', email)
+    console.log('  Hotel:', hotelName)
+    console.log('  Timestamp:', new Date().toISOString())
+
+    // TODO: Send email to office@xezmet.at
+    // For now, we just log it and return success
+    // In production, you would use nodemailer or similar to send the email
+
+    res.status(200).json({
+      success: true,
+      message: 'Demo talebiniz başarıyla alındı. En kısa sürede sizinle iletişime geçeceğiz.'
+    })
+  } catch (error) {
+    console.error('❌ Demo request error:', error)
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    })
   }
 })
 

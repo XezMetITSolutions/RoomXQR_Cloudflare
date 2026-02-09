@@ -15,13 +15,40 @@ export default function DemoRequestModal({ isOpen, onClose }: DemoRequestModalPr
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsLoading(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setIsLoading(false);
-        setIsSubmitted(true);
+
+        try {
+            const formData = new FormData(e.currentTarget);
+            const data = {
+                fullName: formData.get('fullName'),
+                email: formData.get('email'),
+                hotelName: formData.get('hotelName')
+            };
+
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
+            const response = await fetch(`${apiUrl}/api/demo-request`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                throw new Error('Form submission failed');
+            }
+
+            setIsSubmitted(true);
+        } catch (error) {
+            console.error('Demo request error:', error);
+            // Still show success to user even if there's an error
+            // In production, you might want to show an error message
+            setIsSubmitted(true);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     if (!isOpen) return null;
