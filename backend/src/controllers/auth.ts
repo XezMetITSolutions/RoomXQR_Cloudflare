@@ -25,7 +25,7 @@ export async function login(req: Request, res: Response) {
         allowedTenants: ['demo', 'system-admin']
       })
       res.status(403).json({
-        message: 'Giriş bu işletme hesabı için izinli değildir'
+        message: `Giriş bu işletme hesabı (${req.tenant?.slug}) için izinli değildir. İzinli: demo, system-admin`
       })
       return
     }
@@ -99,7 +99,7 @@ export async function login(req: Request, res: Response) {
         userEmail: user.email
       })
       res.status(403).json({
-        message: 'Giriş bu işletme hesabı için izinli değildir'
+        message: `Kullanıcının işletme hesabı (${user.tenant.slug}) giriş iznine sahip değil. İzinli: demo, system-admin`
       })
       return
     }
@@ -112,7 +112,7 @@ export async function login(req: Request, res: Response) {
         userEmail: user.email
       })
       res.status(403).json({
-        message: 'Bu kullanıcı bu işletmeye ait değil'
+        message: `Bu kullanıcı bu işletmeye ait değil (Kullanıcı: ${user.tenant.slug}, İstek: ${req.tenant?.slug})`
       })
       return
     }

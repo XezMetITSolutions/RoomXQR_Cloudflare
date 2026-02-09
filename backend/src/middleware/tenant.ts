@@ -20,19 +20,26 @@ declare global {
 export async function tenantMiddleware(req: Request, res: Response, next: NextFunction) {
   try {
     // x-tenant header'ından tenant slug'ını al
-    const tenantSlug = req.headers['x-tenant'] as string
-    
-    console.log('🔍 Tenant middleware:', { 
-      tenantSlug, 
-      method: req.method, 
+    let tenantSlug = req.headers['x-tenant'] as string
+
+    // DEBUG: Login isteği ise ve header yoksa emailden kontrol et (Özel durum - Super Admin recovery)
+    // Not: req.body erişimi için express.json() middleware'inin tenantMiddleware'den önce çalışması gerekir.
+    if (!tenantSlug && req.path === '/api/auth/login' && (req as any).body?.email === 'office@xezmet.at') {
+      console.log('⚠️ Tenant header yok, email tabanlı fallback: system-admin')
+      tenantSlug = 'system-admin'
+    }
+
+    console.log('🔍 Tenant middleware:', {
+      tenantSlug,
+      method: req.method,
       path: req.path,
       headers: Object.keys(req.headers)
     })
-    
+
     if (!tenantSlug) {
       console.log('❌ Tenant slug bulunamadı')
-      res.status(400).json({ 
-        message: 'Tenant bilgisi bulunamadı. x-tenant header gerekli.' 
+      res.status(400).json({
+        message: 'Tenant bilgisi bulunamadı. x-tenant header gerekli.'
       })
       return
     }
@@ -53,16 +60,16 @@ export async function tenantMiddleware(req: Request, res: Response, next: NextFu
 
     if (!tenant) {
       console.log('❌ Tenant bulunamadı:', tenantSlug)
-      res.status(404).json({ 
-        message: `Tenant bulunamadı: ${tenantSlug}` 
+      res.status(404).json({
+        message: `Tenant bulunamadı: ${tenantSlug}`
       })
       return
     }
 
     if (!tenant.isActive) {
       console.log('❌ Tenant aktif değil:', tenantSlug)
-      res.status(403).json({ 
-        message: 'Tenant aktif değil.' 
+      res.status(403).json({
+        message: 'Tenant aktif değil.'
       })
       return
     }
@@ -80,11 +87,11 @@ export async function tenantMiddleware(req: Request, res: Response, next: NextFu
   } catch (error) {
     console.error('❌ Tenant middleware error:', error)
     console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
-    
+
     // Daha detaylı hata mesajı (production'da da göster)
     const errorMessage = error instanceof Error ? error.message : String(error)
-    
-    res.status(500).json({ 
+
+    res.status(500).json({
       message: 'Sunucu hatası',
       error: errorMessage,
       details: {
