@@ -8,7 +8,8 @@ import {
     FaChartLine, FaUsers, FaClock, FaCheckCircle, FaRocket,
     FaShieldAlt, FaStar, FaPhone, FaWhatsapp, FaChevronDown,
     FaBrain, FaGlobe, FaDesktop,
-    FaArrowRight, FaCogs, FaCreditCard, FaLayerGroup
+    FaArrowRight, FaCogs, FaCreditCard, FaLayerGroup,
+    FaConciergeBell, FaWallet, FaHeadset
 } from 'react-icons/fa';
 import { useLanguageStore } from '@/store/languageStore';
 import LandingLanguageToggle from '@/components/LandingLanguageToggle';
@@ -250,13 +251,13 @@ export default function HomePage() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                         {[
                             { icon: FaQrcode, title: t('qrMenuSystem'), color: "bg-orange-500", desc: t('valPropDigital') },
-                            { icon: FaShoppingCart, title: t('orderManagement'), color: "bg-blue-500", desc: t('valPropSpeed') },
+                            { icon: FaConciergeBell, title: t('orderManagement'), color: "bg-blue-500", desc: t('valPropSpeed') },
                             { icon: FaUtensils, title: t('aiTitle'), color: "bg-purple-500", desc: t('valPropSatisfy') },
                             { icon: FaChartLine, title: t('detailedReporting'), color: "bg-green-500", desc: t('valPropProfit') },
                             { icon: FaGlobe, title: t('multiLangTitle'), color: "bg-indigo-500", desc: t('valPropTrust') },
-                            { icon: FaBell, title: t('marketingAdsTitle'), color: "bg-yellow-500", desc: t('adIncomeTitle') },
-                            { icon: FaCogs, title: t('allInOneTitle'), color: "bg-slate-600", desc: t('valPropDigital') },
-                            { icon: FaChartLine, title: t('support247'), color: "bg-red-500", desc: t('valPropTrust') }
+                            { icon: FaBell, title: t('marketingAdsTitle'), color: "bg-yellow-500", desc: t('marketingAdsDesc') },
+                            { icon: FaWallet, title: t('allInOneTitle'), color: "bg-slate-600", desc: t('valPropDigital') },
+                            { icon: FaHeadset, title: t('support247'), color: "bg-red-500", desc: t('valPropTrust') }
                         ].map((s, i) => (
                             <motion.div
                                 key={i}
