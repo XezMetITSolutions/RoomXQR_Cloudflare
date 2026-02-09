@@ -237,7 +237,8 @@ app.get('/health', async (req: Request, res: Response) => {
       environment: process.env.NODE_ENV || 'development',
       error: error instanceof Error ? error.message : 'Unknown error'
     })
-  })
+  }
+})
 
 // Demo Request endpoint (public, no auth required)
 // Demo Request endpoint (public, no auth required)
