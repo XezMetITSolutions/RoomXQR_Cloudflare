@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 
 async function seedGrandhotelData() {
     try {
-        console.log('🌱 Grandhotel için veriler yükleniyor...')
+        console.log('🌱 Grandhotel için veriler güncelleniyor...')
 
         // 1. Grandhotel Tenant'ını bul
         const tenant = await prisma.tenant.findUnique({
@@ -14,7 +14,7 @@ async function seedGrandhotelData() {
         })
 
         if (!tenant) {
-            console.error('❌ "grandhotel" işletmesi bulunamadı. Önce işletmeyi oluşturmalısınız.')
+            console.error('❌ "grandhotel" işletmesi bulunamadı.')
             return
         }
 
@@ -24,88 +24,127 @@ async function seedGrandhotelData() {
             return
         }
 
+        // Önce eski verileri temizle (Sadece grandhotel'e ait olanları)
+        await prisma.menuItem.deleteMany({ where: { tenantId: tenant.id } })
+        await prisma.notification.deleteMany({ where: { tenantId: tenant.id, type: NotificationType.SYSTEM } })
+
         console.log(`🏨 İşletme: ${tenant.name}, Otel: ${hotel.name}`)
 
-        // 2. Odaları oluştur (Eğer yoksa)
-        console.log('🛏️ Odalar kontrol ediliyor...')
-        const roomNumbers = ['101', '102', '103', '104', '105']
-        for (const num of roomNumbers) {
-            await prisma.room.upsert({
-                where: { qrCode: `grandhotel-room-${num}` },
-                update: {
-                    number: num,
-                    isActive: true,
-                    hotelId: hotel.id,
-                    tenantId: tenant.id
-                },
-                create: {
-                    number: num,
-                    floor: 1,
-                    type: RoomType.DOUBLE,
-                    capacity: 2,
-                    qrCode: `grandhotel-room-${num}`,
-                    hotelId: hotel.id,
-                    tenantId: tenant.id
-                }
-            })
-        }
-
-        // 3. Menü Öğelerini oluştur
+        // 2. Menü Öğelerini oluştur (Oda servisine uygun, genişletilmiş liste)
         console.log('🍴 Menü öğeleri yükleniyor...')
         const menuItems = [
+            // Klasik Oda Servisi
             {
-                name: 'Mercimek Çorbası',
-                description: 'Kıtır ekmek ve limon ile servis edilir.',
-                price: new Decimal(120.00),
-                category: 'Çorbalar',
-                image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80&w=500',
+                name: 'Grand Club Sandwich',
+                description: 'Izgara tavuk, dana jambon, yumurta, marul, domates ve mayonez. Yanında patates kızartması ile.',
+                price: new Decimal(380.00),
+                category: 'Atıştırmalıklar',
+                image: 'https://images.unsplash.com/photo-1567234665766-cd1461d0a5be?q=80&w=500',
                 translations: {
-                    de: { name: 'Linsensuppe', description: 'Serviert mit Croutons und Zitrone.' },
-                    en: { name: 'Lentil Soup', description: 'Served with croutons and lemon.' }
+                    de: { name: 'Grand Club Sandwich', description: 'Gegrilltes Hähnchen, Rinderschinken, Ei, Salat, Tomaten und Mayonnaise. Serviert mit Pommes.' },
+                    en: { name: 'Grand Club Sandwich', description: 'Grilled chicken, beef ham, egg, lettuce, tomato and mayo. Served with French fries.' }
                 }
             },
             {
-                name: 'Izgara Köfte',
-                description: 'Pirinç pilavı ve közlenmiş biber ile.',
-                price: new Decimal(350.00),
-                category: 'Ana Yemekler',
-                image: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?q=80&w=500',
+                name: 'Cheeseburger & Fries',
+                description: '200gr ev yapımı burger köftesi, cheddar peyniri, karamelize soğan. Patates kızartması eşliğinde.',
+                price: new Decimal(420.00),
+                category: 'Atıştırmalıklar',
+                image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=500',
                 translations: {
-                    de: { name: 'Gegrillte Fleischbällchen', description: 'Mit Reis und gegrillten Paprikas.' },
-                    en: { name: 'Grilled Meatballs', description: 'With rice and roasted peppers.' }
+                    de: { name: 'Cheeseburger & Pommes', description: '200g hausgemachtes Burger-Patty, Cheddar-Käse, karamellisierte Zwiebeln. Begleitet von Pommes Frites.' },
+                    en: { name: 'Cheeseburger & Fries', description: '200gr homemade burger patty, cheddar cheese, caramelized onions. Accompanied by French fries.' }
                 }
             },
             {
-                name: 'Pizza Margherita',
-                description: 'Taze mozzarella ve fesleğen.',
-                price: new Decimal(280.00),
-                category: 'Pizzalar',
-                image: 'https://images.unsplash.com/photo-1574071318508-1cdbad80ad50?q=80&w=500',
+                name: 'Sezar Salata (Tavuklu)',
+                description: 'Izgara tavuk dilimleri, marul, kruton ve özel Sezar sos.',
+                price: new Decimal(310.00),
+                category: 'Salatalar',
+                image: 'https://images.unsplash.com/photo-1550304943-4f24f54ddde9?q=80&w=500',
                 translations: {
-                    de: { name: 'Pizza Margherita', description: 'Frischer Mozzarella und Basilikum.' },
-                    en: { name: 'Pizza Margherita', description: 'Fresh mozzarella and basil.' }
+                    de: { name: 'Caesar Salad (mit Hähnchen)', description: 'Gegrillte Hähnchenstreifen, Kopfsalat, Croutons und spezielles Caesar-Dressing.' },
+                    en: { name: 'Caesar Salad (with Chicken)', description: 'Grilled chicken strips, lettuce, croutons and special Caesar sauce.' }
+                }
+            },
+            // Pratik Ana Yemekler
+            {
+                name: 'Penne Arrabbiata',
+                description: 'Acılı domates sosu, siyah zeytin ve taze fesleğen ile.',
+                price: new Decimal(290.00),
+                category: 'Makarnalar',
+                image: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?q=80&w=500',
+                translations: {
+                    de: { name: 'Penne Arrabbiata', description: 'Mit scharfer Tomatensauce, schwarzen Oliven und frischem Basilikum.' },
+                    en: { name: 'Penne Arrabbiata', description: 'With spicy tomato sauce, black olives and fresh basil.' }
                 }
             },
             {
-                name: 'Coca Cola',
-                description: '330ml',
-                price: new Decimal(60.00),
+                name: 'Sebzeli Noodle',
+                description: 'Mevsim sebzeleri ve soya sosu ile wokta pişirilmiş.',
+                price: new Decimal(340.00),
+                category: 'Uzak Doğu',
+                image: 'https://images.unsplash.com/photo-1585032295557-68b61c42e47e?q=80&w=500',
+                translations: {
+                    de: { name: 'Gemüse-Nudeln', description: 'Im Wok zubereitet mit Saisongemüse und Sojasauce.' },
+                    en: { name: 'Vegetable Noodles', description: 'Wok-cooked with seasonal vegetables and soy sauce.' }
+                }
+            },
+            // Tatlılar
+            {
+                name: 'Meyve Tabağı',
+                description: 'Mevsim meyvelerinden oluşan ferahlatıcı tabak.',
+                price: new Decimal(220.00),
+                category: 'Tatlılar',
+                image: 'https://images.unsplash.com/photo-1528498033373-3c6c08e93d79?q=80&w=500',
+                translations: {
+                    de: { name: 'Obstplatte', description: 'Erfrischende Platte mit Früchten der Saison.' },
+                    en: { name: 'Fruit Platter', description: 'Refreshing plate made of seasonal fruits.' }
+                }
+            },
+            {
+                name: 'Tiramisu',
+                description: 'Orijinal İtalyan tarifiyle, taze mascarpone ile.',
+                price: new Decimal(240.00),
+                category: 'Tatlılar',
+                image: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?q=80&w=500',
+                translations: {
+                    de: { name: 'Tiramisu', description: 'Nach original italienischem Rezept, mit frischem Mascarpone.' },
+                    en: { name: 'Tiramisu', description: 'With original Italian recipe, fresh mascarpone.' }
+                }
+            },
+            // İçecekler (Coca Cola kalktı, daha sağlıklı seçenekler eklendi)
+            {
+                name: 'Maden Suyu (250ml)',
+                description: 'Doğal mineralli su.',
+                price: new Decimal(45.00),
                 category: 'İçecekler',
-                image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=500',
+                image: 'https://images.unsplash.com/photo-1559839914-17aae19cea9e?q=80&w=500',
                 translations: {
-                    de: { name: 'Coca Cola', description: '330ml' },
-                    en: { name: 'Coca Cola', description: '330ml' }
+                    de: { name: 'Mineralwasser (250ml)', description: 'Natürliches Mineralwasser.' },
+                    en: { name: 'Mineral Water (250ml)', description: 'Natural mineral water.' }
                 }
             },
             {
-                name: 'Taze Sıkılmış Portakal Suyu',
-                description: 'Günlük taze meyvelerden.',
-                price: new Decimal(85.00),
+                name: 'Ev Yapımı Limonata',
+                description: 'Taze nane yaprakları ile.',
+                price: new Decimal(90.00),
                 category: 'İçecekler',
-                image: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?q=80&w=500',
+                image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=500',
                 translations: {
-                    de: { name: 'Frisch gepresster Orangensaft', description: 'Aus täglichen frischen Früchten.' },
-                    en: { name: 'Fresh Orange Juice', description: 'From daily fresh fruits.' }
+                    de: { name: 'Hausgemachte Limonade', description: 'Mit frischen Minzblättern.' },
+                    en: { name: 'Homemade Lemonade', description: 'With fresh mint leaves.' }
+                }
+            },
+            {
+                name: 'Filtre Kahve',
+                description: 'Taze çekilmiş çekirdeklerden.',
+                price: new Decimal(110.00),
+                category: ' Sıcak İçecekler',
+                image: 'https://images.unsplash.com/photo-1559496417-e7f25cb247f3?q=80&w=500',
+                translations: {
+                    de: { name: 'Filterkaffee', description: 'Aus frisch gemahlenen Bohnen.' },
+                    en: { name: 'Filter Coffee', description: 'From freshly ground beans.' }
                 }
             }
         ]
@@ -120,62 +159,7 @@ async function seedGrandhotelData() {
             })
         }
 
-        // 4. Bilgilendirmeler / Duyurular (Duyuru sayfası için)
-        console.log('📢 Duyurular/Bilgiler ekleniyor...')
-        const announcements = [
-            {
-                type: NotificationType.SYSTEM,
-                title: 'Wi-Fi Şifresi',
-                message: 'Otel genelinde ücretsiz Wi-Fi kullanamı: GrandHotel_Free / Şifre: Welcome2024',
-                metadata: {
-                    category: 'Hizmet',
-                    icon: 'wifi',
-                    translations: {
-                        de: { title: 'WLAN-Passwort', message: 'Kostenloses WLAN im gesamten Hotel: GrandHotel_Free / Passwort: Welcome2024' },
-                        en: { title: 'Wi-Fi Password', message: 'Free Wi-Fi throughout the hotel: GrandHotel_Free / Password: Welcome2024' }
-                    }
-                }
-            },
-            {
-                type: NotificationType.PROMOTION,
-                title: 'Kahvaltı Saatleri',
-                message: 'Açık büfe kahvaltımız hafta içi 07:00-10:00, hafta sonu 07:30-11:00 saatleri arasındadır.',
-                metadata: {
-                    category: 'Restoran',
-                    icon: 'utensils',
-                    translations: {
-                        de: { title: 'Frühstückszeiten', message: 'Unser Frühstücksbuffet ist wochentags von 07:00 bis 10:00 Uhr und am Wochenende von 07:30 bis 11:00 Uhr geöffnet.' },
-                        en: { title: 'Breakfast Hours', message: 'Our breakfast buffet is open from 07:00 to 10:00 on weekdays and 07:30 to 11:00 on weekends.' }
-                    }
-                }
-            },
-            {
-                type: NotificationType.SYSTEM,
-                title: 'Spa & Havuz',
-                message: 'Spa merkezimiz ve havuzumuz her gün 09:00 - 21:00 saatleri arasında hizmetinizdedir.',
-                metadata: {
-                    category: 'Aktivite',
-                    icon: 'pool',
-                    translations: {
-                        de: { title: 'Spa & Pool', message: 'Unser Spa-Center und Pool stehen Ihnen täglich von 09:00 bis 21:00 Uhr zur Verfügung.' },
-                        en: { title: 'Spa & Pool', message: 'Our spa center and pool are at your service daily from 09:00 to 21:00.' }
-                    }
-                }
-            }
-        ]
-
-        for (const ann of announcements) {
-            await prisma.notification.create({
-                data: {
-                    ...ann,
-                    tenantId: tenant.id,
-                    hotelId: hotel.id,
-                    isRead: false
-                }
-            })
-        }
-
-        console.log('✅ Grandhotel demo verileri başarıyla yüklendi.')
+        console.log('✅ Grandhotel ürünleri güncellendi (Coca Cola kaldırıldı, oda servisi seçenekleri eklendi).')
 
     } catch (error) {
         console.error('❌ Hata oluştu:', error)
