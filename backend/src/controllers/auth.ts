@@ -18,14 +18,11 @@ export async function login(req: Request, res: Response) {
 
     console.log('🔍 Login attempt:', { email, tenant: req.tenant?.slug })
 
-    // Sadece demo ve system-admin tenant'larına giriş izni ver
-    if (!req.tenant || (req.tenant.slug !== 'demo' && req.tenant.slug !== 'system-admin')) {
-      console.log('❌ Login denied - Restricted tenant access:', {
-        tenantSlug: req.tenant?.slug,
-        allowedTenants: ['demo', 'system-admin']
-      })
-      res.status(403).json({
-        message: `Giriş bu işletme hesabı (${req.tenant?.slug}) için izinli değildir. İzinli: demo, system-admin`
+    // Tenant kontrolü
+    if (!req.tenant) {
+      console.log('❌ Login denied - No tenant identified')
+      res.status(400).json({
+        message: 'Giriş için işletme hesabı belirlenemedi.'
       })
       return
     }
@@ -92,17 +89,6 @@ export async function login(req: Request, res: Response) {
       return
     }
 
-    // Kullanıcının tenant'ının demo veya system-admin olduğunu kontrol et
-    if (user.tenant.slug !== 'demo' && user.tenant.slug !== 'system-admin') {
-      console.log('❌ User not from allowed tenant:', {
-        userTenant: user.tenant.slug,
-        userEmail: user.email
-      })
-      res.status(403).json({
-        message: `Kullanıcının işletme hesabı (${user.tenant.slug}) giriş iznine sahip değil. İzinli: demo, system-admin`
-      })
-      return
-    }
 
     // Kullanıcının tenant'ının, request'teki tenant ile eşleşip eşleşmediğini kontrol et
     if (req.tenant && user.tenant.slug !== req.tenant.slug) {
