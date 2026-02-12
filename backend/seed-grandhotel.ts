@@ -5,35 +5,62 @@ const prisma = new PrismaClient()
 
 async function seedGrandhotelData() {
     try {
-        console.log('🌱 Grandhotel için veriler güncelleniyor...')
+        console.log('🌱 Grandhotel için zenginleştirilmiş menü yükleniyor...')
 
-        // 1. Grandhotel Tenant'ını bul
         const tenant = await prisma.tenant.findUnique({
             where: { slug: 'grandhotel' },
             include: { hotels: true }
         })
 
-        if (!tenant) {
-            console.error('❌ "grandhotel" işletmesi bulunamadı.')
+        if (!tenant || !tenant.hotels || tenant.hotels.length === 0) {
+            console.error('❌ Grandhotel veya bağlı otel bulunamadı.')
             return
         }
 
-        const hotel = tenant.hotels[0]
-        if (!hotel) {
-            console.error('❌ "grandhotel" için kayıtlı otel bulunamadı.')
-            return
-        }
+        // @ts-ignore
+        const hotelId = tenant.hotels[0].id
+        const tenantId = tenant.id
 
-        // Önce eski verileri temizle (Sadece grandhotel'e ait olanları)
-        await prisma.menuItem.deleteMany({ where: { tenantId: tenant.id } })
-        await prisma.notification.deleteMany({ where: { tenantId: tenant.id, type: NotificationType.SYSTEM } })
+        // Eski ürünleri temizle
+        await prisma.menuItem.deleteMany({ where: { tenantId: tenantId } })
 
-        console.log(`🏨 İşletme: ${tenant.name}, Otel: ${hotel.name}`)
-
-        // 2. Menü Öğelerini oluştur (Oda servisine uygun, genişletilmiş liste)
-        console.log('🍴 Menü öğeleri yükleniyor...')
         const menuItems = [
-            // Klasik Oda Servisi
+            // KAHVALTI
+            {
+                name: 'Geleneksel Türk Kahvaltısı',
+                description: 'Peynir çeşitleri, zeytin, bal-kaymak, reçel, domates, salatalık, haşlanmış yumurta ve sınırsız çay.',
+                price: new Decimal(450.00),
+                category: 'Kahvaltı',
+                image: 'https://images.unsplash.com/photo-1541519047171-8933b93f18e8?q=80&w=500',
+                translations: {
+                    de: { name: 'Traditionelles Türkisches Frühstück', description: 'Käsesorten, Oliven, Honig-Sahne, Marmelade, Tomaten, Gurken, gekochtes Ei und unbegrenzter Tee.' },
+                    en: { name: 'Traditional Turkish Breakfast', description: 'Cheese varieties, olives, honey-cream, jam, tomatoes, cucumbers, boiled egg and unlimited tea.' }
+                }
+            },
+            {
+                name: 'Yaban Mersinli Pankek',
+                description: 'Akçaağaç şurubu ve taze meyveler ile.',
+                price: new Decimal(280.00),
+                category: 'Kahvaltı',
+                image: 'https://images.unsplash.com/photo-1528207776546-365bb710ee93?q=80&w=500',
+                translations: {
+                    de: { name: 'Heidelbeer-Pfannkuchen', description: 'Mit Ahornsirup und frischen Früchten.' },
+                    en: { name: 'Blueberry Pancakes', description: 'With maple syrup and fresh fruits.' }
+                }
+            },
+            {
+                name: 'Avokadolu Poşe Yumurta',
+                description: 'Ekşi mayalı ekmek üzerinde, avokado ezmesi ve hafif baharatlı sos ile.',
+                price: new Decimal(320.00),
+                category: 'Kahvaltı',
+                image: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?q=80&w=500',
+                translations: {
+                    de: { name: 'Avocado-Pochiertes Ei', description: 'Auf Sauerteigbrot mit Avocadopüree und leicht scharfer Sauce.' },
+                    en: { name: 'Avocado Poached Egg', description: 'On sourdough bread with mashed avocado and slightly spicy sauce.' }
+                }
+            },
+
+            // ANA YEMEKLER & ATIŞTIRMALIKLAR
             {
                 name: 'Grand Club Sandwich',
                 description: 'Izgara tavuk, dana jambon, yumurta, marul, domates ve mayonez. Yanında patates kızartması ile.',
@@ -57,18 +84,6 @@ async function seedGrandhotelData() {
                 }
             },
             {
-                name: 'Sezar Salata (Tavuklu)',
-                description: 'Izgara tavuk dilimleri, marul, kruton ve özel Sezar sos.',
-                price: new Decimal(310.00),
-                category: 'Salatalar',
-                image: 'https://images.unsplash.com/photo-1550304943-4f24f54ddde9?q=80&w=500',
-                translations: {
-                    de: { name: 'Caesar Salad (mit Hähnchen)', description: 'Gegrillte Hähnchenstreifen, Kopfsalat, Croutons und spezielles Caesar-Dressing.' },
-                    en: { name: 'Caesar Salad (with Chicken)', description: 'Grilled chicken strips, lettuce, croutons and special Caesar sauce.' }
-                }
-            },
-            // Pratik Ana Yemekler
-            {
                 name: 'Penne Arrabbiata',
                 description: 'Acılı domates sosu, siyah zeytin ve taze fesleğen ile.',
                 price: new Decimal(290.00),
@@ -80,71 +95,86 @@ async function seedGrandhotelData() {
                 }
             },
             {
-                name: 'Sebzeli Noodle',
-                description: 'Mevsim sebzeleri ve soya sosu ile wokta pişirilmiş.',
-                price: new Decimal(340.00),
-                category: 'Uzak Doğu',
-                image: 'https://images.unsplash.com/photo-1585032295557-68b61c42e47e?q=80&w=500',
+                name: 'Mercimek Çorbası',
+                description: 'Klasik süzme mercimek çorbası, kıtır ekmek ve limon ile.',
+                price: new Decimal(150.00),
+                category: 'Çorbalar',
+                image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80&w=500',
                 translations: {
-                    de: { name: 'Gemüse-Nudeln', description: 'Im Wok zubereitet mit Saisongemüse und Sojasauce.' },
-                    en: { name: 'Vegetable Noodles', description: 'Wok-cooked with seasonal vegetables and soy sauce.' }
+                    de: { name: 'Linsensuppe', description: 'Klassische Linsensuppe mit Croutons und Zitrone.' },
+                    en: { name: 'Lentil Soup', description: 'Classic lentil soup with croutons and lemon.' }
                 }
             },
-            // Tatlılar
+
+            // ÇOCUK MENÜSÜ
             {
-                name: 'Meyve Tabağı',
-                description: 'Mevsim meyvelerinden oluşan ferahlatıcı tabak.',
-                price: new Decimal(220.00),
-                category: 'Tatlılar',
-                image: 'https://images.unsplash.com/photo-1528498033373-3c6c08e93d79?q=80&w=500',
+                name: 'Parmak Tavuk (Chicken Fingers)',
+                description: 'Çıtır tavuk dilimleri ve patates kızartması.',
+                price: new Decimal(240.00),
+                category: 'Çocuk Menüsü',
+                image: 'https://images.unsplash.com/photo-1562967914-608f82629710?q=80&w=500',
                 translations: {
-                    de: { name: 'Obstplatte', description: 'Erfrischende Platte mit Früchten der Saison.' },
-                    en: { name: 'Fruit Platter', description: 'Refreshing plate made of seasonal fruits.' }
+                    de: { name: 'Hähnchen-Finger (Chicken Fingers)', description: 'Knusprige Hähnchenstreifen und Pommes Frites.' },
+                    en: { name: 'Chicken Fingers', description: 'Crispy chicken strips and French fries.' }
+                }
+            },
+
+            // TATLILAR
+            {
+                name: 'Çikolatalı Sufle',
+                description: 'Sıcak çikolatalı sufle, vanilyalı dondurma ile.',
+                price: new Decimal(190.00),
+                category: 'Tatlılar',
+                image: 'https://images.unsplash.com/photo-1624353365286-3f8d62ffff51?q=80&w=500',
+                translations: {
+                    de: { name: 'Schokoladensoufflé', description: 'Heißes Schokoladensoufflé mit Vanilleeis.' },
+                    en: { name: 'Chocolate Soufflé', description: 'Hot chocolate soufflé with vanilla ice cream.' }
                 }
             },
             {
                 name: 'Tiramisu',
-                description: 'Orijinal İtalyan tarifiyle, taze mascarpone ile.',
+                description: 'Orijinal İtalyan tarifiyle.',
                 price: new Decimal(240.00),
                 category: 'Tatlılar',
                 image: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?q=80&w=500',
                 translations: {
-                    de: { name: 'Tiramisu', description: 'Nach original italienischem Rezept, mit frischem Mascarpone.' },
-                    en: { name: 'Tiramisu', description: 'With original Italian recipe, fresh mascarpone.' }
+                    de: { name: 'Tiramisu', description: 'Nach original italienischem Rezept.' },
+                    en: { name: 'Tiramisu', description: 'With original Italian recipe.' }
                 }
             },
-            // İçecekler (Coca Cola kalktı, daha sağlıklı seçenekler eklendi)
+
+            // İÇECEKLER
             {
-                name: 'Maden Suyu (250ml)',
-                description: 'Doğal mineralli su.',
-                price: new Decimal(45.00),
+                name: 'Ev Yapımı Buzlu Çay (Şeftali)',
+                description: 'Taze şeftali ve nane aromalı.',
+                price: new Decimal(95.00),
                 category: 'İçecekler',
-                image: 'https://images.unsplash.com/photo-1559839914-17aae19cea9e?q=80&w=500',
+                image: 'https://images.unsplash.com/photo-1499638673689-79a0b5115d87?q=80&w=500',
                 translations: {
-                    de: { name: 'Mineralwasser (250ml)', description: 'Natürliches Mineralwasser.' },
-                    en: { name: 'Mineral Water (250ml)', description: 'Natural mineral water.' }
+                    de: { name: 'Hausgemachter Eistee (Pfirsich)', description: 'Mit frischem Pfirsich- und Minzaroma.' },
+                    en: { name: 'Homemade Ice Tea (Peach)', description: 'With fresh peach and mint flavor.' }
                 }
             },
             {
-                name: 'Ev Yapımı Limonata',
-                description: 'Taze nane yaprakları ile.',
-                price: new Decimal(90.00),
+                name: 'Cappuccino',
+                description: 'Bol süt köpüklü klasik İtalyan kahvesi.',
+                price: new Decimal(120.00),
+                category: 'Sıcak İçecekler',
+                image: 'https://images.unsplash.com/photo-1534778101976-62847782c213?q=80&w=500',
+                translations: {
+                    de: { name: 'Cappuccino', description: 'Klassischer italienischer Kaffee mit viel Milchschaum.' },
+                    en: { name: 'Cappuccino', description: 'Classic Italian coffee with plenty of milk foam.' }
+                }
+            },
+            {
+                name: 'Yeşil Detoks Suyu',
+                description: 'Elma, salatalık, ıspanak ve taze zencefil.',
+                price: new Decimal(140.00),
                 category: 'İçecekler',
-                image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=500',
+                image: 'https://images.unsplash.com/photo-1610970882799-a4c6f04fbe1f?q=80&w=500',
                 translations: {
-                    de: { name: 'Hausgemachte Limonade', description: 'Mit frischen Minzblättern.' },
-                    en: { name: 'Homemade Lemonade', description: 'With fresh mint leaves.' }
-                }
-            },
-            {
-                name: 'Filtre Kahve',
-                description: 'Taze çekilmiş çekirdeklerden.',
-                price: new Decimal(110.00),
-                category: ' Sıcak İçecekler',
-                image: 'https://images.unsplash.com/photo-1559496417-e7f25cb247f3?q=80&w=500',
-                translations: {
-                    de: { name: 'Filterkaffee', description: 'Aus frisch gemahlenen Bohnen.' },
-                    en: { name: 'Filter Coffee', description: 'From freshly ground beans.' }
+                    de: { name: 'Grüner Detox-Saft', description: 'Apfel, Gurke, Spinat und frischer Ingwer.' },
+                    en: { name: 'Green Detox Juice', description: 'Apple, cucumber, spinach and fresh ginger.' }
                 }
             }
         ]
@@ -153,16 +183,17 @@ async function seedGrandhotelData() {
             await prisma.menuItem.create({
                 data: {
                     ...item,
-                    tenantId: tenant.id,
-                    hotelId: hotel.id
+                    tenantId: tenantId,
+                    hotelId: hotelId,
+                    translations: item.translations as any
                 }
             })
         }
 
-        console.log('✅ Grandhotel ürünleri güncellendi (Coca Cola kaldırıldı, oda servisi seçenekleri eklendi).')
+        console.log('✅ Menü zenginleştirildi ve tüm görseller güncellendi.')
 
-    } catch (error) {
-        console.error('❌ Hata oluştu:', error)
+    } catch (e) {
+        console.error(e)
     } finally {
         await prisma.$disconnect()
     }
