@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguageStore, languages } from '@/store/languageStore';
 import {
   LayoutDashboard,
+  Grid,
   Menu,
   Megaphone,
   Users,
@@ -59,6 +60,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   // Navigation items with translations
   const navigation = useMemo(() => [
     { name: getTranslation('sidebar.dashboard'), href: '/isletme', icon: LayoutDashboard, key: 'dashboard', color: 'text-blue-600' },
+    { name: getTranslation('sidebar.panels'), href: '/isletme/paneller', icon: Grid, key: 'paneller', color: 'text-orange-500' },
     { name: getTranslation('sidebar.qr_generator'), href: '/isletme/qr-kod', icon: QrCode, key: 'qr-kod', color: 'text-emerald-600' },
     { name: getTranslation('sidebar.menu_management'), href: '/isletme/menu', icon: Menu, key: 'menu', color: 'text-purple-600' },
     { name: getTranslation('sidebar.announcements'), href: '/isletme/announcements', icon: Megaphone, key: 'announcements', color: 'text-orange-600' },

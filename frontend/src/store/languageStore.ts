@@ -224,8 +224,11 @@ export const translations: Record<string, Translations> = {
     'sidebar.notifications': 'Bildirimler',
     'sidebar.analytics': 'Analitik',
     'sidebar.settings': 'Ayarlar',
+    'sidebar.panels': 'Paneller',
 
     // Page Titles
+    'page.paneller.title': 'Otel Panelleri',
+    'page.paneller.subtitle': 'İşletmenize ait tüm arayüzlere ve erişim yetkilerine buradan göz atın.',
     'page.announcements.title': 'Duyuru Yönetimi',
     'page.announcements.subtitle': 'Misafirlere gösterilecek duyuruları yönetin',
     'page.notifications.title': 'Bildirimler',
@@ -831,6 +834,7 @@ export const translations: Record<string, Translations> = {
     'sidebar.notifications': 'Notifications',
     'sidebar.analytics': 'Analytics',
     'sidebar.settings': 'Settings',
+    'sidebar.panels': 'Panels',
 
     // Page Titles
     'page.announcements.title': 'Announcement Management',
