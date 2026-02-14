@@ -2311,6 +2311,91 @@ app.post('/api/notifications', tenantMiddleware, async (req: Request, res: Respo
 })
 
 // Menu endpoints
+app.get('/api/menu', tenantMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = getTenantId(req)
+
+    // Get all menu items for tenant
+    const menuItems = await prisma.menuItem.findMany({
+      where: {
+        tenantId,
+        isActive: true
+      },
+      orderBy: {
+        category: 'asc'
+      }
+    })
+
+    res.json({ menu: menuItems });
+    return;
+  } catch (error) {
+    console.error('Menu fetch error:', error)
+    res.status(500).json({ message: 'Database error' })
+    return;
+  }
+})
+
+// Orders endpoints
+app.get('/api/orders', tenantMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = getTenantId(req)
+
+    // Get all orders for tenant
+    const orders = await prisma.order.findMany({
+      where: {
+        tenantId
+      },
+      include: {
+        items: {
+          include: {
+            menuItem: true
+          }
+        },
+        guest: true,
+        room: true
+      },
+      orderBy: {
+        createdAt: 'desc'
+      },
+      take: 100 // Son 100 siparişi getir
+    })
+
+    res.json(orders);
+    return;
+  } catch (error) {
+    console.error('Orders fetch error:', error)
+    res.status(500).json({ message: 'Database error' })
+    return;
+  }
+})
+
+app.put('/api/orders/:id', tenantMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = getTenantId(req)
+    const { id } = req.params
+    const { status } = req.body
+
+    const existingOrder = await prisma.order.findFirst({
+      where: { id, tenantId }
+    })
+
+    if (!existingOrder) {
+      res.status(404).json({ message: 'Order not found' }); return;
+    }
+
+    const updatedOrder = await prisma.order.update({
+      where: { id },
+      data: { status }
+    })
+
+    res.json(updatedOrder); return;
+  } catch (error) {
+    console.error('Order update error:', error)
+    res.status(500).json({ message: 'Database error' })
+    return;
+  }
+})
+
 app.post('/api/menu', tenantMiddleware, authMiddleware, async (req: Request, res: Response) => {
   let step = 'init';
   try {
