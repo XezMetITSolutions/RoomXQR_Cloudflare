@@ -147,6 +147,20 @@ export const translations: Record<string, Translations> = {
     'room.quantity': 'Miktar',
     'room.send_request': 'İsteği Gönder',
 
+    // Konsiyerj sayfası
+    'concierge.subtitle': 'Rezervasyon, transfer ve özel istekleriniz için',
+    'concierge.restaurant': 'Restoran Rezervasyonu',
+    'concierge.restaurant_desc': 'Restoran rezervasyonu talebi',
+    'concierge.transfer': 'Transfer',
+    'concierge.transfer_desc': 'Havaalanı veya otogar transfer talebi',
+    'concierge.tour': 'Tur & Aktivite',
+    'concierge.tour_desc': 'Tur veya aktivite rezervasyonu',
+    'concierge.custom_request': 'Özel isteğiniz',
+    'concierge.custom_placeholder': 'Rezervasyon, transfer, tur veya diğer isteklerinizi yazın...',
+    'concierge.send': 'Gönder',
+    'concierge.footer': 'Talepleriniz resepsiyona iletilecektir. En kısa sürede size dönüş yapılacaktır.',
+    'general.back': 'Geri',
+
     // Hızlı seçim öğeleri
     'quick.towel': 'Havlu',
     'quick.slippers': 'Terlik',
@@ -739,6 +753,20 @@ export const translations: Record<string, Translations> = {
     'room.request_details': 'Request Details',
     'room.quantity': 'Quantity',
     'room.send_request': 'Send Request',
+
+    // Concierge page
+    'concierge.subtitle': 'For reservations, transfers and special requests',
+    'concierge.restaurant': 'Restaurant Reservation',
+    'concierge.restaurant_desc': 'Restaurant reservation request',
+    'concierge.transfer': 'Transfer',
+    'concierge.transfer_desc': 'Airport or station transfer request',
+    'concierge.tour': 'Tour & Activity',
+    'concierge.tour_desc': 'Tour or activity booking',
+    'concierge.custom_request': 'Your request',
+    'concierge.custom_placeholder': 'Write your reservation, transfer, tour or other request...',
+    'concierge.send': 'Send',
+    'concierge.footer': 'Your requests will be sent to reception. We will get back to you shortly.',
+    'general.back': 'Back',
 
     // Quick select items
     'quick.towel': 'Towel',

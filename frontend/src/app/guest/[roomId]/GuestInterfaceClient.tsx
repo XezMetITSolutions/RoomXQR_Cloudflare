@@ -27,6 +27,14 @@ import { useLanguageStore, languages } from '@/store/languageStore';
 import { useThemeStore } from '@/store/themeStore';
 import { Globe, ChevronDown } from 'lucide-react';
 
+const DEFAULT_ACTIVITY_IMAGES = [
+  { title: 'Spa', imageUrl: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&q=80' },
+  { title: 'Hamam', imageUrl: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&q=80' },
+  { title: 'Havuz', imageUrl: 'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=800&q=80' },
+  { title: 'Fitness', imageUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80' },
+  { title: 'Restoran', imageUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80' }
+];
+
 interface GuestInterfaceClientProps {
   roomId: string;
   initialLang?: string;
@@ -106,10 +114,15 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName }:
           }
           if (Array.isArray(data.activityImages) && data.activityImages.length > 0) {
             setActivityImages(data.activityImages);
+          } else {
+            setActivityImages(DEFAULT_ACTIVITY_IMAGES);
           }
+        } else {
+          setActivityImages(DEFAULT_ACTIVITY_IMAGES);
         }
       } catch (error) {
         console.error('Error loading hotel name:', error);
+        setActivityImages(DEFAULT_ACTIVITY_IMAGES);
       }
     };
 
@@ -365,27 +378,26 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName }:
         <AnnouncementBanner roomId={roomId} />
       </div>
 
-      {/* Otel aktiviteleri görselleri */}
-      {activityImages.length > 0 && (
-        <div className="w-full max-w-md mb-4 px-4">
-          <p className="text-sm font-medium mb-2" style={{ color: theme.textColor }}>Otel Aktiviteleri</p>
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin" style={{ scrollbarWidth: 'thin' }}>
-            {activityImages.map((item, idx) => (
-              <div key={idx} className="flex-shrink-0 w-36 rounded-xl overflow-hidden shadow-md border" style={{ borderColor: theme.borderColor }}>
-                <div className="relative w-36 h-28 bg-gray-100">
-                  <img
-                    src={item.imageUrl}
-                    alt={item.title}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-                <p className="text-xs font-medium py-1.5 px-2 text-center" style={{ color: theme.textColor }}>{item.title}</p>
+      {/* Otel aktiviteleri görselleri - API yoksa varsayılan liste kullanılır */}
+      <div className="w-full max-w-md mb-4 px-4">
+        <p className="text-sm font-medium mb-2" style={{ color: theme.textColor }}>Otel Aktiviteleri</p>
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin" style={{ scrollbarWidth: 'thin' }}>
+          {(activityImages.length > 0 ? activityImages : DEFAULT_ACTIVITY_IMAGES).map((item, idx) => (
+            <div key={idx} className="flex-shrink-0 w-36 rounded-xl overflow-hidden shadow-md border" style={{ borderColor: theme.borderColor }}>
+              <div className="relative w-36 h-28 bg-gray-100">
+                <img
+                  src={item.imageUrl}
+                  alt={item.title}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                  referrerPolicy="no-referrer"
+                />
               </div>
-            ))}
-          </div>
+              <p className="text-xs font-medium py-1.5 px-2 text-center" style={{ color: theme.textColor }}>{item.title}</p>
+            </div>
+          ))}
         </div>
-      )}
+      </div>
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full max-w-md mb-4 px-4">
         {/* Oda Servisi */}
@@ -418,7 +430,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName }:
           onClick={async () => {
             try {
               await ApiService.createGuestRequest({
-                roomId: `room-${roomId}`,
+                roomId: roomId,
                 type: 'housekeeping',
                 priority: 'medium',
                 status: 'pending',
@@ -433,23 +445,13 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName }:
           <FaBroom className="text-2xl sm:text-3xl mb-2" style={{ color: theme.secondaryColor }} />
           <span className="font-medium text-sm sm:text-base" style={{ color: theme.textColor }}>{safeGetTranslation('room.housekeeping', 'Oda Temizliği')}</span>
         </button>
-        {/* Konsiyerj */}
+        {/* Konsiyerj - yeni sayfaya yönlendir */}
         <button
           className="flex flex-col items-center justify-center rounded-xl p-4 sm:p-6 shadow hover:scale-105 transition"
           style={{ background: `${theme.primaryColor}20` }}
-          onClick={async () => {
-            try {
-              await ApiService.createGuestRequest({
-                roomId: roomId,
-                type: 'concierge',
-                priority: 'medium',
-                status: 'pending',
-                description: safeGetTranslation('notifications.concierge_description', 'Konsiyerj hizmeti talebi'),
-              });
-              addNotification('info', safeGetTranslation('notifications.concierge_title', 'Konsiyerj Talebi'), safeGetTranslation('notifications.concierge_message', 'Konsiyerj talebiniz resepsiyona iletildi. En kısa sürede yanıtlanacaktır.'));
-            } catch (error) {
-              addNotification('info', safeGetTranslation('notifications.concierge_title', 'Konsiyerj Talebi'), safeGetTranslation('notifications.concierge_message', 'Konsiyerj talebiniz resepsiyona iletildi. En kısa sürede yanıtlanacaktır.'));
-            }
+          onClick={() => {
+            const roomNumber = roomId.replace('room-', '');
+            router.push(`/concierge?roomId=${roomNumber}`);
           }}
         >
           <FaHeadset className="text-2xl sm:text-3xl mb-2" style={{ color: theme.primaryColor }} />
