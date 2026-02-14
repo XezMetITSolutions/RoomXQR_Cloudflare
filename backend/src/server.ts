@@ -1469,39 +1469,7 @@ app.get('/api/menu', tenantMiddleware, async (req: Request, res: Response) => {
   }
 });
 
-app.get('/api/rooms', tenantMiddleware, async (req: Request, res: Response) => {
-  try {
-    const tenantId = getTenantId(req)
-    const rooms = await prisma.room.findMany({
-      where: {
-        tenantId,
-        isActive: true
-      },
-      include: {
-        guests: {
-          where: { isActive: true },
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            checkIn: true,
-            checkOut: true
-          }
-        }
-      },
-      orderBy: { number: 'asc' }
-    })
-    res.json({ rooms }); return;
-  } catch (error) {
-    console.error('Rooms error:', error)
-    const isDevelopment = process.env.NODE_ENV === 'development' || process.env.NODE_ENV !== 'production'
-    res.status(500).json({
-      message: 'Database error',
-      error: isDevelopment ? (error instanceof Error ? error.message : String(error)) : undefined
-    })
-    return;
-  }
-})
+
 
 app.get('/api/guests', tenantMiddleware, async (req: Request, res: Response) => {
   try {

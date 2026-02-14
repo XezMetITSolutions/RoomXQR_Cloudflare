@@ -44,6 +44,34 @@ export interface RoomStatus {
 
 // API çağrıları
 export class ApiService {
+  // Header oluşturucu helper
+  private static getHeaders(token?: string): any {
+    const headers: any = {
+      'Content-Type': 'application/json',
+    };
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    } else if (typeof window !== 'undefined') {
+      const savedToken = localStorage.getItem('auth_token');
+      if (savedToken) {
+        headers['Authorization'] = `Bearer ${savedToken}`;
+      }
+    }
+
+    let tenantSlug = 'demo';
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      const subdomain = hostname.split('.')[0];
+      if (subdomain && subdomain !== 'www' && subdomain !== 'roomxqr' && subdomain !== 'roomxqr-backend') {
+        tenantSlug = subdomain;
+      }
+      headers['x-tenant'] = tenantSlug;
+    }
+
+    return headers;
+  }
+
   // Misafir talepleri
   static async getGuestRequests(token?: string, roomId?: string): Promise<GuestRequest[]> {
     if (USE_MOCK_DATA) {
@@ -55,24 +83,7 @@ export class ApiService {
       const url = roomId ? `${API_BASE_URL}/requests?roomId=${roomId}` : `${API_BASE_URL}/requests`;
       console.log('Fetching requests from:', url);
 
-      const headers: any = {
-        'Content-Type': 'application/json',
-      };
-
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      // Tenant slug
-      let tenantSlug = 'demo';
-      if (typeof window !== 'undefined') {
-        const hostname = window.location.hostname;
-        const subdomain = hostname.split('.')[0];
-        if (subdomain && subdomain !== 'www' && subdomain !== 'roomxqr' && subdomain !== 'roomxqr-backend') {
-          tenantSlug = subdomain;
-        }
-        headers['x-tenant'] = tenantSlug;
-      }
+      const headers = this.getHeaders(token);
 
       const response = await fetch(url, {
         method: 'GET',
@@ -116,21 +127,8 @@ export class ApiService {
 
     try {
       console.log('Creating request:', request);
-      // Tenant slug
-      let tenantSlug = 'demo';
-      if (typeof window !== 'undefined') {
-        const hostname = window.location.hostname;
-        const subdomain = hostname.split('.')[0];
-        if (subdomain && subdomain !== 'www' && subdomain !== 'roomxqr' && subdomain !== 'roomxqr-backend') {
-          tenantSlug = subdomain;
-        }
-      }
-
-      const headers: any = {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'x-tenant': tenantSlug
-      };
+      const headers = this.getHeaders();
+      headers['Access-Control-Allow-Origin'] = '*';
 
       const response = await fetch(`${API_BASE_URL}/requests`, {
         method: 'POST',
@@ -169,22 +167,11 @@ export class ApiService {
 
   static async updateRequestStatus(requestId: string, status: GuestRequest['status'], notes?: string): Promise<GuestRequest> {
     try {
-      // Tenant slug
-      let tenantSlug = 'demo';
-      if (typeof window !== 'undefined') {
-        const hostname = window.location.hostname;
-        const subdomain = hostname.split('.')[0];
-        if (subdomain && subdomain !== 'www' && subdomain !== 'roomxqr' && subdomain !== 'roomxqr-backend') {
-          tenantSlug = subdomain;
-        }
-      }
+      const headers = this.getHeaders();
 
       const response = await fetch(`${API_BASE_URL}/requests/${requestId}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-tenant': tenantSlug
-        },
+        headers,
         body: JSON.stringify({ status, notes }),
       });
       if (!response.ok) throw new Error('Failed to update request');
@@ -213,24 +200,7 @@ export class ApiService {
     try {
       const url = roomId ? `${API_BASE_URL}/notifications?roomId=${roomId}` : `${API_BASE_URL}/notifications`;
 
-      const headers: any = {
-        'Content-Type': 'application/json',
-      };
-
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      // Tenant slug
-      let tenantSlug = 'demo';
-      if (typeof window !== 'undefined') {
-        const hostname = window.location.hostname;
-        const subdomain = hostname.split('.')[0];
-        if (subdomain && subdomain !== 'www' && subdomain !== 'roomxqr' && subdomain !== 'roomxqr-backend') {
-          tenantSlug = subdomain;
-        }
-        headers['x-tenant'] = tenantSlug;
-      }
+      const headers = this.getHeaders(token);
 
       const response = await fetch(url, { headers });
       if (!response.ok) throw new Error('Failed to fetch notifications');
@@ -254,7 +224,8 @@ export class ApiService {
   // Oda durumu
   static async getRoomStatus(roomId: string): Promise<RoomStatus> {
     try {
-      const response = await fetch(`${API_BASE_URL}/rooms/${roomId}/status`);
+      const headers = this.getHeaders();
+      const response = await fetch(`${API_BASE_URL}/rooms/${roomId}/status`, { headers });
       if (!response.ok) throw new Error('Failed to fetch room status');
       return await response.json();
     } catch (error) {
@@ -272,24 +243,7 @@ export class ApiService {
   // Tüm odaları çek
   static async getRooms(token?: string): Promise<RoomStatus[]> {
     try {
-      const headers: any = {
-        'Content-Type': 'application/json'
-      };
-
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      // Tenant slug'ı belirle
-      let tenantSlug = 'demo';
-      if (typeof window !== 'undefined') {
-        const hostname = window.location.hostname;
-        const subdomain = hostname.split('.')[0];
-        if (subdomain && subdomain !== 'www' && subdomain !== 'roomxqr' && subdomain !== 'roomxqr-backend') {
-          tenantSlug = subdomain;
-        }
-        headers['x-tenant'] = tenantSlug;
-      }
+      const headers = this.getHeaders(token);
 
       const response = await fetch(`${API_BASE_URL}/rooms`, {
         headers
@@ -350,24 +304,7 @@ export class ApiService {
     averageResponseTime: number;
   }> {
     try {
-      const headers: any = {
-        'Content-Type': 'application/json',
-      };
-
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      // Tenant slug
-      let tenantSlug = 'demo';
-      if (typeof window !== 'undefined') {
-        const hostname = window.location.hostname;
-        const subdomain = hostname.split('.')[0];
-        if (subdomain && subdomain !== 'www' && subdomain !== 'roomxqr' && subdomain !== 'roomxqr-backend') {
-          tenantSlug = subdomain;
-        }
-        headers['x-tenant'] = tenantSlug;
-      }
+      const headers = this.getHeaders(token);
 
       const response = await fetch(`${API_BASE_URL}/statistics`, { headers });
       if (!response.ok) throw new Error('Failed to fetch statistics');
@@ -387,11 +324,11 @@ export class ApiService {
   // Toplu oda oluştur
   static async createRooms(rooms: any[]): Promise<any> {
     try {
+      const headers = this.getHeaders();
+
       const response = await fetch(`${API_BASE_URL}/rooms/bulk`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({ rooms }),
       });
 
@@ -406,24 +343,7 @@ export class ApiService {
   // Tekil oda sil
   static async deleteRoom(roomId: string, token?: string): Promise<any> {
     try {
-      const headers: any = {
-        'Content-Type': 'application/json',
-      };
-
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      // Tenant slug
-      let tenantSlug = 'demo';
-      if (typeof window !== 'undefined') {
-        const hostname = window.location.hostname;
-        const subdomain = hostname.split('.')[0];
-        if (subdomain && subdomain !== 'www' && subdomain !== 'roomxqr' && subdomain !== 'roomxqr-backend') {
-          tenantSlug = subdomain;
-        }
-        headers['x-tenant'] = tenantSlug;
-      }
+      const headers = this.getHeaders(token);
 
       const response = await fetch(`${API_BASE_URL}/rooms/delete`, {
         method: 'POST',
@@ -442,24 +362,7 @@ export class ApiService {
   // Toplu oda sil
   static async deleteRoomsBulk(roomIds: string[], token?: string): Promise<any> {
     try {
-      const headers: any = {
-        'Content-Type': 'application/json',
-      };
-
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      // Tenant slug
-      let tenantSlug = 'demo';
-      if (typeof window !== 'undefined') {
-        const hostname = window.location.hostname;
-        const subdomain = hostname.split('.')[0];
-        if (subdomain && subdomain !== 'www' && subdomain !== 'roomxqr' && subdomain !== 'roomxqr-backend') {
-          tenantSlug = subdomain;
-        }
-        headers['x-tenant'] = tenantSlug;
-      }
+      const headers = this.getHeaders(token);
 
       const response = await fetch(`${API_BASE_URL}/rooms/bulk-delete`, {
         method: 'POST',
@@ -503,11 +406,10 @@ export class ApiService {
   // Ödeme durumu güncelleme
   static async updatePaymentStatus(paymentId: string, status: 'paid' | 'pending'): Promise<void> {
     try {
+      const headers = this.getHeaders();
       const response = await fetch(`${API_BASE_URL}/payments/${paymentId}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({ status }),
       });
 
@@ -521,11 +423,10 @@ export class ApiService {
   // QR kod sıfırlama
   static async resetRoomQR(roomId: string): Promise<void> {
     try {
+      const headers = this.getHeaders();
       const response = await fetch(`${API_BASE_URL}/rooms/${roomId}/reset-qr`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       });
 
       if (!response.ok) throw new Error('Failed to reset room QR');
@@ -538,11 +439,10 @@ export class ApiService {
   // Yeni: Müşteri adını içeren QR kod oluşturma
   static async generateGuestQR(roomId: string, guestName: string): Promise<string> {
     try {
+      const headers = this.getHeaders();
       const response = await fetch(`${API_BASE_URL}/rooms/${roomId}/generate-guest-qr`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({ guestName }),
       });
 
@@ -581,11 +481,10 @@ export class ApiService {
     language?: string;
   }): Promise<{ success: boolean; qrCode?: string }> {
     try {
+      const headers = this.getHeaders();
       const response = await fetch(`${API_BASE_URL}/guests/checkin`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({
           roomId,
           ...guestData,
@@ -607,11 +506,10 @@ export class ApiService {
   // Yeni: Müşteri check-out işlemi (QR kod otomatik sıfırlama ile)
   static async checkOutGuest(roomId: string): Promise<{ success: boolean; qrCode?: string }> {
     try {
+      const headers = this.getHeaders();
       const response = await fetch(`${API_BASE_URL}/guests/checkout`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({ roomId }),
       });
 
@@ -629,11 +527,10 @@ export class ApiService {
   // Oda değişikliği
   static async changeRoom(fromRoomId: string, toRoomId: string, roomData: any): Promise<void> {
     try {
+      const headers = this.getHeaders();
       const response = await fetch(`${API_BASE_URL}/rooms/change`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({
           fromRoomId,
           toRoomId,
@@ -651,11 +548,10 @@ export class ApiService {
   // Müşteriye bildirim gönderme
   static async sendNotificationToGuest(roomId: string, message: string, type: 'response' | 'update' | 'info' = 'response'): Promise<void> {
     try {
+      const headers = this.getHeaders();
       const response = await fetch(`${API_BASE_URL}/notifications/send-to-guest`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({
           roomId,
           message,

@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 
 export default function ReceptionPanel() {
-  const { user, token } = useAuth();
+  const { user, token, isLoading: authLoading } = useAuth();
   const [currentLanguage, setCurrentLanguage] = useState<Language>('tr');
   const [requests, setRequests] = useState<GuestRequest[]>([]);
   const [rooms, setRooms] = useState<RoomStatus[]>([]);
@@ -159,11 +159,13 @@ export default function ReceptionPanel() {
 
   // Veri yükleme fonksiyonu
   const loadData = useCallback(async () => {
+    if (authLoading) return;
+
     try {
       setIsLoading(true);
       const [requestsData, statsData, roomsData] = await Promise.all([
         ApiService.getGuestRequests(token || undefined),
-        ApiService.getStatistics(token || undefined),
+        token ? ApiService.getStatistics(token) : Promise.resolve({ totalRequests: 0, pendingRequests: 0, completedToday: 0, averageResponseTime: 0 }),
         ApiService.getRooms(token || undefined),
       ]);
 
@@ -241,7 +243,7 @@ export default function ReceptionPanel() {
     } finally {
       setIsLoading(false);
     }
-  }, [addNotification, lastRequestCount, playNotificationSound]);
+  }, [addNotification, lastRequestCount, playNotificationSound, token]);
 
   // Veri yükleme
   // Browser tab title'ını ayarla
