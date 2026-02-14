@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguageStore } from '@/store/languageStore';
 import {
@@ -31,6 +32,7 @@ interface User {
 }
 
 export default function PanelsPage() {
+    const router = useRouter();
     const { token, user: currentUser } = useAuth();
     const { getTranslation } = useLanguageStore();
     const [users, setUsers] = useState<User[]>([]);
@@ -101,21 +103,22 @@ export default function PanelsPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-6">
-                {/* Misafir Arayüzü (Özel Kart) */}
-                <div className="hotel-card p-6 border-l-4 border-indigo-600 bg-indigo-50/30">
+                {/* Misafir Karşılama Arayüzü (Özel Kart) */}
+                <div
+                    onClick={() => window.open('/guest/101', '_blank')}
+                    className="hotel-card p-6 border-l-4 border-indigo-600 bg-indigo-50/30 cursor-pointer hover:bg-indigo-50 transition-colors group"
+                >
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div className="flex items-center space-x-4">
-                            <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
+                            <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
                                 <Globe className="w-6 h-6 text-white" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-bold text-gray-900">Misafir Karşılama Arayüzü</h3>
+                                <h3 className="text-lg font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">Misafir Karşılama Arayüzü</h3>
                                 <p className="text-sm text-gray-500">Müşterilerin QR kod okuttuğunda gördüğü ana ekran.</p>
                                 <div className="mt-1 flex items-center space-x-2 text-indigo-600 font-mono text-xs">
                                     <span>{getFullUrl('/guest/101')}</span>
-                                    <a href="/guest/101" target="_blank" rel="noopener noreferrer">
-                                        <ExternalLink className="w-3 h-3 cursor-pointer hover:scale-110 transition-transform" />
-                                    </a>
+                                    <ExternalLink className="w-3 h-3" />
                                 </div>
                             </div>
                         </div>
@@ -134,19 +137,21 @@ export default function PanelsPage() {
                         const accessList = getUsersWithAccess(panel.key);
 
                         return (
-                            <div key={panel.key} className="hotel-card p-5 hover:border-gray-300 transition-all group">
+                            <div
+                                key={panel.key}
+                                onClick={() => router.push(panel.route)}
+                                className="hotel-card p-5 hover:border-hotel-gold transition-all group cursor-pointer hover:shadow-md"
+                            >
                                 <div className="flex items-start justify-between">
                                     <div className="flex items-center space-x-3">
-                                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${panel.color} bg-opacity-10`}>
+                                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${panel.color} bg-opacity-10 group-hover:scale-110 transition-transform`}>
                                             <Icon className={`w-5 h-5 ${panel.color.includes('bg-') ? panel.color.replace('bg-', 'text-') : panel.color}`} />
                                         </div>
                                         <div>
-                                            <h4 className="font-bold text-gray-900">{panel.name}</h4>
-                                            <div className="flex items-center space-x-1 text-xs text-gray-400 group-hover:text-blue-600 transition-colors">
+                                            <h4 className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{panel.name}</h4>
+                                            <div className="flex items-center space-x-1 text-xs text-gray-400">
                                                 <span className="font-mono">{panel.route}</span>
-                                                <a href={panel.route} target="_blank" rel="noopener noreferrer">
-                                                    <ExternalLink className="w-3 h-3" />
-                                                </a>
+                                                <ExternalLink className="w-3 h-3" />
                                             </div>
                                         </div>
                                     </div>
