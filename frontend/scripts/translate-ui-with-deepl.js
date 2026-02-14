@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 /**
- * Tüm arayüz metinlerini (languageStore tr + translateService localDictionary)
- * DeepL ile DE, EN, RU'ya çevirir. Çıktı: frontend/public/locales/{tr,de,en,ru}.json
- * Kullanım: DEEPL_API_KEY=xxx node scripts/translate-ui-with-deepl.js
- * veya: DEEPL_API=xxx node scripts/translate-ui-with-deepl.js
+ * Arayüz metinlerini (languageStore tr) DeepL ile DE, EN, RU'ya çevirir.
+ * Çıktı: public/locales/{tr,de,en,ru}.json
+ * Bu dosya frontend içinde; deploy'da da mevcut olur.
  */
 
 const fs = require('fs');
@@ -12,10 +11,7 @@ const path = require('path');
 const DEEPL_KEY = process.env.DEEPL_API_KEY || process.env.DEEPL_API;
 const LANG_MAP = { tr: 'TR', de: 'DE', en: 'EN', ru: 'RU' };
 const BATCH_SIZE = 50;
-// Repo kökünden çalıştırılırsa: ROOT = repo; frontend içinden çalıştırılırsa: ROOT = frontend
-const possibleFrontend = path.resolve(__dirname, '..');
-const hasStore = fs.existsSync(path.join(possibleFrontend, 'src', 'store', 'languageStore.ts'));
-const ROOT = hasStore ? possibleFrontend : path.resolve(__dirname, '..', 'frontend');
+const ROOT = path.resolve(__dirname, '..');
 const STORE_PATH = path.join(ROOT, 'src', 'store', 'languageStore.ts');
 const LOCALES_DIR = path.join(ROOT, 'public', 'locales');
 
@@ -113,7 +109,7 @@ async function main() {
     );
   }
 
-  console.log('3. Bitti. Dosyalar: frontend/public/locales/tr.json, de.json, en.json, ru.json');
+  console.log('3. Bitti. Dosyalar: public/locales/tr.json, de.json, en.json, ru.json');
 }
 
 main().catch((err) => {

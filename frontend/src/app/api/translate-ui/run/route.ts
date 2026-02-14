@@ -15,18 +15,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const rootDir = path.resolve(process.cwd(), '..');
-    const scriptPath = path.join(rootDir, 'scripts', 'translate-ui-with-deepl.js');
+    const cwd = process.cwd();
+    const scriptPath = path.join(cwd, 'scripts', 'translate-ui-with-deepl.js');
     if (!fs.existsSync(scriptPath)) {
       return NextResponse.json(
-        { success: false, message: 'Script bulunamadı: scripts/translate-ui-with-deepl.js' },
+        { success: false, message: 'Script bulunamadı: frontend/scripts/translate-ui-with-deepl.js' },
         { status: 404 }
       );
     }
 
     return await new Promise<NextResponse>((resolve) => {
       const child = spawn('node', [scriptPath], {
-        cwd: rootDir,
+        cwd,
         env: { ...process.env, DEEPL_API_KEY: apiKey, DEEPL_API: apiKey },
       });
 
