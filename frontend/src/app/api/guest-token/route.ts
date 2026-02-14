@@ -20,14 +20,19 @@ export async function POST(request: Request) {
   try {
     const tenantSlug = getTenantSlug(request);
     const body = await request.json().catch(() => ({}));
-    const { roomId, guestName } = body;
+    const { roomId, guestName, checkIn, checkOut } = body;
     if (!roomId || !guestName) {
       return NextResponse.json({ message: 'roomId ve guestName gerekli.' }, { status: 400 });
     }
     const res = await fetch(`${BACKEND_URL}/api/guest-token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-tenant': tenantSlug },
-      body: JSON.stringify({ roomId: String(roomId).trim(), guestName: String(guestName).trim() }),
+      body: JSON.stringify({
+        roomId: String(roomId).trim(),
+        guestName: String(guestName).trim(),
+        checkIn,
+        checkOut
+      }),
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {

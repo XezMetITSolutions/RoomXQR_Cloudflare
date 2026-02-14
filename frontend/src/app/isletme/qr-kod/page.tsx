@@ -1113,6 +1113,41 @@ export default function QRKodPage() {
                       });
 
                       const d = await r.json().catch(() => ({}));
+
+                      // Update local state to reflect changes immediately
+                      const nameParts = name.trim().split(' ');
+                      const firstName = nameParts[0];
+                      const lastName = nameParts.slice(1).join(' ');
+
+                      const newGuest = {
+                        firstName,
+                        lastName,
+                        checkIn: guestCheckIn,
+                        checkOut: guestCheckOut
+                      };
+
+                      setRooms(prevRooms => prevRooms.map(room => {
+                        if (room.number === roomToSelect) {
+                          return {
+                            ...room,
+                            guests: [{ ...newGuest }]
+                          };
+                        }
+                        return room;
+                      }));
+
+                      if (useGeneratedRooms) {
+                        setGeneratedRooms(prevGen => prevGen.map(room => {
+                          if (room.number === roomToSelect) {
+                            return {
+                              ...room,
+                              guests: [{ ...newGuest }]
+                            };
+                          }
+                          return room;
+                        }));
+                      }
+
                       // SADECE kullanıcı özellikle isterse tokenlı link kullanılabilir 
                       // ama şu anki basitlik isteği üzerine kalıcı linki EZMİYORUZ.
                       // setQRCodeURL(`${baseURL}/guest/${roomToSelect}?g=${encodeURIComponent(d.token)}`);
