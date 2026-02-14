@@ -772,7 +772,7 @@ export default function ReceptionPanel() {
               >
                 Tüm Odalar
               </button>
-              {Array.from(new Set(rooms.map(r => r.floor || 1))).sort((a, b) => a - b).map(floor => (
+              {Array.from(new Set(rooms.map(r => r.floor || 1))).sort((a: any, b: any) => a - b).map(floor => (
                 <button
                   key={floor}
                   onClick={() => setSelectedFloor(floor)}
