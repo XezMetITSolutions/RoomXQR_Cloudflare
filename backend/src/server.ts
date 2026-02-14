@@ -1548,13 +1548,14 @@ app.post('/api/orders', tenantMiddleware, async (req: Request, res: Response) =>
     }
 
     // Extract room number from roomId (e.g., "room-101" -> "101")
-    const roomNumber = roomId.replace('room-', '');
+    const roomNumber = roomId.replace(/^room-/, '');
 
-    // Check if room exists by number or id
+    // Oda ara: id "room-101", id "101" veya number "101" ile (bulk "101" ile oluşturulmuş olabilir)
     let room = await prisma.room.findFirst({
       where: {
         OR: [
           { id: roomId },
+          { id: roomNumber },
           { number: roomNumber }
         ],
         tenantId

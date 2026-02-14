@@ -432,8 +432,10 @@ export default function KitchenPanel() {
               rooms
                 .filter(room => selectedFloor === 'all' || (room.floor || 1) === selectedFloor)
                 .map((room) => {
-                  const hasActiveOrder = orders.some(o => o.roomId === (room.number || room.roomId.replace('room-', '')) && o.status === 'pending');
-                  const roomNum = room.number || room.roomId.replace('room-', '');
+                  const roomNum = room.number || room.roomId.replace(/^room-/, '');
+                  const hasActiveOrder = orders.some(o =>
+                    (o.roomId.replace(/^room-/, '') || o.roomId) === roomNum && o.status === 'pending'
+                  );
                   return (
                     <div
                       key={room.roomId}

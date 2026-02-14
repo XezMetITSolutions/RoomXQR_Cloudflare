@@ -799,8 +799,10 @@ export default function ReceptionPanel() {
               rooms
                 .filter(room => selectedFloor === 'all' || (room.floor || 1) === selectedFloor)
                 .map((room) => {
-                  const hasActiveRequest = requests.some(r => r.roomId === room.roomId && r.status === 'pending');
-                  const roomNum = room.number || room.roomId.replace('room-', '');
+                  const roomNum = room.number || room.roomId.replace(/^room-/, '');
+                  const hasActiveRequest = requests.some(r =>
+                    (r.roomId.replace(/^room-/, '') || r.roomId) === roomNum && r.status === 'pending'
+                  );
                   return (
                     <div
                       key={room.roomId}

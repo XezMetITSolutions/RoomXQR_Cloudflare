@@ -148,20 +148,9 @@ export class ApiService {
       return data;
     } catch (error) {
       console.error('Error creating request:', error);
-      // Fallback: Mock response döndür ve global listeye ekle
-      const newRequest = {
-        id: Date.now().toString(),
-        ...request,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      // Global mock listesine ekle
-      const currentRequests = this.getMockRequests();
-      currentRequests.unshift(newRequest);
-      this.saveMockRequests(currentRequests);
-
-      return newRequest;
+      // API hatasında mock'a düşme; resepsiyon gerçek API'den çektiği için istek orada görünmez.
+      // Hatayı çağırana ilet ki kullanıcıya "tekrar deneyin" veya hata mesajı gösterilebilsin.
+      throw error;
     }
   }
 
@@ -254,14 +243,13 @@ export class ApiService {
       const rawRooms = Array.isArray(data) ? data : (data.rooms && Array.isArray(data.rooms) ? data.rooms : []);
 
       // Backend formatını RoomStatus formatına dönüştür
-      return rawRooms.map((room: any) => {
-        // Backend'den gelen veri zaten formatlanmış olabilir (server.ts'deki /api/rooms gibi)
-        // Eğer formatlanmışsa bu alanlar doğrudan gelecektir.
+      const mapped = rawRooms.map((room: any) => {
         const activeGuest = Array.isArray(room.guests) && room.guests.length > 0 ? room.guests[0] : null;
-
+        const rid = room.roomId || room.id || room.qrCode || `room-${room.number}`;
+        const num = room.number || String(rid).replace(/^room-/, '');
         return {
-          roomId: room.roomId || room.id || room.qrCode || `room-${room.number}`,
-          number: room.number,
+          roomId: rid,
+          number: num,
           floor: room.floor,
           type: room.type,
           status: room.status || (room.isOccupied ? 'occupied' : 'vacant'),
@@ -270,6 +258,27 @@ export class ApiService {
           checkOut: room.checkOut || activeGuest?.checkOut || undefined,
         } as RoomStatus;
       });
+
+      // Aynı oda numarası için birden fazla kayıt olabilir (id "101" ve "room-101"). Numaraya göre tekilleştir.
+      const byNumber = new Map<string, RoomStatus>();
+      for (const r of mapped) {
+        const num = r.number || r.roomId.replace(/^room-/, '');
+        const existing = byNumber.get(num);
+        if (!existing) {
+          byNumber.set(num, r);
+        } else {
+          // Dolu veya room-XXX formatında olanı tercih et
+          const prefer = (a: RoomStatus, b: RoomStatus) => {
+            if (a.status === 'occupied' && b.status !== 'occupied') return a;
+            if (b.status === 'occupied' && a.status !== 'occupied') return b;
+            if (a.roomId === `room-${num}`) return a;
+            if (b.roomId === `room-${num}`) return b;
+            return a;
+          };
+          byNumber.set(num, prefer(r, existing));
+        }
+      }
+      return Array.from(byNumber.values());
     } catch (error) {
       console.error('Error fetching rooms:', error);
 

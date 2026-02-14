@@ -615,10 +615,15 @@ function DigerIstekler({ onRequestSent, roomId }: { onRequestSent: (message: str
       });
 
       onRequestSent(`"${istek}" talebiniz resepsiyona iletildi. En kısa sürede yanıtlanacaktır.`);
-
     } catch (error) {
       console.error('Error creating request:', error);
-      onRequestSent(`"${istek}" talebiniz resepsiyona iletildi. En kısa sürede yanıtlanacaktır.`);
+      const errMsg = error instanceof Error ? error.message : String(error);
+      const is404 = typeof errMsg === 'string' && (errMsg.includes('404') || errMsg.includes('Tenant'));
+      onRequestSent(
+        is404
+          ? 'Otel sistemi şu an tanımlı değil. Lütfen resepsiyonu arayın veya daha sonra tekrar deneyin.'
+          : 'Talep gönderilemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin veya resepsiyonu arayın.'
+      );
     }
 
     setIstek("");
