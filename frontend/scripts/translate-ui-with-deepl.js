@@ -20,7 +20,8 @@ if (!DEEPL_KEY) {
   process.exit(1);
 }
 
-const deeplUrl = DEEPL_KEY.includes('free')
+const isFreeKey = DEEPL_KEY.endsWith(':fx');
+const deeplUrl = isFreeKey
   ? 'https://api-free.deepl.com/v2/translate'
   : 'https://api.deepl.com/v2/translate';
 

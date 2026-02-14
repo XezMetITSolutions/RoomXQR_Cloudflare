@@ -15,7 +15,8 @@ async function translateBatch(
   body.append('source_lang', 'TR');
   body.append('target_lang', LANG_MAP[targetLang] || targetLang.toUpperCase());
   texts.forEach((t) => body.append('text', t));
-  const url = apiKey.includes('free')
+  const isFreeKey = apiKey.endsWith(':fx');
+  const url = isFreeKey
     ? 'https://api-free.deepl.com/v2/translate'
     : 'https://api.deepl.com/v2/translate';
   const res = await fetch(url, {

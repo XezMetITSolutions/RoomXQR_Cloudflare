@@ -11,7 +11,8 @@ export async function POST(request: NextRequest) {
     if (!DEEPL_API_KEY) {
       return NextResponse.json({ error: 'DeepL API anahtarı yapılandırılmamış' }, { status: 500 });
     }
-    const deeplUrl = DEEPL_API_KEY.includes('free')
+    const isFreeKey = DEEPL_API_KEY.endsWith(':fx');
+    const deeplUrl = isFreeKey
       ? 'https://api-free.deepl.com/v2/translate'
       : 'https://api.deepl.com/v2/translate';
 

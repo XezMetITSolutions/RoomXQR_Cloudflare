@@ -4482,7 +4482,8 @@ app.post('/api/translate', tenantMiddleware, authMiddleware, async (req: Request
     const source = sourceLang ? (sourceLang as string).toString().toLowerCase() : 'tr';
 
     // DeepL API endpoint (free tier)
-    const deeplEndpoint = DEEPL_API_KEY.includes('free')
+    const isFreeKey = DEEPL_API_KEY.endsWith(':fx');
+    const deeplEndpoint = isFreeKey
       ? 'https://api-free.deepl.com/v2/translate'
       : 'https://api.deepl.com/v2/translate';
 
