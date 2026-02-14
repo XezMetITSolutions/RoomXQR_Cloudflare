@@ -34,10 +34,13 @@ export default function KitchenPanel() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showMenuModal, setShowMenuModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedFloor, setSelectedFloor] = useState<number | 'all'>('all');
   const [cancelOrderId, setCancelOrderId] = useState<string | null>(null);
 
   // Bildirim sesi çalma fonksiyonu
   const playNotificationSound = () => {
+    if (typeof window === 'undefined') return;
+
     try {
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
@@ -378,30 +381,70 @@ export default function KitchenPanel() {
 
         {/* Tüm Odalar Grid */}
         <div className="hotel-card p-6 mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Tüm Odalar</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
-            {rooms.length > 0 ? rooms.map((room) => {
-              const hasActiveOrder = orders.some(o => o.roomId === (room.number || room.roomId.replace('room-', '')) && o.status === 'pending');
-              const roomNum = room.number || room.roomId.replace('room-', '');
-              return (
-                <div
-                  key={room.roomId}
-                  onClick={() => setSearchTerm(roomNum)}
-                  className={`
-                    p-3 rounded-lg border-2 text-center transition-all cursor-pointer relative overflow-hidden hover:shadow-md
-                    ${hasActiveOrder ? 'animate-pulse border-red-500 bg-red-50 shadow-red-200' : ''}
-                    ${!hasActiveOrder && room.status === 'occupied' ? 'bg-green-100 border-green-200 text-green-800' : ''}
-                    ${!hasActiveOrder && room.status !== 'occupied' ? 'bg-white border-gray-200 text-gray-400' : ''}
-                  `}
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
+            <h2 className="text-lg font-bold text-gray-900">Tüm Odalar</h2>
+
+            {/* Floor Tabs (Registerkarteler) */}
+            <div className="flex overflow-x-auto pb-2 sm:pb-0 gap-2 w-full sm:w-auto no-scrollbar">
+              <button
+                onClick={() => setSelectedFloor('all')}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${selectedFloor === 'all'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+              >
+                Tüm Odalar
+              </button>
+              {Array.from(new Set(rooms.map(r => r.floor || 1))).sort((a, b) => a - b).map(floor => (
+                <button
+                  key={floor}
+                  onClick={() => setSelectedFloor(floor)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${selectedFloor === floor
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
                 >
-                  <div className={`font-bold text-lg ${hasActiveOrder ? 'text-red-700' : ''}`}>{roomNum}</div>
-                  <div className="text-xs truncate font-medium">
-                    {hasActiveOrder ? '❗️ Sipariş Var' : (room.guestName || (room.status === 'occupied' ? 'Dolu' : 'Boş'))}
-                  </div>
-                </div>
-              );
-            }) : (
-              <div className="col-span-full text-center text-gray-400 py-4">Oda bilgisi yükleniyor...</div>
+                  {floor}. Kat
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+            {isLoading && rooms.length === 0 ? (
+              <div className="col-span-full text-center text-gray-400 py-8 flex flex-col items-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-2"></div>
+                <span>Oda bilgisi yükleniyor...</span>
+              </div>
+            ) : rooms.length > 0 ? (
+              rooms
+                .filter(room => selectedFloor === 'all' || (room.floor || 1) === selectedFloor)
+                .map((room) => {
+                  const hasActiveOrder = orders.some(o => o.roomId === (room.number || room.roomId.replace('room-', '')) && o.status === 'pending');
+                  const roomNum = room.number || room.roomId.replace('room-', '');
+                  return (
+                    <div
+                      key={room.roomId}
+                      onClick={() => setSearchTerm(roomNum)}
+                      className={`
+                      p-3 rounded-lg border-2 text-center transition-all cursor-pointer relative overflow-hidden hover:shadow-md
+                      ${hasActiveOrder ? 'animate-pulse border-red-500 bg-red-50 shadow-red-200' : ''}
+                      ${!hasActiveOrder && room.status === 'occupied' ? 'bg-green-100 border-green-200 text-green-800' : ''}
+                      ${!hasActiveOrder && room.status !== 'occupied' ? 'bg-white border-gray-200 text-gray-400' : ''}
+                    `}
+                    >
+                      <div className={`font-bold text-lg ${hasActiveOrder ? 'text-red-700' : ''}`}>{roomNum}</div>
+                      <div className="text-xs truncate font-medium">
+                        {hasActiveOrder ? '❗️ Sipariş Var' : (room.guestName || (room.status === 'occupied' ? 'Dolu' : 'Boş'))}
+                      </div>
+                    </div>
+                  );
+                })
+            ) : (
+              <div className="col-span-full text-center text-gray-400 py-8">
+                <p>Henüz oda bulunmuyor.</p>
+                <p className="text-sm mt-2">QR Kod sayfasından oda oluşturabilirsiniz.</p>
+              </div>
             )}
           </div>
         </div>
