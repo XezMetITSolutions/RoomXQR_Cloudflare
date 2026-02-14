@@ -129,16 +129,16 @@ export default function OdaYonetimiPage() {
 
   // Helper function for consistent room ID matching
   const matchesRoom = useCallback((orderRoomId: string, targetRoomNum: string) => {
-    // Normalize both inputs: remove 'room-' prefix (case insensitive), trim whitespace
-    const n1 = String(orderRoomId || '').replace(/^room-/i, '').trim();
-    const n2 = String(targetRoomNum || '').replace(/^room-/i, '').trim();
+    // Normalize both inputs: remove *all* 'room-' prefixes (case insensitive), trim whitespace
+    const n1 = String(orderRoomId || '').replace(/^(room-)+/i, '').trim();
+    const n2 = String(targetRoomNum || '').replace(/^(room-)+/i, '').trim();
     return n1 === n2;
   }, []);
 
   const roomDebt = useCallback((roomId: string, roomNumber: string) => {
     // We can use the passed roomNumber which is already normalized in the loop,
     // or re-normalize roomId just to be safe. "matchesRoom" handles normalization.
-    const norm = (id: string) => (id || '').replace(/^room-/i, '').trim();
+    const norm = (id: string) => (id || '').replace(/^(room-)+/i, '').trim();
     const num = norm(roomId) || roomNumber;
 
     return orders
@@ -146,7 +146,7 @@ export default function OdaYonetimiPage() {
       .reduce((sum, o) => sum + o.totalAmount, 0);
   }, [orders, matchesRoom]);
 
-  const normRoomNum = (val: any) => String(val ?? '').replace(/^room-/, '').trim();
+  const normRoomNum = (val: any) => String(val ?? '').replace(/^(room-)+/i, '').trim();
   // Katlara göre grupla; aynı numara tek satır
   const roomsByFloor = rooms.reduce<Record<number, RoomStatus[]>>((acc, r) => {
     const floor = typeof r.floor === 'number' ? r.floor : parseInt(String(r.floor), 10) || 1;
@@ -466,7 +466,7 @@ function RoomDetailModal({
   onClose: () => void;
   onEdit: () => void;
 }) {
-  const norm = (id: string | number) => (String(id) || '').replace(/^room-/i, '').trim();
+  const norm = (id: string | number) => (String(id) || '').replace(/^(room-)+/i, '').trim();
   const roomNum = norm(room.number ?? room.roomId);
 
   console.log('RoomDetailModal Debug:', {
