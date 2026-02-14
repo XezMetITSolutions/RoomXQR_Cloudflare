@@ -1,11 +1,12 @@
 import GuestInterfaceClient from '@/app/guest/[roomId]/GuestInterfaceClient';
 import { NotificationProvider } from '@/contexts/NotificationContext';
 
-export default function GuestInterfaceEN({ params, searchParams }: { params: { roomId: string }; searchParams?: { guest?: string } }) {
+export default function GuestInterfaceEN({ params, searchParams }: { params: { roomId: string }; searchParams?: { guest?: string; g?: string } }) {
     const guestName = searchParams?.guest ?? undefined;
+    const guestToken = searchParams?.g ?? undefined;
     return (
         <NotificationProvider roomId={`room-${params.roomId}`}>
-            <GuestInterfaceClient roomId={`room-${params.roomId}`} initialLang="en" guestName={guestName} />
+            <GuestInterfaceClient roomId={`room-${params.roomId}`} initialLang="en" guestName={guestName} guestToken={guestToken} />
         </NotificationProvider>
     );
 }

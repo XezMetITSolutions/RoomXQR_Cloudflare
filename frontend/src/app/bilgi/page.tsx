@@ -70,55 +70,47 @@ export default function BilgiPage() {
     setIsHydrated(true);
   }, []);
 
-  // Hotel info yükle
+  // Hotel info: ilk yükleme + arka plan güncellemeleri (sayfa yenilenmeden AJAX)
   useEffect(() => {
-    const loadHotelInfo = async () => {
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
+    let tenantSlug = 'demo';
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      const subdomain = hostname.split('.')[0];
+      if (subdomain && subdomain !== 'www' && subdomain !== 'roomxqr' && subdomain !== 'roomxqr-backend') {
+        tenantSlug = subdomain;
+      }
+    }
+
+    const fetchHotelInfo = async (isInitial: boolean) => {
       try {
-        setIsLoadingInfo(true);
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
-        
-        // URL'den tenant slug'ını al
-        let tenantSlug = 'demo';
-        if (typeof window !== 'undefined') {
-          const hostname = window.location.hostname;
-          const subdomain = hostname.split('.')[0];
-          if (subdomain && subdomain !== 'www' && subdomain !== 'roomxqr' && subdomain !== 'roomxqr-backend') {
-            tenantSlug = subdomain;
-          }
-        }
-
+        if (isInitial) setIsLoadingInfo(true);
         const response = await fetch(`${API_BASE_URL}/api/hotel/info?t=${Date.now()}`, {
-          headers: {
-            'x-tenant': tenantSlug
-          }
+          headers: { 'x-tenant': tenantSlug }
         });
-
         if (response.ok) {
           const data = await response.json();
-          console.log('Bilgi sayfası - Loaded hotel info:', JSON.stringify(data, null, 2));
           setHotelInfo(data);
-        } else {
-          console.error('Failed to load hotel info');
         }
       } catch (error) {
-        console.error('Error loading hotel info:', error);
+        if (isInitial) console.error('Error loading hotel info:', error);
       } finally {
-        setIsLoadingInfo(false);
+        if (isInitial) setIsLoadingInfo(false);
       }
     };
 
-    loadHotelInfo();
+    fetchHotelInfo(true);
 
-    // Sayfa görünür olduğunda veriyi yeniden yükle (güncellemeleri görmek için)
+    const POLL_INTERVAL_MS = 60000;
+    const pollTimer = setInterval(() => fetchHotelInfo(false), POLL_INTERVAL_MS);
+
     const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        loadHotelInfo();
-      }
+      if (!document.hidden) fetchHotelInfo(false);
     };
-
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
+      clearInterval(pollTimer);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);

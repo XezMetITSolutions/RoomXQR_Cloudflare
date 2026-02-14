@@ -38,7 +38,10 @@ const DEFAULT_ACTIVITY_IMAGES = [
 interface GuestInterfaceClientProps {
   roomId: string;
   initialLang?: string;
+  /** Eski linkler için: URL'de ?guest= ile gelen isim (oda bağlı değil) */
   guestName?: string;
+  /** Oda bağlı token: sadece bu oda için isim gösterilir; link 102 yapılırsa isim görünmez */
+  guestToken?: string;
 }
 
 /** Misafir adından "Sayın Ad S." formatı üretir (örn: Leyla Yılmaz -> Sayın Leyla Y.) */
@@ -51,9 +54,12 @@ function formatGuestGreeting(fullName: string): string {
   return `Sayın ${firstName} ${lastInitial}.`;
 }
 
-export default function GuestInterfaceClient({ roomId, initialLang, guestName }: GuestInterfaceClientProps) {
+export default function GuestInterfaceClient({ roomId, initialLang, guestName, guestToken }: GuestInterfaceClientProps) {
   const router = useRouter();
   const [showSurvey, setShowSurvey] = useState(false);
+  /** Token doğrulandıktan sonra sadece oda eşleşirse dolu; yoksa legacy guestName kullanılır */
+  const [resolvedGuestName, setResolvedGuestName] = useState<string | undefined>(undefined);
+  const [guestNameResolved, setGuestNameResolved] = useState(false);
   // Guest info artık kullanılmıyor - soyisim sorusu kaldırıldı
   const [hotelName, setHotelName] = useState<string>('');
   const [activityImages, setActivityImages] = useState<{ title: string; imageUrl: string }[]>([]);
@@ -69,6 +75,28 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName }:
       setLanguage(initialLang);
     }
   }, [initialLang, setLanguage]);
+
+  // Oda bağlı token doğrula: ?g= sadece bu oda için isim döner; link 102 yapılırsa isim görünmez
+  useEffect(() => {
+    if (guestToken) {
+      const numericRoomId = roomId.replace(/^room-/, '');
+      const tenant = typeof window !== 'undefined' ? (() => {
+        const h = window.location.hostname.split('.')[0];
+        return h && h !== 'www' && h !== 'roomxqr' && h !== 'roomxqr-backend' ? h : 'demo';
+      })() : 'demo';
+      fetch(`/api/guest-token/verify?token=${encodeURIComponent(guestToken)}&roomId=${encodeURIComponent(numericRoomId)}`, {
+        headers: { 'x-tenant': tenant },
+      })
+        .then((r) => r.json())
+        .then((d) => { if (d && d.guestName) setResolvedGuestName(d.guestName); setGuestNameResolved(true); })
+        .catch(() => setGuestNameResolved(true));
+    } else {
+      setResolvedGuestName(guestName);
+      setGuestNameResolved(true);
+    }
+  }, [guestToken, roomId, guestName]);
+
+  const displayGuestName = guestNameResolved ? resolvedGuestName : undefined;
 
   const supportedLanguages = getSupportedLanguages();
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
@@ -265,9 +293,9 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName }:
                 : safeGetTranslation('room.welcome', 'Hoş Geldiniz')
               }
             </h1>
-            {guestName && (
+            {displayGuestName && (
               <p className="text-sm sm:text-base mt-1 opacity-90" style={{ color: theme.textColor }}>
-                {formatGuestGreeting(guestName)}
+                {formatGuestGreeting(displayGuestName)}
               </p>
             )}
           </div>
@@ -329,9 +357,9 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName }:
               : safeGetTranslation('room.welcome', 'Hoş Geldiniz')
             }
           </h1>
-          {guestName && (
+          {displayGuestName && (
             <p className="text-sm sm:text-base mt-1 opacity-90" style={{ color: theme.textColor }}>
-              {formatGuestGreeting(guestName)}
+              {formatGuestGreeting(displayGuestName)}
             </p>
           )}
         </div>

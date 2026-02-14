@@ -63,7 +63,8 @@ export default function QRMenuPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedSubCategory, setSelectedSubCategory] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [cart, setCart] = useState<{ id: string; quantity: number }[]>([]);
+  const [cart, setCart] = useState<{ lineId: string; id: string; quantity: number; note?: string }[]>([]);
+  const [productModal, setProductModal] = useState<any | null>(null);
   const [showCart, setShowCart] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [cartNote, setCartNote] = useState('');
@@ -102,12 +103,20 @@ export default function QRMenuPage() {
     }
   }, []);
 
-  // Menü verilerini API'den yükle
+  // Menü verilerini API'den yükle (tenant subdomain'den; böylece kategoriler doğru gelir)
   useEffect(() => {
     const loadMenuData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/menu');
+        let tenantSlug = 'demo';
+        if (typeof window !== 'undefined') {
+          const hostname = window.location.hostname;
+          const sub = hostname.split('.')[0];
+          if (sub && sub !== 'www' && sub !== 'roomxqr' && sub !== 'roomxqr-backend') tenantSlug = sub;
+        }
+        const response = await fetch(`/api/menu?tenant=${encodeURIComponent(tenantSlug)}`, {
+          headers: { 'x-tenant': tenantSlug }
+        });
         if (response.ok) {
           const data = await response.json();
           // API'den gelen veriyi QR menü formatına çevir
@@ -174,11 +183,11 @@ export default function QRMenuPage() {
           // Sadece API'den gelen gerçek ürünleri kullan, demo ürünleri ekleme
           setMenuData(formattedMenu);
 
-          // Backend'den gelen kategorileri çıkar ve dinamik kategoriler oluştur
+          // Backend'den gelen kategorileri çıkar (ürün müsait olmasa da kategori listelensin)
           const uniqueCategories = new Set<string>();
           formattedMenu.forEach((item: any) => {
-            if (item.category && item.available) {
-              uniqueCategories.add(item.category);
+            if (item.category && item.category.trim()) {
+              uniqueCategories.add(item.category.trim());
             }
           });
 
@@ -422,11 +431,11 @@ export default function QRMenuPage() {
     }
   }, [announcements.length]);
 
-  // Sepetteki ürünleri getir
+  // Sepetteki ürünleri getir (lineId ve note dahil)
   const getCartItems = useCallback(() => cart.map(ci => {
     const product = menuData.find(m => m.id === ci.id);
-    return product ? { ...product, quantity: ci.quantity } : null;
-  }).filter(Boolean) as (typeof menuData[0] & { quantity: number })[], [cart, menuData]);
+    return product ? { ...product, lineId: ci.lineId, quantity: ci.quantity, note: ci.note } : null;
+  }).filter(Boolean) as (typeof menuData[0] & { lineId: string; quantity: number; note?: string })[], [cart, menuData]);
 
   // Finalized modal'ını 3 saniye sonra otomatik kapat
   useEffect(() => {
@@ -538,8 +547,8 @@ export default function QRMenuPage() {
     categoriesWithProducts.add('all'); // "Tümü" her zaman göster
 
     menuData.forEach(item => {
-      if (item.available && item.category) {
-        categoriesWithProducts.add(item.category);
+      if (item.category && item.category.trim()) {
+        categoriesWithProducts.add(item.category.trim());
       }
     });
 
@@ -607,27 +616,20 @@ export default function QRMenuPage() {
   // Alt kategori gösterimi
   const showSubCategories = selectedCategory !== 'all' && (subCategories as any)[selectedCategory]?.length > 0;
 
-  // Sepete ekle
-  const addToCart = (id: string) => {
-    setCart(prev => {
-      const found = prev.find(item => item.id === id);
-      if (found) {
-        return prev.map(item => item.id === id ? { ...item, quantity: item.quantity + 1 } : item);
-      } else {
-        return [...prev, { id, quantity: 1 }];
-      }
-    });
+  // Sepete ekle (modal'dan: adet + yorum ile)
+  const addToCart = (id: string, quantity: number = 1, note: string = '') => {
+    setCart(prev => [...prev, { lineId: `line-${Date.now()}-${Math.random().toString(36).slice(2)}`, id, quantity, note: note.trim() || undefined }]);
   };
-  // Sepetten çıkar
-  const removeFromCart = (id: string) => {
-    setCart(prev => prev.filter(item => item.id !== id));
+  // Sepetten çıkar (satır bazlı)
+  const removeFromCart = (lineId: string) => {
+    setCart(prev => prev.filter(item => item.lineId !== lineId));
   };
   // Adet değiştir
-  const setCartQuantity = (id: string, quantity: number) => {
+  const setCartQuantity = (lineId: string, quantity: number) => {
     if (quantity <= 0) {
-      removeFromCart(id);
+      removeFromCart(lineId);
     } else {
-      setCart(prev => prev.map(item => item.id === id ? { ...item, quantity } : item));
+      setCart(prev => prev.map(item => item.lineId === lineId ? { ...item, quantity } : item));
     }
   };
   // Sepet toplamı
@@ -985,7 +987,7 @@ export default function QRMenuPage() {
               <MenuCard
                 key={item.id}
                 {...item}
-                onAdd={() => addToCart(item.id)}
+                onAdd={() => setProductModal(item)}
                 getTranslation={getTranslation}
               />
             ))}
@@ -1011,6 +1013,18 @@ export default function QRMenuPage() {
               <span className="text-base font-normal">{getCartTotal()}₺</span>
             </button>
           </div>
+        )}
+        {/* Ürün detay modalı - adet ve yorum ile sepete ekle */}
+        {productModal && (
+          <ProductModal
+            item={productModal}
+            onAdd={(quantity, note) => {
+              addToCart(productModal.id, quantity, note);
+              setProductModal(null);
+            }}
+            onClose={() => setProductModal(null)}
+            getTranslation={getTranslation}
+          />
         )}
         {/* Sepet Modal */}
         {showCart && (
@@ -1060,6 +1074,87 @@ export default function QRMenuPage() {
             </div>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function ProductModal({ item, onAdd, onClose, getTranslation }: {
+  item: any;
+  onAdd: (quantity: number, note: string) => void;
+  onClose: () => void;
+  getTranslation: (key: string) => string;
+}) {
+  const theme = useThemeStore();
+  const [quantity, setQuantity] = useState(1);
+  const [note, setNote] = useState('');
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="rounded-3xl max-w-md w-full shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto" style={{ background: theme.cardBackground, border: `1px solid ${theme.borderColor}` }}>
+        <div className="flex justify-between items-center p-4" style={{ borderBottom: `1px solid ${theme.borderColor}` }}>
+          <h2 className="text-lg font-bold" style={{ color: theme.textColor }}>{item.name}</h2>
+          <button onClick={onClose} className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: theme.borderColor }}>
+            <X className="w-5 h-5" style={{ color: theme.textColor }} />
+          </button>
+        </div>
+        <div className="relative w-full h-48 sm:h-52 bg-gray-100">
+          {item.image ? (
+            <NextImage src={item.image} alt={item.name} fill className="object-cover" sizes="400px" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-100 to-red-100">
+              <span className="text-4xl font-bold text-orange-500">{item.name.charAt(0)}</span>
+            </div>
+          )}
+        </div>
+        <div className="p-4 space-y-4">
+          {item.description && (
+            <p className="text-sm" style={{ color: theme.textColor }}>{item.description}</p>
+          )}
+          <div className="flex justify-between items-center">
+            <span className="text-xl font-bold" style={{ color: theme.primaryColor }}>{item.price}₺</span>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2" style={{ color: theme.textColor }}>{getTranslation('room.quantity') || 'Adet'}</label>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                className="w-10 h-10 rounded-full flex items-center justify-center"
+                style={{ background: `${theme.primaryColor}20`, color: theme.primaryColor }}
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+              <span className="w-8 text-center font-semibold" style={{ color: theme.textColor }}>{quantity}</span>
+              <button
+                type="button"
+                onClick={() => setQuantity(q => q + 1)}
+                className="w-10 h-10 rounded-full flex items-center justify-center"
+                style={{ background: `${theme.primaryColor}20`, color: theme.primaryColor }}
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2" style={{ color: theme.textColor }}>Yorum / Not</label>
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Örn: Acılı, acısız, ekstra sos, soğansız..."
+              rows={2}
+              className="w-full px-3 py-2 rounded-xl border resize-none text-sm focus:outline-none focus:ring-2"
+              style={{ borderColor: theme.borderColor, background: theme.backgroundColor, color: theme.textColor }}
+            />
+          </div>
+          <button
+            onClick={() => onAdd(quantity, note)}
+            className="w-full py-3 rounded-xl font-semibold text-white"
+            style={{ background: theme.gradientColors?.length ? `linear-gradient(135deg, ${theme.gradientColors[2]} 0%, ${theme.gradientColors[3]} 100%)` : theme.secondaryColor }}
+          >
+            {getTranslation('product.add_to_cart')}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -1173,8 +1268,8 @@ function CartModal({ items, note, setNote, onClose, onOrder, setCartQuantity, re
   setNote: (v: string) => void;
   onClose: () => void;
   onOrder: () => void;
-  setCartQuantity: (id: string, quantity: number) => void;
-  removeFromCart: (id: string) => void;
+  setCartQuantity: (lineId: string, quantity: number) => void;
+  removeFromCart: (lineId: string) => void;
   total: number;
   getTranslation: (key: string) => string;
 }) {
@@ -1207,8 +1302,7 @@ function CartModal({ items, note, setNote, onClose, onOrder, setCartQuantity, re
             <>
               <div className="p-4 space-y-3">
                 {items.map(item => (
-                  <div key={item.id} className="flex items-center space-x-3 p-3 rounded-xl" style={{ background: theme.borderColor }}>
-                    {/* Ürün Görseli - Daha küçük */}
+                  <div key={item.lineId} className="flex items-center space-x-3 p-3 rounded-xl" style={{ background: theme.borderColor }}>
                     <div className="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
                       {item.image ? (
                         <NextImage src={item.image} alt={item.name} fill sizes="48px" className="object-cover" />
@@ -1222,11 +1316,14 @@ function CartModal({ items, note, setNote, onClose, onOrder, setCartQuantity, re
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold text-sm truncate" style={{ color: theme.textColor }}>{item.name}</div>
                       <div className="text-xs" style={{ color: theme.textColor }}>{item.price}₺</div>
+                      {item.note && (
+                        <div className="text-xs mt-0.5 opacity-80" style={{ color: theme.textColor }}>Not: {item.note}</div>
+                      )}
                     </div>
 
                     <div className="flex items-center space-x-2">
                       <button
-                        onClick={() => setCartQuantity(item.id, item.quantity - 1)}
+                        onClick={() => setCartQuantity(item.lineId, item.quantity - 1)}
                         className="w-7 h-7 rounded-full flex items-center justify-center transition-colors"
                         style={{ background: `${theme.primaryColor}20`, color: theme.primaryColor }}
                       >
@@ -1234,14 +1331,14 @@ function CartModal({ items, note, setNote, onClose, onOrder, setCartQuantity, re
                       </button>
                       <span className="w-6 text-center font-semibold text-sm" style={{ color: theme.textColor }}>{item.quantity}</span>
                       <button
-                        onClick={() => setCartQuantity(item.id, item.quantity + 1)}
+                        onClick={() => setCartQuantity(item.lineId, item.quantity + 1)}
                         className="w-7 h-7 rounded-full flex items-center justify-center transition-colors"
                         style={{ background: `${theme.primaryColor}20`, color: theme.primaryColor }}
                       >
                         <Plus className="w-3 h-3" />
                       </button>
                       <button
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => removeFromCart(item.lineId)}
                         className="w-7 h-7 rounded-full flex items-center justify-center transition-colors"
                         style={{ background: '#fee2e2', color: '#b91c1c' }}
                       >
@@ -1344,7 +1441,7 @@ function ConfirmationModal({ items, note, total, onProceed, onBack, getTranslati
               <h3 className="text-lg font-semibold mb-3" style={{ color: theme.textColor }}>Sipariş Özeti</h3>
               <div className="space-y-2">
                 {items.map(item => (
-                  <div key={item.id} className="flex justify-between items-center">
+                  <div key={item.lineId || item.id} className="flex justify-between items-center">
                     <div className="flex items-center space-x-3">
                       <div className="relative w-10 h-10 rounded-lg overflow-hidden">
                         {item.image ? (
@@ -1357,7 +1454,7 @@ function ConfirmationModal({ items, note, total, onProceed, onBack, getTranslati
                       </div>
                       <div>
                         <div className="font-medium" style={{ color: theme.textColor }}>{item.name}</div>
-                        <div className="text-sm" style={{ color: theme.textColor }}>x {item.quantity}</div>
+                        <div className="text-sm" style={{ color: theme.textColor }}>x {item.quantity}{item.note ? ` · ${item.note}` : ''}</div>
                       </div>
                     </div>
                     <div className="text-sm font-semibold" style={{ color: theme.textColor }}>{item.price * item.quantity}₺</div>
@@ -1438,12 +1535,12 @@ function PaymentModal({ items, note, total, roomId, onPaymentSuccess, onBack, ge
         }
       }
 
-      // Sipariş item'larını hazırla
+      // Sipariş item'larını hazırla (ürün bazlı not + genel not)
       const orderItems = items.map(item => ({
         menuItemId: item.id,
         quantity: item.quantity,
         price: item.price,
-        notes: note || undefined
+        notes: item.note || note || undefined
       }));
 
       // Guest ID'yi bul veya oluştur (roomId'den)
@@ -1504,7 +1601,7 @@ function PaymentModal({ items, note, total, roomId, onPaymentSuccess, onBack, ge
               <h3 className="text-lg font-semibold mb-3" style={{ color: theme.textColor }}>Sipariş Özeti</h3>
               <div className="space-y-2">
                 {items.map(item => (
-                  <div key={item.id} className="flex justify-between items-center">
+                  <div key={item.lineId || item.id} className="flex justify-between items-center">
                     <div className="flex items-center space-x-3">
                       <div className="relative w-10 h-10 rounded-lg overflow-hidden">
                         {item.image ? (
@@ -1517,7 +1614,7 @@ function PaymentModal({ items, note, total, roomId, onPaymentSuccess, onBack, ge
                       </div>
                       <div>
                         <div className="font-medium" style={{ color: theme.textColor }}>{item.name}</div>
-                        <div className="text-sm" style={{ color: theme.textColor }}>x {item.quantity}</div>
+                        <div className="text-sm" style={{ color: theme.textColor }}>x {item.quantity}{item.note ? ` · ${item.note}` : ''}</div>
                       </div>
                     </div>
                     <div className="text-sm font-semibold" style={{ color: theme.textColor }}>{item.price * item.quantity}₺</div>

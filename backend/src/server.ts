@@ -19,6 +19,7 @@ import fs from 'fs'
 import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
 import nodemailer from 'nodemailer'
+import jwt from 'jsonwebtoken'
 
 // Load environment variables
 dotenv.config()
@@ -1100,6 +1101,46 @@ app.post('/api/users', tenantMiddleware, authMiddleware, requirePermission('user
 app.put('/api/users/:id', tenantMiddleware, authMiddleware, requirePermission('users'), updateUser)
 app.put('/api/users/:id/permissions', tenantMiddleware, authMiddleware, requirePermission('users'), updateUserPermissions)
 app.delete('/api/users/:id', tenantMiddleware, authMiddleware, requirePermission('users'), deleteUser)
+
+// Guest link token: oda + tenant bağlı; link 102 yapılırsa 101'in ismi görünmez
+const GUEST_LINK_SECRET = process.env.JWT_SECRET || process.env.GUEST_LINK_SECRET || 'guest-link-secret'
+const GUEST_LINK_EXPIRY = '90d'
+
+app.post('/api/guest-token', tenantMiddleware, (req: Request, res: Response) => {
+  try {
+    const tenantId = getTenantId(req)
+    const { roomId, guestName } = req.body || {}
+    if (!roomId || !guestName || typeof roomId !== 'string' || typeof guestName !== 'string') {
+      res.status(400).json({ message: 'roomId ve guestName gerekli.' })
+      return
+    }
+    const payload = { roomId: String(roomId).trim(), guestName: String(guestName).trim(), tenantId, aud: 'guest-link' }
+    const token = jwt.sign(payload, GUEST_LINK_SECRET, { expiresIn: GUEST_LINK_EXPIRY })
+    res.json({ token })
+  } catch (e) {
+    res.status(500).json({ message: 'Token oluşturulamadı.' })
+  }
+})
+
+app.get('/api/guest-token/verify', tenantMiddleware, (req: Request, res: Response) => {
+  try {
+    const tenantId = getTenantId(req)
+    const token = (req.query.token as string) || ''
+    const roomId = (req.query.roomId as string) || ''
+    if (!token || !roomId) {
+      res.json({})
+      return
+    }
+    const decoded = jwt.verify(token, GUEST_LINK_SECRET) as { roomId?: string; guestName?: string; tenantId?: string; aud?: string }
+    if (decoded.aud !== 'guest-link' || decoded.tenantId !== tenantId || decoded.roomId !== String(roomId).trim()) {
+      res.json({})
+      return
+    }
+    res.json({ guestName: decoded.guestName || '' })
+  } catch {
+    res.json({})
+  }
+})
 
 // API Routes
 app.get('/api/menu', tenantMiddleware, async (req: Request, res: Response) => {
