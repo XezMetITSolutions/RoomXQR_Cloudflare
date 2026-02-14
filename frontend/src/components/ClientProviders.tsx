@@ -4,6 +4,7 @@ import { NotificationProvider } from '@/contexts/NotificationContext';
 import { AuthProvider } from '@/contexts/AuthContext';
 import DataInitializer from '@/components/DataInitializer';
 import ThemeProvider from '@/components/ThemeProvider';
+import LocaleLoader from '@/components/LocaleLoader';
 
 interface ClientProvidersProps {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ export default function ClientProviders({ children, roomId }: ClientProvidersPro
     <AuthProvider>
       <NotificationProvider roomId={roomId}>
         <ThemeProvider>
+          <LocaleLoader />
           <DataInitializer />
           {children}
         </ThemeProvider>

@@ -4472,11 +4472,14 @@ app.post('/api/translate', tenantMiddleware, authMiddleware, async (req: Request
       return;
     }
 
-    const DEEPL_API_KEY = process.env.DEEPL_API_KEY;
+    const DEEPL_API_KEY = process.env.DEEPL_API_KEY || process.env.DEEPL_API;
     if (!DEEPL_API_KEY) {
       res.status(500).json({ message: 'DeepL API key not configured' });
       return;
     }
+
+    const target = (targetLang || '').toString().toLowerCase();
+    const source = sourceLang ? (sourceLang as string).toString().toLowerCase() : 'tr';
 
     // DeepL API endpoint (free tier)
     const deeplEndpoint = DEEPL_API_KEY.includes('free')
@@ -4496,8 +4499,8 @@ app.post('/api/translate', tenantMiddleware, authMiddleware, async (req: Request
       'tr': 'TR',
     };
 
-    const deeplTargetLang = deeplLangMap[targetLang.toLowerCase()] || targetLang.toUpperCase();
-    const deeplSourceLang = sourceLang ? (deeplLangMap[sourceLang.toLowerCase()] || sourceLang.toUpperCase()) : undefined;
+    const deeplTargetLang = deeplLangMap[target] || target.toUpperCase();
+    const deeplSourceLang = source === 'tr' ? 'TR' : (deeplLangMap[source] || source.toUpperCase());
 
     const response = await fetch(deeplEndpoint, {
       method: 'POST',

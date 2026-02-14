@@ -96,9 +96,15 @@ export default function SettingsPage() {
         if (settingsData.hotel) setHotelSettings(settingsData.hotel);
         if (settingsData.theme) setThemeSettings(settingsData.theme);
         if (settingsData.language) {
-          console.log('Settings yükleniyor - language:', settingsData.language);
-          console.log('Settings yükleniyor - supportedLanguages:', settingsData.language.supportedLanguages);
-          setLanguageSettings(settingsData.language);
+          const raw = settingsData.language;
+          const supported = Array.isArray(raw.supportedLanguages) && raw.supportedLanguages.length > 0
+            ? raw.supportedLanguages
+            : ['tr', 'de', 'en', 'ru'];
+          const defaultLang = supported.includes(raw.defaultLanguage) ? raw.defaultLanguage : 'tr';
+          setLanguageSettings({
+            defaultLanguage: defaultLang,
+            supportedLanguages: supported,
+          });
         } else {
           console.warn('Settings yüklenirken language bulunamadı, varsayılan değerler kullanılıyor');
         }
@@ -371,7 +377,7 @@ export default function SettingsPage() {
 
   const [languageSettings, setLanguageSettings] = useState<LanguageSettings>({
     defaultLanguage: 'tr',
-    supportedLanguages: ['tr', 'en', 'de', 'fr', 'es', 'it', 'ru', 'ar', 'zh'],
+    supportedLanguages: ['tr', 'de', 'en', 'ru'],
   });
 
   const [showPaletteModal, setShowPaletteModal] = useState(false);
@@ -384,14 +390,15 @@ export default function SettingsPage() {
     { id: 'language', label: getTranslation('settings.tab.language'), icon: Globe },
   ], [getTranslation]);
 
+  // Öncelik: tr, de, en, ru (tam çeviri); diğer diller de seçilebilir
   const languages = [
     { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
-    { code: 'en', name: 'English', flag: '🇺🇸' },
     { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
     { code: 'fr', name: 'Français', flag: '🇫🇷' },
     { code: 'es', name: 'Español', flag: '🇪🇸' },
     { code: 'it', name: 'Italiano', flag: '🇮🇹' },
-    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
     { code: 'ar', name: 'العربية', flag: '🇸🇦' },
     { code: 'zh', name: '中文', flag: '🇨🇳' },
   ];

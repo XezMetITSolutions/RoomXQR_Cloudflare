@@ -45,7 +45,7 @@ export function useTranslation(): UseTranslationReturn {
         body: JSON.stringify({
           text,
           targetLang,
-          sourceLang,
+          sourceLang: sourceLang || 'tr',
         }),
       });
       

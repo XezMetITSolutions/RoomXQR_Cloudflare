@@ -88,14 +88,13 @@ export default function AnnouncementsManagement() {
       if (savedSettings) {
         const settingsData = JSON.parse(savedSettings);
         if (settingsData.language?.supportedLanguages && Array.isArray(settingsData.language.supportedLanguages)) {
-          return settingsData.language.supportedLanguages;
+          if (settingsData.language.supportedLanguages.length > 0) return settingsData.language.supportedLanguages;
         }
       }
     } catch (error) {
       console.error('Settings yüklenirken hata:', error);
     }
-    // Varsayılan diller
-    return ['tr', 'en', 'de', 'fr'];
+    return ['tr', 'de', 'en', 'ru'];
   };
 
   // Otomatik çeviri fonksiyonu - Türkçe metin değiştiğinde tetiklenir

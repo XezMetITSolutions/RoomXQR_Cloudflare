@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const DEEPL_API_KEY = 'bf2e3c01-d17a-43dc-a2f9-31cfa6d7ef2a:fx';
-const DEEPL_API_URL = 'https://api-free.deepl.com/v2/translate';
+const DEEPL_LANG_MAP: Record<string, string> = {
+  tr: 'TR', de: 'DE', en: 'EN', ru: 'RU', fr: 'FR', es: 'ES', it: 'IT', ar: 'AR', zh: 'ZH',
+};
 
 export async function POST(request: NextRequest) {
   try {
     const { text, targetLang, sourceLang } = await request.json();
+    const DEEPL_API_KEY = process.env.DEEPL_API_KEY || process.env.DEEPL_API;
+    if (!DEEPL_API_KEY) {
+      return NextResponse.json({ error: 'DeepL API anahtarı yapılandırılmamış' }, { status: 500 });
+    }
+    const deeplUrl = DEEPL_API_KEY.includes('free')
+      ? 'https://api-free.deepl.com/v2/translate'
+      : 'https://api.deepl.com/v2/translate';
 
     if (!text || !targetLang) {
       return NextResponse.json({
@@ -13,20 +21,16 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // DeepL dil kodlarını büyük harfe zorla (en -> EN, fr -> FR)
-    const target = String(targetLang).toUpperCase();
-
-    // DeepL API'sine gönderilecek parametreleri hazırla
+    const target = String(targetLang).toLowerCase();
+    const source = sourceLang ? String(sourceLang).toLowerCase() : 'tr';
+    const deeplTarget = DEEPL_LANG_MAP[target] || target.toUpperCase();
+    const deeplSource = DEEPL_LANG_MAP[source] || source.toUpperCase();
     const params = new URLSearchParams();
     params.append('text', text);
-    params.append('target_lang', target);
+    params.append('target_lang', deeplTarget);
+    params.append('source_lang', deeplSource);
 
-    // Eğer sourceLang 'AUTO' değilse ve varsa ekle, aksi takdirde DeepL otomatik algılar
-    if (sourceLang && sourceLang.toUpperCase() !== 'AUTO' && sourceLang !== '') {
-      params.append('source_lang', sourceLang.toUpperCase());
-    }
-
-    const response = await fetch(DEEPL_API_URL, {
+    const response = await fetch(deeplUrl, {
       method: 'POST',
       headers: {
         'Authorization': `DeepL-Auth-Key ${DEEPL_API_KEY}`,

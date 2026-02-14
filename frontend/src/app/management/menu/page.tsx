@@ -148,16 +148,14 @@ export default function MenuPage() {
       if (savedSettings) {
         const settingsData = JSON.parse(savedSettings);
         if (settingsData.language?.supportedLanguages && Array.isArray(settingsData.language.supportedLanguages)) {
-          // Türkçe'yi çıkar çünkü orijinal dil
-          return settingsData.language.supportedLanguages.filter((lang: string) => lang !== 'tr');
+          const supported = settingsData.language.supportedLanguages.filter((lang: string) => lang !== 'tr');
+          if (supported.length > 0) return supported;
         }
       }
     } catch (error) {
       console.error('Settings yüklenirken hata:', error);
     }
-
-    // Varsayılan diller (Türkçe hariç)
-    return ['en', 'de', 'fr', 'es', 'it', 'ru', 'ar', 'zh'];
+    return ['de', 'en', 'ru'];
   };
 
   // Otomatik çeviri yap

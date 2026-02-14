@@ -29,19 +29,16 @@ export default function MenuAddDebugPage() {
         if (savedSettings) {
           const settingsData = JSON.parse(savedSettings);
           if (settingsData.language?.supportedLanguages && Array.isArray(settingsData.language.supportedLanguages)) {
-            // Türkçe'yi de dahil et
             setSelectedLanguages(settingsData.language.supportedLanguages);
           } else {
-            // Varsayılan diller
-            setSelectedLanguages(['tr', 'en', 'de', 'fr']);
+            setSelectedLanguages(['tr', 'de', 'en', 'ru']);
           }
         } else {
-          // Varsayılan diller
-          setSelectedLanguages(['tr', 'en', 'de', 'fr']);
+          setSelectedLanguages(['tr', 'de', 'en', 'ru']);
         }
       } catch (error) {
         console.error('Settings yüklenirken hata:', error);
-        setSelectedLanguages(['tr', 'en', 'de', 'fr']);
+        setSelectedLanguages(['tr', 'de', 'en', 'ru']);
       }
     };
 

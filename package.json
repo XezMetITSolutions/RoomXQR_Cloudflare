@@ -24,7 +24,8 @@
     "type-check:backend": "cd backend && npm run type-check",
     "type-check:frontend": "cd frontend && npm run type-check",
     "db:deploy": "cd backend && npm run db:deploy",
-    "db:seed": "cd backend && npm run db:seed"
+    "db:seed": "cd backend && npm run db:seed",
+    "translate-ui": "node scripts/translate-ui-with-deepl.js"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

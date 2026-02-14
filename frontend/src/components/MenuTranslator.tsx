@@ -37,13 +37,9 @@ const getSupportedLanguagesForTranslation = (): SupportedLanguage[] => {
       console.log('MenuTranslator - supportedLanguages isArray:', Array.isArray(settingsData.language?.supportedLanguages));
       
       if (settingsData.language?.supportedLanguages && Array.isArray(settingsData.language.supportedLanguages)) {
-        // Türkçe'yi çıkar çünkü orijinal dil
         const supported = settingsData.language.supportedLanguages
           .filter((lang: string) => lang !== 'tr') as SupportedLanguage[];
-        
-        console.log('MenuTranslator - Settings\'ten alınan diller (Türkçe hariç):', supported);
-        console.log('MenuTranslator - Filtrelenmiş dil sayısı:', supported.length);
-        return supported;
+        if (supported.length > 0) return supported;
       } else {
         console.warn('MenuTranslator - supportedLanguages bulunamadı veya array değil:', {
           language: settingsData.language,
@@ -60,9 +56,8 @@ const getSupportedLanguagesForTranslation = (): SupportedLanguage[] => {
     console.error('MenuTranslator - Settings yüklenirken hata:', error);
   }
   
-  // Eğer settings yoksa, varsayılan dilleri kullan (Türkçe hariç)
-  console.log('MenuTranslator - Settings bulunamadı, varsayılan diller kullanılıyor:', ['en', 'de', 'fr', 'es', 'it', 'ru', 'ar', 'zh']);
-  return ['en', 'de', 'fr', 'es', 'it', 'ru', 'ar', 'zh'];
+  // Varsayılan: otel önceliği dört dil (Türkçe orijinal hariç) → de, en, ru; diğer diller ayarlardan eklenebilir
+  return ['de', 'en', 'ru'];
 };
 
 export function MenuTranslator({ menuItem, onTranslated, className = '' }: MenuTranslatorProps) {

@@ -12,15 +12,19 @@ export interface Translations {
   [key: string]: string;
 }
 
-// Dil tanımları
+// Müşteriye sunulan diller: sadece Türkçe, Almanca, İngilizce, Rusça (DeepL ile; karışmasın)
+export const CUSTOMER_LANGUAGES = ['tr', 'de', 'en', 'ru'] as const;
+export type CustomerLanguageCode = typeof CUSTOMER_LANGUAGES[number];
+
+// Dil tanımları (müşteri seçenekleri önce)
 export const languages: Language[] = [
   { code: 'tr', name: 'Türkçe', flag: '🇹🇷', nativeName: 'Türkçe' },
-  { code: 'en', name: 'English', flag: '🇺🇸', nativeName: 'English' },
   { code: 'de', name: 'Deutsch', flag: '🇩🇪', nativeName: 'Deutsch' },
+  { code: 'en', name: 'English', flag: '🇺🇸', nativeName: 'English' },
+  { code: 'ru', name: 'Русский', flag: '🇷🇺', nativeName: 'Русский' },
   { code: 'fr', name: 'Français', flag: '🇫🇷', nativeName: 'Français' },
   { code: 'es', name: 'Español', flag: '🇪🇸', nativeName: 'Español' },
   { code: 'it', name: 'Italiano', flag: '🇮🇹', nativeName: 'Italiano' },
-  { code: 'ru', name: 'Русский', flag: '🇷🇺', nativeName: 'Русский' },
   { code: 'ar', name: 'العربية', flag: '🇸🇦', nativeName: 'العربية' },
   { code: 'zh', name: '中文', flag: '🇨🇳', nativeName: '中文' },
 ];
@@ -2847,24 +2851,28 @@ export const translations: Record<string, Translations> = {
   },
 };
 
+// public/locales/{tr,de,en,ru}.json yüklendiğinde burada tutulur (DeepL script çıktısı)
+export type LoadedTranslations = Record<string, Record<string, string>>;
+
 interface LanguageStore {
   currentLanguage: string;
+  loadedTranslations: LoadedTranslations | null;
   setLanguage: (language: string) => void;
+  setLoadedTranslations: (lang: string, data: Record<string, string>) => void;
   getTranslation: (key: string) => string;
   getCurrentLanguage: () => Language;
   getSupportedLanguages: () => Language[];
 }
 
-// Settings'ten desteklenen dilleri al
+// Settings'ten desteklenen dilleri al. Varsayılan: otel önceliği tr, de, en, ru (tam çeviri); diğer diller de seçilebilir.
 const getSupportedLanguagesFromSettings = (): string[] => {
-  if (typeof window === 'undefined') return ['tr', 'en', 'de', 'fr'];
+  if (typeof window === 'undefined') return [...CUSTOMER_LANGUAGES];
 
   try {
     const savedSettings = localStorage.getItem('hotel-settings');
     if (savedSettings) {
       const settingsData = JSON.parse(savedSettings);
       if (settingsData.language?.supportedLanguages && Array.isArray(settingsData.language.supportedLanguages)) {
-        // En az bir dil olmalı
         if (settingsData.language.supportedLanguages.length > 0) {
           return settingsData.language.supportedLanguages;
         }
@@ -2874,8 +2882,7 @@ const getSupportedLanguagesFromSettings = (): string[] => {
     console.warn('Settings yüklenirken hata:', error);
   }
 
-  // Varsayılan diller
-  return ['tr', 'en', 'de', 'fr'];
+  return [...CUSTOMER_LANGUAGES];
 };
 
 // Settings'ten varsayılan dili al
@@ -2901,13 +2908,25 @@ export const useLanguageStore = create<LanguageStore>()(
   persist(
     (set, get) => ({
       currentLanguage: typeof window !== 'undefined' ? getDefaultLanguageFromSettings() : 'tr',
+      loadedTranslations: null,
 
       setLanguage: (language: string) => {
         set({ currentLanguage: language });
       },
 
+      setLoadedTranslations: (lang: string, data: Record<string, string>) => {
+        set((state) => ({
+          loadedTranslations: {
+            ...(state.loadedTranslations || {}),
+            [lang]: data,
+          },
+        }));
+      },
+
       getTranslation: (key: string) => {
-        const { currentLanguage } = get();
+        const { currentLanguage, loadedTranslations } = get();
+        const loaded = loadedTranslations?.[currentLanguage]?.[key];
+        if (loaded !== undefined && loaded !== null) return loaded;
         const langTranslations = translations[currentLanguage];
         return langTranslations?.[key] || key;
       },
@@ -2925,7 +2944,8 @@ export const useLanguageStore = create<LanguageStore>()(
     }),
     {
       name: 'language-store',
-      skipHydration: false, // Hydration'ı etkinleştir
+      skipHydration: false,
+      partialize: (state) => ({ currentLanguage: state.currentLanguage }),
     }
   )
 );
