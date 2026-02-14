@@ -21,7 +21,7 @@ export default function DebugGuestPage() {
             const tenant = typeof window !== 'undefined' ? window.location.hostname.split('.')[0] : 'demo';
             const slug = tenant && tenant !== 'www' && tenant !== 'roomxqr' ? tenant : 'demo';
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com'}/api/rooms`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr.onrender.com'}/api/rooms`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'x-tenant': slug
@@ -222,8 +222,8 @@ export default function DebugGuestPage() {
                         {results.length === 0 && <p className="text-gray-600 italic">Henüz bir işlem yapılmadı...</p>}
                         {results.map(log => (
                             <div key={log.id} className={`p-3 rounded border-l-4 ${log.type === 'error' ? 'bg-red-900/20 border-red-500' :
-                                    log.type === 'success' ? 'bg-green-900/20 border-green-500' :
-                                        'bg-blue-900/20 border-blue-500'
+                                log.type === 'success' ? 'bg-green-900/20 border-green-500' :
+                                    'bg-blue-900/20 border-blue-500'
                                 }`}>
                                 <div className="flex justify-between items-start mb-2">
                                     <span className="font-bold text-gray-300">[{log.timestamp}] {log.message}</span>
