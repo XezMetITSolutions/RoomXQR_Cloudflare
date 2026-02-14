@@ -24,13 +24,16 @@ import {
   VolumeX,
   Zap,
   Bell,
-  X
+  X,
+  Utensils
 } from 'lucide-react';
+import { Order } from '@/types';
 
 export default function ReceptionPanel() {
   const { user, token, isLoading: authLoading } = useAuth();
   const [currentLanguage, setCurrentLanguage] = useState<Language>('tr');
   const [requests, setRequests] = useState<GuestRequest[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [rooms, setRooms] = useState<RoomStatus[]>([]);
   const [filter, setFilter] = useState<'all' | 'urgent' | 'pending' | 'in_progress'>('all');
   const [selectedFloor, setSelectedFloor] = useState<number | 'all'>('all');
@@ -167,7 +170,18 @@ export default function ReceptionPanel() {
         ApiService.getGuestRequests(token || undefined),
         token ? ApiService.getStatistics(token) : Promise.resolve({ totalRequests: 0, pendingRequests: 0, completedToday: 0, averageResponseTime: 0 }),
         ApiService.getRooms(token || undefined),
+        // Fetch orders
+        fetch(`/api/orders`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'x-tenant': typeof window !== 'undefined' ? window.location.hostname.split('.')[0] : 'demo',
+          }
+        }).then(res => res.ok ? res.json() : [])
       ]);
+
+      const safeOrdersData = Array.isArray(ordersData) ? ordersData : [];
+      setOrders(safeOrdersData);
 
 
       if (!Array.isArray(requestsData)) {
@@ -230,7 +244,9 @@ export default function ReceptionPanel() {
       setStatistics(statsData);
       setRooms(safeRoomsData);
 
-      // Yeni talepleri kontrol et
+      // Yeni istek kontrolü - ses bildirimi için 
+      // (yemek siparişleri hariç FAKAT hazır olan yemek siparişleri dahil edilmeli mi? Şimdilik sadece yeni talepler)
+
       const newCount = requestsData.filter(r =>
         new Date(r.createdAt).getTime() > Date.now() - 300000 // Son 5 dakika
       ).length;
@@ -635,6 +651,43 @@ export default function ReceptionPanel() {
     }
   };
 
+  // Hazır siparişleri filtrele
+  const readyOrders = orders.filter(o => o.status === 'READY' || o.status === 'ready');
+
+  const handleOrderDelivery = async (orderId: string) => {
+    try {
+      if (!confirm('Bu siparişin odaya teslim edildiğini onaylıyor musunuz?')) return;
+
+      const tenantSlug = typeof window !== 'undefined' ? window.location.hostname.split('.')[0] : 'demo';
+      await fetch(`/api/orders/${orderId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'x-tenant': tenantSlug
+        },
+        body: JSON.stringify({ status: 'DELIVERED' })
+      });
+
+      // Update local state
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'delivered' } : o));
+
+      addNotification({
+        type: 'success',
+        title: 'Teslim Edildi',
+        message: 'Sipariş başarıyla teslim edildi olarak işaretlendi',
+      });
+
+    } catch (error) {
+      console.error('Sipariş güncellenemedi', error);
+      addNotification({
+        type: 'error',
+        title: 'Hata',
+        message: 'İşlem sırasında bir hata oluştu',
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
       {/* Header */}
@@ -757,7 +810,46 @@ export default function ReceptionPanel() {
         </>
       )}
 
-      {/* Tüm Odalar Grid */}
+      {/* Hazır Siparişler Bölümü */}
+      {readyOrders.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg shadow-sm mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-green-800 flex items-center gap-2">
+                <Utensils className="w-6 h-6" />
+                Mutfakta Hazır Bekleyen Siparişler ({readyOrders.length})
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {readyOrders.map(order => (
+                <div key={order.id} className="bg-white p-4 rounded-lg shadow border border-green-100">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="font-bold text-lg bg-green-100 text-green-800 px-2 py-0.5 rounded">
+                      Oda {String(order.roomId).replace(/^room-/, '')}
+                    </span>
+                    <span className="text-xs text-gray-500 font-mono">
+                      {new Date(order.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                  <ul className="text-sm text-gray-600 mb-3 space-y-1">
+                    {order.items?.map((item: any, idx: number) => (
+                      <li key={idx}>- {item.quantity}x {item.menuItem?.name || item.name || 'Ürün'}</li>
+                    ))}
+                  </ul>
+                  <button
+                    onClick={() => handleOrderDelivery(order.id)}
+                    className="w-full py-2 bg-green-600 hover:bg-green-700 text-white rounded font-medium text-sm flex items-center justify-center gap-2 transition-colors"
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    Teslim Et
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
