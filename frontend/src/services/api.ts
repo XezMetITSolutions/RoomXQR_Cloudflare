@@ -232,7 +232,8 @@ export class ApiService {
       });
 
       if (!response.ok) throw new Error(`Failed to fetch rooms: ${response.status}`);
-      return await response.json();
+      const data = await response.json();
+      return Array.isArray(data) ? data : (data.rooms && Array.isArray(data.rooms) ? data.rooms : []);
     } catch (error) {
       console.error('Error fetching rooms:', error);
 
