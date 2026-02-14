@@ -1476,7 +1476,8 @@ app.get('/api/rooms', tenantMiddleware, async (req: Request, res: Response) => {
             id: true,
             firstName: true,
             lastName: true,
-            checkIn: true
+            checkIn: true,
+            checkOut: true
           }
         }
       },

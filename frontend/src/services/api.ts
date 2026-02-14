@@ -297,7 +297,22 @@ export class ApiService {
 
       if (!response.ok) throw new Error(`Failed to fetch rooms: ${response.status}`);
       const data = await response.json();
-      return Array.isArray(data) ? data : (data.rooms && Array.isArray(data.rooms) ? data.rooms : []);
+      const rawRooms = Array.isArray(data) ? data : (data.rooms && Array.isArray(data.rooms) ? data.rooms : []);
+
+      // Backend formatını RoomStatus formatına dönüştür
+      return rawRooms.map((room: any) => {
+        const activeGuest = Array.isArray(room.guests) && room.guests.length > 0 ? room.guests[0] : null;
+        return {
+          roomId: room.qrCode || `room-${room.number}`,
+          number: room.number,
+          floor: room.floor,
+          type: room.type,
+          status: room.isOccupied ? 'occupied' : 'vacant',
+          guestName: activeGuest ? `${activeGuest.firstName} ${activeGuest.lastName}`.trim() : undefined,
+          checkIn: activeGuest?.checkIn || undefined,
+          checkOut: activeGuest?.checkOut || undefined,
+        } as RoomStatus;
+      });
     } catch (error) {
       console.error('Error fetching rooms:', error);
 
