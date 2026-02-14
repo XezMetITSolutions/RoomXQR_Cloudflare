@@ -1884,6 +1884,11 @@ app.get('/api/requests', tenantMiddleware, async (req: Request, res: Response) =
 app.post('/api/requests', tenantMiddleware, async (req: Request, res: Response) => {
   try {
     const tenantId = getTenantId(req)
+    const hotel = await prisma.hotel.findFirst({ where: { tenantId } })
+    if (!hotel) {
+      res.status(404).json({ message: 'Hotel not found for this tenant' })
+      return
+    }
     const { roomId, type, priority, status, description, notes } = req.body
     const normalizedType = (type || 'GENERAL').toString().toUpperCase()
     const normalizedPriority = (priority || 'MEDIUM').toString().toUpperCase()
@@ -1898,7 +1903,7 @@ app.post('/api/requests', tenantMiddleware, async (req: Request, res: Response) 
         description: description || '',
         notes,
         tenantId,
-        hotelId: 'default-hotel-id'
+        hotelId: hotel.id
       }
     })
 
