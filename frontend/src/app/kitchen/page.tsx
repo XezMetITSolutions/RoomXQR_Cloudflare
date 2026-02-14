@@ -74,7 +74,14 @@ export default function KitchenPanel() {
         const response = await fetch('/api/menu');
         if (response.ok) {
           const data = await response.json();
-          const formattedMenu = data.menu.map((item: any) => ({
+          let menuItems = data.menu;
+
+          if (!Array.isArray(menuItems)) {
+            console.warn('Menu data is not an array:', data);
+            menuItems = [];
+          }
+
+          const formattedMenu = menuItems.map((item: any) => ({
             id: item.id,
             name: item.name,
             description: item.description || '',
