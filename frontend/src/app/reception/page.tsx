@@ -59,6 +59,11 @@ export default function ReceptionPanel() {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [lastRequestCount, setLastRequestCount] = useState(0);
 
+  const [lastRequestCount, setLastRequestCount] = useState(0);
+
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr.onrender.com';
+  const API_BASE_URL = /\/api\/?$/.test(API_BASE) ? API_BASE.replace(/\/$/, '') : `${API_BASE.replace(/\/$/, '')}/api`;
+
   // Bildirim sistemi - sadece yeni istekler için
   const { addNotification, notifications, unreadCount, markAsRead } = useNotifications();
 
@@ -166,12 +171,12 @@ export default function ReceptionPanel() {
 
     try {
       setIsLoading(true);
-      const [requestsData, statsData, roomsData] = await Promise.all([
+      const [requestsData, statsData, roomsData, ordersData] = await Promise.all([
         ApiService.getGuestRequests(token || undefined),
         token ? ApiService.getStatistics(token) : Promise.resolve({ totalRequests: 0, pendingRequests: 0, completedToday: 0, averageResponseTime: 0 }),
         ApiService.getRooms(token || undefined),
         // Fetch orders
-        fetch(`/api/orders`, {
+        fetch(`${API_BASE_URL}/orders`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
@@ -179,9 +184,6 @@ export default function ReceptionPanel() {
           }
         }).then(res => res.ok ? res.json() : [])
       ]);
-
-      const safeOrdersData = Array.isArray(ordersData) ? ordersData : [];
-      setOrders(safeOrdersData);
 
 
       if (!Array.isArray(requestsData)) {
@@ -193,6 +195,9 @@ export default function ReceptionPanel() {
         console.warn('Rooms data is not an array:', roomsData);
       }
       const safeRoomsData = Array.isArray(roomsData) ? roomsData : [];
+
+      const safeOrdersData = Array.isArray(ordersData) ? ordersData : [];
+      setOrders(safeOrdersData);
 
       console.log('Resepsiyon paneli - Yüklenen istekler:', safeRequestsData);
       console.log('Resepsiyon paneli - LocalStorage içeriği:', localStorage.getItem('roomapp_requests'));
@@ -659,7 +664,7 @@ export default function ReceptionPanel() {
       if (!confirm('Bu siparişin odaya teslim edildiğini onaylıyor musunuz?')) return;
 
       const tenantSlug = typeof window !== 'undefined' ? window.location.hostname.split('.')[0] : 'demo';
-      await fetch(`/api/orders/${orderId}`, {
+      await fetch(`${API_BASE_URL}/orders/${orderId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
