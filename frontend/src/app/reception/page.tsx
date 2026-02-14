@@ -40,6 +40,8 @@ export default function ReceptionPanel() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRequest, setSelectedRequest] = useState<GuestRequest | null>(null);
   const [selectedRoomInfo, setSelectedRoomInfo] = useState<GuestRequest | null>(null);
+  // Delivery Modal State
+  const [selectedDeliveryOrder, setSelectedDeliveryOrder] = useState<Order | null>(null);
   const [customMessage, setCustomMessage] = useState('');
   const [checkoutConfirm, setCheckoutConfirm] = useState<{ roomId: string, pendingPayments: any[], totalAmount: number } | null>(null);
   const [showPaymentDetails, setShowPaymentDetails] = useState(false);
@@ -659,10 +661,26 @@ export default function ReceptionPanel() {
   // Hazır siparişleri filtrele
   const readyOrders = orders.filter(o => o.status === 'READY' || o.status === 'ready');
 
-  const handleOrderDelivery = async (orderId: string) => {
-    try {
-      if (!confirm('Bu siparişin odaya teslim edildiğini onaylıyor musunuz?')) return;
+  const getPaymentLabel = (method?: string) => {
+    switch (method) {
+      case 'cash': return 'Nakit';
+      case 'pos': return 'Kredi Kartı / POS';
+      case 'room_charge': return 'Odaya Yaz';
+      case 'online': return 'Online Ödeme';
+      case 'card': return 'Kredi Kartı';
+      default: return 'Belirtilmedi';
+    }
+  };
 
+  const handleOrderDelivery = (order: Order) => {
+    setSelectedDeliveryOrder(order);
+  };
+
+  const confirmOrderDelivery = async () => {
+    if (!selectedDeliveryOrder) return;
+    const orderId = selectedDeliveryOrder.id;
+
+    try {
       const tenantSlug = typeof window !== 'undefined' ? window.location.hostname.split('.')[0] : 'demo';
       await fetch(`${API_BASE_URL}/orders/${orderId}`, {
         method: 'PUT',
@@ -690,6 +708,8 @@ export default function ReceptionPanel() {
         title: 'Hata',
         message: 'İşlem sırasında bir hata oluştu',
       });
+    } finally {
+      setSelectedDeliveryOrder(null);
     }
   };
 
@@ -841,8 +861,16 @@ export default function ReceptionPanel() {
                       <li key={idx}>- {item.quantity}x {item.menuItem?.name || item.name || 'Ürün'}</li>
                     ))}
                   </ul>
+                  <div className="mb-3">
+                    <span className={`text-xs font-semibold px-2 py-1 rounded ${order.paymentMethod === 'room_charge' ? 'bg-blue-100 text-blue-800' :
+                        order.paymentMethod === 'online' ? 'bg-purple-100 text-purple-800' :
+                          'bg-yellow-100 text-yellow-800' // Nakit/POS
+                      }`}>
+                      {getPaymentLabel(order.paymentMethod)}
+                    </span>
+                  </div>
                   <button
-                    onClick={() => handleOrderDelivery(order.id)}
+                    onClick={() => handleOrderDelivery(order)}
                     className="w-full py-2 bg-green-600 hover:bg-green-700 text-white rounded font-medium text-sm flex items-center justify-center gap-2 transition-colors"
                   >
                     <CheckCircle className="w-4 h-4" />
@@ -1506,6 +1534,73 @@ export default function ReceptionPanel() {
                 setCheckInRoomId('');
               }}
             />
+          </div>
+        </div>
+      )}
+      {/* Delivery Confirmation Modal */}
+      {selectedDeliveryOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100">
+            <div className="bg-gradient-to-r from-green-600 to-green-500 p-4">
+              <div className="flex justify-between items-center text-white">
+                <h3 className="text-lg font-bold flex items-center gap-2">
+                  <CheckCircle className="w-6 h-6" />
+                  Sipariş Teslim Onayı
+                </h3>
+                <button
+                  onClick={() => setSelectedDeliveryOrder(null)}
+                  className="p-1 hover:bg-white/20 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6">
+              <div className="text-center mb-6">
+                <div className="inline-block p-3 bg-green-50 rounded-full mb-3">
+                  <Utensils className="w-8 h-8 text-green-600" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-900">
+                  Oda {String(selectedDeliveryOrder.roomId).replace(/^room-/, '')}
+                </h4>
+                <p className="text-gray-500 text-sm mt-1">Sipariş teslimatı için onay gerekiyor</p>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-4 mb-6 space-y-3">
+                <div className="flex justify-between items-center border-b border-gray-200 pb-2">
+                  <span className="text-gray-600">Ödeme Yöntemi:</span>
+                  <span className={`font-bold ${selectedDeliveryOrder.paymentMethod === 'room_charge' ? 'text-blue-600' :
+                      selectedDeliveryOrder.paymentMethod === 'online' ? 'text-purple-600' :
+                        'text-yellow-600'
+                    }`}>
+                    {getPaymentLabel(selectedDeliveryOrder.paymentMethod)}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Toplam Tutar:</span>
+                  <span className="font-bold text-lg text-gray-900">
+                    {selectedDeliveryOrder.totalAmount?.toFixed(2)}₺
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setSelectedDeliveryOrder(null)}
+                  className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
+                >
+                  İptal
+                </button>
+                <button
+                  onClick={confirmOrderDelivery}
+                  className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  Teslim Edildi
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
