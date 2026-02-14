@@ -28,7 +28,7 @@ export default function QRKodPage() {
   const [roomToSelect, setRoomToSelect] = useState<string | null>(null);
   const [guestNameInput, setGuestNameInput] = useState('');
   const [guestTokenLoading, setGuestTokenLoading] = useState(false);
-  const [guestCheckIn, setGuestCheckIn] = useState(new Date().toISOString().split('T')[0]);
+  const [guestCheckIn, setGuestCheckIn] = useState('');
   const [guestCheckOut, setGuestCheckOut] = useState('');
 
   // Otomatik oda oluşturma fonksiyonu
@@ -154,6 +154,9 @@ export default function QRKodPage() {
           console.error('Kaydedilmiş özel odalar yüklenirken hata:', error);
         }
       }
+
+      // Set initial date only on client side to prevent hydration error
+      setGuestCheckIn(new Date().toISOString().split('T')[0]);
     }
   }, []);
 
@@ -1101,7 +1104,9 @@ export default function QRKodPage() {
                         return h && h !== 'www' && h !== 'roomxqr' && h !== 'roomxqr-backend' ? h : 'demo';
                       })();
 
-                      const r = await fetch('/api/guest-token', {
+                      // Use absolute path for API to avoid 404 on subdomains
+                      const apiPath = `${window.location.origin}/api/guest-token`;
+                      const r = await fetch(apiPath, {
                         method: 'POST',
                         headers: {
                           'Content-Type': 'application/json',
