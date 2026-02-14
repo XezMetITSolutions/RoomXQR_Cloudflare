@@ -162,9 +162,9 @@ export default function ReceptionPanel() {
     try {
       setIsLoading(true);
       const [requestsData, statsData, roomsData] = await Promise.all([
-        token ? ApiService.getGuestRequests(token) : Promise.resolve([]),
-        token ? ApiService.getStatistics(token) : Promise.resolve({ totalRequests: 0, pendingRequests: 0, completedToday: 0, averageResponseTime: 0 }),
-        token ? ApiService.getRooms(token) : Promise.resolve([]),
+        ApiService.getGuestRequests(token || undefined),
+        ApiService.getStatistics(token || undefined),
+        ApiService.getRooms(token || undefined),
       ]);
 
 

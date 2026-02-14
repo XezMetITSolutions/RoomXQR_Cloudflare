@@ -2,11 +2,11 @@
 import { useState, useEffect } from 'react';
 
 // API kökünü normalle: ENV kök domain ise '/api' ekle, zaten '/api' içeriyorsa olduğu gibi kullan
-const RAW_API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.roomxr.com';
+const RAW_API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr.onrender.com';
 const API_BASE_URL = /\/api\/?$/.test(RAW_API_BASE)
   ? RAW_API_BASE.replace(/\/$/, '')
   : `${RAW_API_BASE.replace(/\/$/, '')}/api`;
-const USE_MOCK_DATA = true; // Geçici olarak mock data kullan
+const USE_MOCK_DATA = false; // Gerçek backend'i kullan
 
 export interface GuestRequest {
   id: string;
@@ -301,16 +301,19 @@ export class ApiService {
 
       // Backend formatını RoomStatus formatına dönüştür
       return rawRooms.map((room: any) => {
+        // Backend'den gelen veri zaten formatlanmış olabilir (server.ts'deki /api/rooms gibi)
+        // Eğer formatlanmışsa bu alanlar doğrudan gelecektir.
         const activeGuest = Array.isArray(room.guests) && room.guests.length > 0 ? room.guests[0] : null;
+
         return {
-          roomId: room.qrCode || `room-${room.number}`,
+          roomId: room.roomId || room.id || room.qrCode || `room-${room.number}`,
           number: room.number,
           floor: room.floor,
           type: room.type,
-          status: room.isOccupied ? 'occupied' : 'vacant',
-          guestName: activeGuest ? `${activeGuest.firstName} ${activeGuest.lastName}`.trim() : undefined,
-          checkIn: activeGuest?.checkIn || undefined,
-          checkOut: activeGuest?.checkOut || undefined,
+          status: room.status || (room.isOccupied ? 'occupied' : 'vacant'),
+          guestName: room.guestName || (activeGuest ? `${activeGuest.firstName} ${activeGuest.lastName}`.trim() : undefined),
+          checkIn: room.checkIn || activeGuest?.checkIn || undefined,
+          checkOut: room.checkOut || activeGuest?.checkOut || undefined,
         } as RoomStatus;
       });
     } catch (error) {

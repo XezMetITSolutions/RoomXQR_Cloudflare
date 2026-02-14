@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.roomxr.com'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr.onrender.com'
 
 class ApiClient {
   private baseURL: string
@@ -15,7 +15,7 @@ class ApiClient {
     }
 
     const response = await fetch(url, { ...options, headers })
-    
+
     if (!response.ok) {
       throw new Error(`API Error: ${response.status}`)
     }
