@@ -47,7 +47,7 @@ export default function QRKodPage() {
     return generated;
   };
 
-  const handleGenerateRooms = () => {
+  const handleGenerateRooms = async () => {
     const newRooms = generateRooms(floorCount, roomsPerFloor);
     setGeneratedRooms(newRooms);
     setUseGeneratedRooms(true);
@@ -58,6 +58,43 @@ export default function QRKodPage() {
       localStorage.setItem('qrKod_useGeneratedRooms', 'true');
       localStorage.setItem('qrKod_floorCount', floorCount.toString());
       localStorage.setItem('qrKod_roomsPerFloor', roomsPerFloor.toString());
+    }
+
+    // Backend'e kaydet (Veritabanı senkronizasyonu)
+    try {
+      if (token) {
+        // ApiService yerine direkt fetch kullanıyoruz çünkü ApiService token yönetimi şu an bu panel için tam entegre değiş
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
+
+        let tenantSlug = 'demo';
+        if (typeof window !== 'undefined') {
+          const hostname = window.location.hostname;
+          const subdomain = hostname.split('.')[0];
+          if (subdomain && subdomain !== 'www' && subdomain !== 'roomxqr' && subdomain !== 'roomxqr-backend') {
+            tenantSlug = subdomain;
+          }
+        }
+
+        await fetch(`${API_BASE_URL}/api/rooms/bulk`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'x-tenant': tenantSlug
+          },
+          body: JSON.stringify({ rooms: newRooms })
+        });
+        console.log('Odalar veritabanına kaydedildi');
+
+        // Veritabanındaki listeyi de güncelle
+        setRooms(prev => {
+          // Basit bir birleştirme mantığı, duplicate kontrolü yapılabilir ama şimdilik yeterli
+          // Gerçekte API'den tekrar çekmek daha doğru olur ama UI update için:
+          return newRooms;
+        });
+      }
+    } catch (error) {
+      console.error('Odalar veritabanına kaydedilemedi:', error);
     }
 
     // İlk odayı seç

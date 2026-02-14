@@ -1925,6 +1925,94 @@ app.patch('/api/requests/:id', async (req: Request, res: Response) => {
   }
 })
 
+
+// Bulk create rooms
+app.post('/api/rooms/bulk', tenantMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = getTenantId(req)
+    const { rooms } = req.body
+
+    if (!Array.isArray(rooms) || rooms.length === 0) {
+      res.status(400).json({ message: 'Rooms array is required and cannot be empty' }); return;
+    }
+
+    // Get hotel ID from tenant
+    const hotel = await prisma.hotel.findFirst({
+      where: { tenantId }
+    })
+
+    if (!hotel) {
+      res.status(404).json({ message: 'Hotel not found for this tenant' }); return;
+    }
+
+    const results = {
+      created: 0,
+      updated: 0,
+      failed: 0,
+      errors: [] as string[]
+    }
+
+    for (const room of rooms) {
+      try {
+        const roomNumber = room.number
+        const roomId = room.id || `room-${roomNumber}`
+
+        // Check if room exists
+        const existingRoom = await prisma.room.findFirst({
+          where: {
+            OR: [
+              { id: roomId },
+              { number: roomNumber, tenantId }
+            ]
+          }
+        })
+
+        if (existingRoom) {
+          // Update existing room
+          await prisma.room.update({
+            where: { id: existingRoom.id },
+            data: {
+              floor: parseInt(room.floor) || 1,
+              isActive: true
+            }
+          })
+          results.updated++
+        } else {
+          // Create new room
+          await prisma.room.create({
+            data: {
+              id: roomId,
+              number: roomNumber,
+              floor: parseInt(room.floor) || 1,
+              type: 'DOUBLE', // Default type
+              capacity: 2,
+              qrCode: `room-${roomNumber}`,
+              isOccupied: false,
+              isActive: true,
+              tenantId,
+              hotelId: hotel.id
+            }
+          })
+          results.created++
+        }
+      } catch (error: any) {
+        console.error(`Error processing room ${room.number}:`, error)
+        results.failed++
+        results.errors.push(`Room ${room.number}: ${error.message}`)
+      }
+    }
+
+    res.json({
+      message: 'Rooms processed successfully',
+      results
+    }); return;
+  } catch (error) {
+    console.error('Bulk room creation error:', error)
+    res.status(500).json({ message: 'Database error' })
+    return;
+  }
+})
+
 // Rooms endpoint to get all rooms with status
 app.get('/api/rooms', tenantMiddleware, async (req: Request, res: Response) => {
   try {

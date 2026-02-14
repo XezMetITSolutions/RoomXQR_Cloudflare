@@ -252,6 +252,25 @@ export class ApiService {
     }
   }
 
+  // Toplu oda oluştur
+  static async createRooms(rooms: any[]): Promise<any> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/rooms/bulk`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ rooms }),
+      });
+
+      if (!response.ok) throw new Error('Failed to create rooms');
+      return await response.json();
+    } catch (error) {
+      console.error('Error creating rooms:', error);
+      throw error;
+    }
+  }
+
   // WebSocket bağlantısı (gerçek zamanlı güncellemeler için)
   static connectWebSocket(roomId: string, onMessage: (data: any) => void): WebSocket | null {
     try {
