@@ -76,23 +76,44 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
     }
   }, [initialLang, setLanguage]);
 
-  // Oda bağlı token doğrula: ?g= sadece bu oda için isim döner; link 102 yapılırsa isim görünmez
+  // Sabit QR (Permanent Key) Mantığı: Token yoksa bile odadaki aktif misafiri bul
   useEffect(() => {
+    const numericRoomId = roomId.replace(/^room-/, '');
+    const tenant = typeof window !== 'undefined' ? (() => {
+      const h = window.location.hostname.split('.')[0];
+      return h && h !== 'www' && h !== 'roomxqr' && h !== 'roomxqr-backend' ? h : 'demo';
+    })() : 'demo';
+
     if (guestToken) {
-      const numericRoomId = roomId.replace(/^room-/, '');
-      const tenant = typeof window !== 'undefined' ? (() => {
-        const h = window.location.hostname.split('.')[0];
-        return h && h !== 'www' && h !== 'roomxqr' && h !== 'roomxqr-backend' ? h : 'demo';
-      })() : 'demo';
+      // 1. Durum: Tokenlı Link (Dinamik/Güvenli)
       fetch(`/api/guest-token/verify?token=${encodeURIComponent(guestToken)}&roomId=${encodeURIComponent(numericRoomId)}`, {
         headers: { 'x-tenant': tenant },
       })
         .then((r) => r.json())
-        .then((d) => { if (d && d.guestName) setResolvedGuestName(d.guestName); setGuestNameResolved(true); })
+        .then((d) => {
+          if (d && d.guestName) setResolvedGuestName(d.guestName);
+          setGuestNameResolved(true);
+        })
         .catch(() => setGuestNameResolved(true));
     } else {
-      setResolvedGuestName(guestName);
-      setGuestNameResolved(true);
+      // 2. Durum: Sabit QR (Permanent Key) - Odadaki aktif misafiri sorgula
+      fetch(`/api/rooms/${numericRoomId}/active-guest`, {
+        headers: { 'x-tenant': tenant },
+      })
+        .then((r) => r.json())
+        .then((d) => {
+          if (d && d.guestName) {
+            setResolvedGuestName(d.guestName);
+          } else if (guestName) {
+            // Legacy/Fallback desteği
+            setResolvedGuestName(guestName);
+          }
+          setGuestNameResolved(true);
+        })
+        .catch(() => {
+          if (guestName) setResolvedGuestName(guestName);
+          setGuestNameResolved(true);
+        });
     }
   }, [guestToken, roomId, guestName]);
 

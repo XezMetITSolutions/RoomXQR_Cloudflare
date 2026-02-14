@@ -28,6 +28,8 @@ export default function QRKodPage() {
   const [roomToSelect, setRoomToSelect] = useState<string | null>(null);
   const [guestNameInput, setGuestNameInput] = useState('');
   const [guestTokenLoading, setGuestTokenLoading] = useState(false);
+  const [guestCheckIn, setGuestCheckIn] = useState(new Date().toISOString().split('T')[0]);
+  const [guestCheckOut, setGuestCheckOut] = useState('');
 
   // Otomatik oda oluşturma fonksiyonu
   const generateRooms = (floors: number, roomsPerFloor: number) => {
@@ -152,7 +154,8 @@ export default function QRKodPage() {
           const formattedRooms = roomsData.map((room: any) => ({
             number: room.number || room.id,
             floor: room.floor || Math.floor(parseInt(room.number || '0') / 100) || 1,
-            id: room.id
+            id: room.id,
+            guests: room.guests || []
           })).sort((a: any, b: any) => {
             const numA = parseInt(a.number) || 0;
             const numB = parseInt(b.number) || 0;
@@ -624,8 +627,8 @@ export default function QRKodPage() {
                     setCustomRoom('');
                   }}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${!showCustomInput
-                      ? 'bg-hotel-gold text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ? 'bg-hotel-gold text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                     }`}
                 >
                   {useGeneratedRooms ? getTranslation('qr.generated_rooms') : getTranslation('qr.database_rooms')} ({isLoading ? '...' : (useGeneratedRooms ? generatedRooms.length : rooms.length)})
@@ -633,8 +636,8 @@ export default function QRKodPage() {
                 <button
                   onClick={() => setShowCustomInput(true)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${showCustomInput
-                      ? 'bg-hotel-gold text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    ? 'bg-hotel-gold text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                     }`}
                 >
                   {getTranslation('qr.custom_rooms')} ({customRooms.length})
@@ -710,8 +713,8 @@ export default function QRKodPage() {
                           <div
                             key={room.number}
                             className={`p-3 rounded-lg border-2 transition-all cursor-pointer ${selectedCustomRoom === room.number
-                                ? 'border-hotel-gold bg-hotel-gold text-white'
-                                : 'border-gray-200 hover:border-hotel-gold hover:bg-gray-50'
+                              ? 'border-hotel-gold bg-hotel-gold text-white'
+                              : 'border-gray-200 hover:border-hotel-gold hover:bg-gray-50'
                               }`}
                             onClick={() => {
                               setSelectedCustomRoom(room.number);
@@ -739,35 +742,77 @@ export default function QRKodPage() {
               )}
             </div>
 
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <h4 className="text-sm font-semibold text-amber-900 mb-1">
+                📌 Sabit Oda Anahtarı Modeli Aktif
+              </h4>
+              <p className="text-xs text-amber-700 leading-relaxed">
+                Bu QR kod odadaki misafir değişse bile <b>hiç değişmez</b>. Odanın içine bir kez asmanız yeterlidir.
+                Sistem odaya giriş yapan misafiri otomatik tanır.
+              </p>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                QR Kod URL
+                Kalıcı QR Kod URL (Oda İçin)
               </label>
               <div className="flex items-center space-x-2">
                 <input
                   type="text"
-                  value={qrCodeURL || `${baseURL}/guest/${showCustomInput ? selectedCustomRoom : selectedRoom}`}
+                  value={`${baseURL}/guest/${showCustomInput ? (selectedCustomRoom || '...') : (selectedRoom || '...')}`}
                   readOnly
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-sm"
+                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-sm font-mono"
                 />
                 <button
-                  onClick={handleCopy}
+                  onClick={() => {
+                    const url = `${baseURL}/guest/${showCustomInput ? selectedCustomRoom : selectedRoom}`;
+                    navigator.clipboard.writeText(url);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
                   className="px-4 py-3 bg-hotel-gold text-white rounded-lg hover:bg-hotel-navy transition-colors flex items-center space-x-2"
                 >
-                  {copied ? (
-                    <>
-                      <Check className="w-4 h-4" />
-                      <span className="text-sm font-medium">{getTranslation('qr.copied')}</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-4 h-4" />
-                      <span className="text-sm font-medium">{getTranslation('qr.copy')}</span>
-                    </>
-                  )}
+                  {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  <span className="text-sm font-medium">Kopyala</span>
                 </button>
               </div>
             </div>
+
+            {qrCodeURL && qrCodeURL.includes('?g=') && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 animate-in fade-in slide-in-from-top-2">
+                <label className="block text-sm font-bold text-blue-900 mb-2">
+                  ✨ Misafire Özel Link (WhatsApp/Dijital)
+                </label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={qrCodeURL}
+                    readOnly
+                    className="flex-1 px-3 py-2 border border-blue-300 rounded-lg bg-white text-xs font-mono text-blue-700"
+                  />
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(qrCodeURL);
+                      alert('Özel link kopyalandı! Bu linki misafire dijital olarak gönderebilirsiniz.');
+                    }}
+                    className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    title="Özel Linki Kopyala"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setQRCodeURL('')}
+                    className="p-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300"
+                    title="Görünümü Temizle"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                <p className="text-[10px] text-blue-600 mt-2">
+                  * Bu link sadece bu misafire özeldir ve check-out tarihinde iptal olur.
+                </p>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <button
@@ -828,10 +873,13 @@ export default function QRKodPage() {
 
             <div className="text-center">
               <h3 className="text-lg font-bold text-gray-900 mb-2">
-                Oda {showCustomInput ? customRoom : selectedRoom}
+                Oda {showCustomInput ? (selectedCustomRoom || '...') : (selectedRoom || '...')}
               </h3>
+              <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mb-3">
+                Kalıcı QR (Sabit Link)
+              </div>
               <p className="text-sm text-gray-600">
-                QR kodu tarayarak misafirleriniz menüye erişebilir
+                Bu kodu odadaki masaya veya duvara asabilirsiniz.
               </p>
             </div>
           </div>
@@ -906,13 +954,20 @@ export default function QRKodPage() {
                     <button
                       key={room.number}
                       onClick={() => {
+                        const activeGuest = room.guests && room.guests.length > 0 ? room.guests[0] : null;
                         setRoomToSelect(room.number);
-                        setGuestNameInput('');
+                        if (activeGuest) {
+                          setGuestNameInput(`${activeGuest.firstName} ${activeGuest.lastName}`);
+                          setGuestCheckIn(activeGuest.checkIn ? new Date(activeGuest.checkIn).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
+                        } else {
+                          setGuestNameInput('');
+                          setGuestCheckIn(new Date().toISOString().split('T')[0]);
+                        }
                         setShowGuestModal(true);
                       }}
                       className={`p-2 rounded-lg border-2 transition-all text-xs ${selectedRoom === room.number
-                          ? 'border-hotel-gold bg-hotel-gold text-white'
-                          : 'border-gray-200 hover:border-hotel-gold hover:bg-gray-50'
+                        ? 'border-hotel-gold bg-hotel-gold text-white'
+                        : 'border-gray-200 hover:border-hotel-gold hover:bg-gray-50'
                         }`}
                     >
                       <div className="font-bold">{room.number}</div>
@@ -935,50 +990,95 @@ export default function QRKodPage() {
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <p className="text-sm text-gray-600 mb-3">Misafir adı soyadı girin. QR kod açıldığında &quot;Hoş geldiniz Sayın ...&quot; olarak görünecektir. Link oda ile eşleşir; başka oda yapılırsa isim görünmez. Boş bırakabilirsiniz.</p>
-            <input
-              type="text"
-              value={guestNameInput}
-              onChange={(e) => setGuestNameInput(e.target.value)}
-              placeholder="Örn: Leyla Yılmaz"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hotel-gold focus:border-transparent mb-4"
-              onKeyDown={async (e) => {
-                if (e.key !== 'Enter') return;
-                setSelectedRoom(roomToSelect);
-                const name = guestNameInput.trim();
-                if (!name) { setQRCodeURL(`${baseURL}/guest/${roomToSelect}`); setShowGuestModal(false); setRoomToSelect(null); return; }
-                setGuestTokenLoading(true);
-                try {
-                  const tenant = (() => { const h = window.location.hostname.split('.')[0]; return h && h !== 'www' && h !== 'roomxqr' && h !== 'roomxqr-backend' ? h : 'demo'; })();
-                  const r = await fetch('/api/guest-token', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-tenant': tenant }, body: JSON.stringify({ roomId: roomToSelect, guestName: name }) });
-                  const d = await r.json().catch(() => ({}));
-                  if (d.token) setQRCodeURL(`${baseURL}/guest/${roomToSelect}?g=${encodeURIComponent(d.token)}`);
-                  else setQRCodeURL(`${baseURL}/guest/${roomToSelect}?guest=${encodeURIComponent(name)}`);
-                } catch { setQRCodeURL(`${baseURL}/guest/${roomToSelect}?guest=${encodeURIComponent(name)}`); }
-                setGuestTokenLoading(false); setShowGuestModal(false); setRoomToSelect(null);
-              }}
-            />
+            <p className="text-sm text-gray-600 mb-3">Misafir bilgilerini doğrulayın. Bu bilgiler QR kodun içine (token bazlı) gömülecektir. Yeni bir misafir geldiğinde yeni tarihli bir QR kod üretmeniz önerilir.</p>
+
+            <div className="space-y-4 mb-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Misafir Ad Soyad</label>
+                <input
+                  type="text"
+                  value={guestNameInput}
+                  onChange={(e) => setGuestNameInput(e.target.value)}
+                  placeholder="Örn: Leyla Yılmaz"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hotel-gold focus:border-transparent"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Check-in Tarihi</label>
+                  <input
+                    type="date"
+                    value={guestCheckIn}
+                    onChange={(e) => setGuestCheckIn(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hotel-gold focus:border-transparent text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Check-out (Opsiyonel)</label>
+                  <input
+                    type="date"
+                    value={guestCheckOut}
+                    onChange={(e) => setGuestCheckOut(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hotel-gold focus:border-transparent text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
             <div className="flex gap-2 justify-end">
-              <button onClick={() => { setShowGuestModal(false); setRoomToSelect(null); }} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50" disabled={guestTokenLoading}>İptal</button>
+              <button
+                onClick={() => { setShowGuestModal(false); setRoomToSelect(null); }}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                disabled={guestTokenLoading}
+              >
+                İptal
+              </button>
               <button
                 onClick={async () => {
                   setSelectedRoom(roomToSelect);
                   const name = guestNameInput.trim();
-                  if (!name) { setQRCodeURL(`${baseURL}/guest/${roomToSelect}`); setShowGuestModal(false); setRoomToSelect(null); return; }
+                  if (!name) {
+                    setQRCodeURL(`${baseURL}/guest/${roomToSelect}`);
+                    setShowGuestModal(false);
+                    setRoomToSelect(null);
+                    return;
+                  }
                   setGuestTokenLoading(true);
                   try {
-                    const tenant = (() => { const h = window.location.hostname.split('.')[0]; return h && h !== 'www' && h !== 'roomxqr' && h !== 'roomxqr-backend' ? h : 'demo'; })();
-                    const r = await fetch('/api/guest-token', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-tenant': tenant }, body: JSON.stringify({ roomId: roomToSelect, guestName: name }) });
+                    const tenant = (() => {
+                      const h = window.location.hostname.split('.')[0];
+                      return h && h !== 'www' && h !== 'roomxqr' && h !== 'roomxqr-backend' ? h : 'demo';
+                    })();
+
+                    const r = await fetch('/api/guest-token', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json', 'x-tenant': tenant },
+                      body: JSON.stringify({
+                        roomId: roomToSelect,
+                        guestName: name,
+                        checkIn: guestCheckIn,
+                        checkOut: guestCheckOut || null
+                      })
+                    });
+
                     const d = await r.json().catch(() => ({}));
-                    if (d.token) setQRCodeURL(`${baseURL}/guest/${roomToSelect}?g=${encodeURIComponent(d.token)}`);
-                    else setQRCodeURL(`${baseURL}/guest/${roomToSelect}?guest=${encodeURIComponent(name)}`);
-                  } catch { setQRCodeURL(`${baseURL}/guest/${roomToSelect}?guest=${encodeURIComponent(name)}`); }
-                  setGuestTokenLoading(false); setShowGuestModal(false); setRoomToSelect(null);
+                    if (d.token) {
+                      setQRCodeURL(`${baseURL}/guest/${roomToSelect}?g=${encodeURIComponent(d.token)}`);
+                    } else {
+                      setQRCodeURL(`${baseURL}/guest/${roomToSelect}?guest=${encodeURIComponent(name)}`);
+                    }
+                  } catch (err) {
+                    setQRCodeURL(`${baseURL}/guest/${roomToSelect}?guest=${encodeURIComponent(name)}`);
+                  }
+                  setGuestTokenLoading(false);
+                  setShowGuestModal(false);
+                  setRoomToSelect(null);
                 }}
-                className="px-4 py-2 bg-hotel-gold text-white rounded-lg hover:bg-hotel-navy disabled:opacity-50"
+                className="px-4 py-2 bg-hotel-gold text-white rounded-lg hover:bg-hotel-navy disabled:opacity-50 font-medium"
                 disabled={guestTokenLoading}
               >
-                {guestTokenLoading ? '...' : 'Tamam'}
+                {guestTokenLoading ? '...' : 'QR Kod Oluştur'}
               </button>
             </div>
           </div>

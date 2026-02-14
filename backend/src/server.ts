@@ -1106,15 +1106,25 @@ app.delete('/api/users/:id', tenantMiddleware, authMiddleware, requirePermission
 const GUEST_LINK_SECRET = process.env.JWT_SECRET || process.env.GUEST_LINK_SECRET || 'guest-link-secret'
 const GUEST_LINK_EXPIRY = '90d'
 
-app.post('/api/guest-token', tenantMiddleware, (req: Request, res: Response) => {
+app.post('/api/guest-token', tenantMiddleware, async (req: Request, res: Response) => {
   try {
     const tenantId = getTenantId(req)
-    const { roomId, guestName } = req.body || {}
+    const { roomId, guestName, checkIn, checkOut } = req.body || {}
     if (!roomId || !guestName || typeof roomId !== 'string' || typeof guestName !== 'string') {
       res.status(400).json({ message: 'roomId ve guestName gerekli.' })
       return
     }
-    const payload = { roomId: String(roomId).trim(), guestName: String(guestName).trim(), tenantId, aud: 'guest-link' }
+
+    // Token içeriği: oda numarası, misafir adı, tarih bilgileri ve tenant bağlayıcıları
+    const payload = {
+      roomId: String(roomId).trim(),
+      guestName: String(guestName).trim(),
+      checkIn: checkIn || new Date().toISOString(),
+      checkOut: checkOut || null,
+      tenantId,
+      aud: 'guest-link'
+    }
+
     const token = jwt.sign(payload, GUEST_LINK_SECRET, { expiresIn: GUEST_LINK_EXPIRY })
     res.json({ token })
   } catch (e) {
@@ -1122,23 +1132,119 @@ app.post('/api/guest-token', tenantMiddleware, (req: Request, res: Response) => 
   }
 })
 
-app.get('/api/guest-token/verify', tenantMiddleware, (req: Request, res: Response) => {
+app.get('/api/guest-token/verify', tenantMiddleware, async (req: Request, res: Response) => {
   try {
     const tenantId = getTenantId(req)
     const token = (req.query.token as string) || ''
     const roomId = (req.query.roomId as string) || ''
+
     if (!token || !roomId) {
       res.json({})
       return
     }
-    const decoded = jwt.verify(token, GUEST_LINK_SECRET) as { roomId?: string; guestName?: string; tenantId?: string; aud?: string }
-    if (decoded.aud !== 'guest-link' || decoded.tenantId !== tenantId || decoded.roomId !== String(roomId).trim()) {
+
+    const decoded = jwt.verify(token, GUEST_LINK_SECRET) as {
+      roomId?: string;
+      guestName?: string;
+      tenantId?: string;
+      aud?: string;
+      checkIn?: string;
+      checkOut?: string;
+    }
+
+    const normalizedRoomId = String(roomId).trim()
+
+    // 1. Token oda numarası ve tenant ile eşleşiyor mu? (Güvenlik kontrolü)
+    if (decoded.aud !== 'guest-link' ||
+      decoded.tenantId !== tenantId ||
+      String(decoded.roomId).trim() !== normalizedRoomId) {
+      console.log('❌ Token verification failed: Room or Tenant mismatch')
       res.json({})
       return
     }
-    res.json({ guestName: decoded.guestName || '' })
-  } catch {
+
+    // 2. Yeni check-in kontrolü: Eğer odada daha yeni bir misafir girişi varsa eski token geçersizdir
+    if (decoded.checkIn) {
+      const latestGuest = await prisma.guest.findFirst({
+        where: {
+          OR: [
+            { roomId: normalizedRoomId },
+            { room: { number: normalizedRoomId } }
+          ],
+          tenantId,
+          isActive: true
+        },
+        orderBy: { checkIn: 'desc' }
+      })
+
+      if (latestGuest) {
+        const tokenCheckIn = new Date(decoded.checkIn).getTime()
+        const dbCheckIn = new Date(latestGuest.checkIn).getTime()
+
+        // Veritabanındaki en son check-in tarihi, tokendakinden daha yeniyse (10sn opsiyon payı ile)
+        // Bu sayede eski misafirin linki otomatik olarak "hatalı/geçersiz" hale gelir.
+        if (dbCheckIn > tokenCheckIn + 10000) {
+          console.log('⚠️ Token expired due to new check-in')
+          res.json({ message: 'expired_token' })
+          return
+        }
+      }
+    }
+
+    // 3. Check-out tarih kontrolü (opsiyonel)
+    if (decoded.checkOut) {
+      const checkOutDate = new Date(decoded.checkOut)
+      if (new Date() > checkOutDate) {
+        res.json({ message: 'expired_token' })
+        return
+      }
+    }
+
+    res.json({
+      guestName: decoded.guestName || '',
+      checkIn: decoded.checkIn,
+      checkOut: decoded.checkOut
+    })
+  } catch (error) {
     res.json({})
+  }
+})
+
+// SABİT QR (Permanent Key) için: Odadaki aktif misafiri getir
+app.get('/api/rooms/:number/active-guest', tenantMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = getTenantId(req)
+    const { number } = req.params
+
+    const guest = await prisma.guest.findFirst({
+      where: {
+        tenantId,
+        isActive: true,
+        room: {
+          number: String(number)
+        }
+      },
+      orderBy: { checkIn: 'desc' },
+      select: {
+        firstName: true,
+        lastName: true,
+        checkIn: true,
+        checkOut: true
+      }
+    })
+
+    if (!guest) {
+      res.json({ guestName: null })
+      return
+    }
+
+    res.json({
+      guestName: `${guest.firstName} ${guest.lastName}`,
+      checkIn: guest.checkIn,
+      checkOut: guest.checkOut
+    })
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' })
   }
 })
 
