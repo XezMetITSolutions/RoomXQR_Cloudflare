@@ -16,13 +16,30 @@ import {
   Loader2,
   X,
   Pencil,
+  Eye,
+  Receipt,
+  Clock,
+  CheckCircle2
 } from 'lucide-react';
+
+interface OrderItem {
+  id: string;
+  quantity: number;
+  price: number;
+  menuItem: {
+    name: string;
+    price: number;
+  };
+}
 
 interface OrderRow {
   id: string;
-  roomId: string;
+  roomId: string; // or number?
   totalAmount: number;
   status: string;
+  createdAt: string;
+  items: OrderItem[];
+  paymentMethod?: string;
 }
 
 export default function OdaYonetimiPage() {
@@ -38,6 +55,7 @@ export default function OdaYonetimiPage() {
   const [submitting, setSubmitting] = useState(false);
   const [selectedFloorTab, setSelectedFloorTab] = useState<number | 'all'>('all');
   const [editGuestModal, setEditGuestModal] = useState<{ roomId: string; number: string; guestName: string; checkIn: string; checkOut: string } | null>(null);
+  const [selectedRoom, setSelectedRoom] = useState<RoomStatus | null>(null);
 
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr.onrender.com';
   const API_BASE_URL = /\/api\/?$/.test(API_BASE) ? API_BASE.replace(/\/$/, '') : `${API_BASE.replace(/\/$/, '')}/api`;
@@ -89,6 +107,9 @@ export default function OdaYonetimiPage() {
           roomId: o.roomId || '',
           totalAmount: parseFloat(o.totalAmount) || 0,
           status: (o.status || '').toUpperCase(),
+          createdAt: o.createdAt,
+          items: o.items || [],
+          paymentMethod: o.paymentMethod
         })));
       } else {
         setOrders([]);
@@ -224,7 +245,11 @@ export default function OdaYonetimiPage() {
                       return (
                         <div
                           key={num}
-                          className="flex flex-wrap items-center gap-4 px-4 py-3 hover:bg-gray-50/50"
+                          className="flex flex-wrap items-center gap-4 px-4 py-3 hover:bg-gray-50/50 cursor-pointer"
+                          onClick={() => {
+                            // Sadece butona basılmadığında çalışsın
+                            setSelectedRoom(room);
+                          }}
                         >
                           <div className="w-14 flex-shrink-0">
                             <span className="inline-flex items-center justify-center w-12 h-12 rounded-xl font-bold text-lg bg-amber-50 text-amber-800 border border-amber-200">
@@ -254,7 +279,16 @@ export default function OdaYonetimiPage() {
                               </span>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2 flex-shrink-0">
+                          <div className="flex items-center gap-2 flex-shrink-0" onClick={e => e.stopPropagation()}>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedRoom(room)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-sm font-medium"
+                              title="Detaylar"
+                            >
+                              <Eye className="w-4 h-4" />
+                              Detay
+                            </button>
                             <button
                               type="button"
                               onClick={() => setEditGuestModal({
@@ -268,7 +302,6 @@ export default function OdaYonetimiPage() {
                               title="Düzenle"
                             >
                               <Pencil className="w-4 h-4" />
-                              Düzenle
                             </button>
                             {occupied ? (
                               <button
@@ -304,6 +337,26 @@ export default function OdaYonetimiPage() {
             );
           })}
         </div>
+      )}
+
+      {/* Room Detail Modal */}
+      {selectedRoom && (
+        <RoomDetailModal
+          room={selectedRoom}
+          orders={orders}
+          onClose={() => setSelectedRoom(null)}
+          onEdit={() => {
+            const num = normRoomNum(selectedRoom.number ?? selectedRoom.roomId);
+            setEditGuestModal({
+              roomId: selectedRoom.roomId,
+              number: num,
+              guestName: selectedRoom.guestName || '',
+              checkIn: selectedRoom.checkIn ? new Date(selectedRoom.checkIn).toISOString().slice(0, 10) : '',
+              checkOut: selectedRoom.checkOut ? new Date(selectedRoom.checkOut).toISOString().slice(0, 10) : '',
+            });
+            setSelectedRoom(null); // Close details to open edit
+          }}
+        />
       )}
 
       {/* Check-in modal */}
@@ -387,6 +440,186 @@ export default function OdaYonetimiPage() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function RoomDetailModal({
+  room,
+  orders,
+  onClose,
+  onEdit
+}: {
+  room: RoomStatus;
+  orders: OrderRow[];
+  onClose: () => void;
+  onEdit: () => void;
+}) {
+  const norm = (id: string) => (id || '').replace(/^room-/, '');
+  const roomNum = norm(room.number ?? room.roomId);
+
+  // Filter orders for this room
+  const roomOrders = orders.filter(o => (norm(o.roomId) || o.roomId) === roomNum);
+
+  // Unpaid orders (Debt)
+  const unpaidOrders = roomOrders.filter(o => o.status === 'DELIVERED' || o.status === 'READY');
+  const totalDebt = unpaidOrders.reduce((sum, o) => sum + o.totalAmount, 0);
+
+  // Sort all orders by date desc
+  const historyOrders = [...roomOrders].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto relative">
+        <div className="flex items-center justify-between mb-6 sticky top-0 bg-white z-10 border-b border-gray-100 pb-4">
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center justify-center w-12 h-12 rounded-xl font-bold text-xl bg-amber-50 text-amber-800 border border-amber-200">
+              {roomNum}
+            </span>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">Oda Detayları</h3>
+              <p className="text-sm text-gray-500">{room.floor}. Kat</p>
+            </div>
+          </div>
+          <button type="button" onClick={onClose} className="p-2 rounded-lg hover:bg-gray-100">
+            <X className="w-6 h-6 text-gray-500" />
+          </button>
+        </div>
+
+        {/* Guest Info */}
+        <div className="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-100">
+          <div className="flex items-start justify-between">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+              <div>
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Misafir</span>
+                <div className="flex items-center gap-2 mt-1">
+                  <User className="w-5 h-5 text-gray-400" />
+                  <span className="font-medium text-gray-900">{room.guestName || '—'}</span>
+                </div>
+              </div>
+              <div>
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Konaklama</span>
+                <div className="flex items-center gap-2 mt-1">
+                  <Calendar className="w-5 h-5 text-gray-400" />
+                  <span className="text-gray-900 text-sm">
+                    {room.checkIn ? new Date(room.checkIn).toLocaleDateString('tr-TR') : '—'}
+                    {' '}<span className="text-gray-400">→</span>{' '}
+                    {room.checkOut ? new Date(room.checkOut).toLocaleDateString('tr-TR') : '—'}
+                  </span>
+                </div>
+              </div>
+            </div>
+            {room.guestName && (
+              <button
+                onClick={onEdit}
+                className="ml-4 p-2 text-amber-600 hover:bg-amber-50 rounded-lg flex-shrink-0"
+                title="Misafir Bilgilerini Düzenle"
+              >
+                <Pencil className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Unpaid Balance Section */}
+        <div className="mb-6">
+          <h4 className="text-sm font-bold text-gray-900 flex items-center gap-2 mb-3">
+            <Wallet className="w-4 h-4 text-amber-600" />
+            Ödenecek Tutar (Açık Siparişler)
+          </h4>
+
+          {unpaidOrders.length > 0 ? (
+            <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
+              <div className="bg-amber-50 px-4 py-3 border-b border-amber-100 flex justify-between items-center">
+                <span className="text-sm font-medium text-amber-900">Toplam Borç</span>
+                <span className="text-lg font-bold text-amber-700">₺{totalDebt.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span>
+              </div>
+              <div className="divide-y divide-gray-100 max-h-56 overflow-y-auto">
+                {unpaidOrders.map(order => (
+                  <div key={order.id} className="p-3 text-sm hover:bg-gray-50">
+                    <div className="flex justify-between text-gray-900 font-medium mb-1">
+                      <span className="flex items-center gap-2">
+                        <Clock className="w-3 h-3 text-gray-400" />
+                        {new Date(order.createdAt).toLocaleString('tr-TR')}
+                      </span>
+                      <span>₺{order.totalAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span>
+                    </div>
+                    <div className="px-2 py-1.5 bg-gray-50 rounded-lg">
+                      <ul className="text-gray-600 text-xs space-y-1">
+                        {order.items.map(item => (
+                          <li key={item.id} className="flex justify-between">
+                            <span>{item.quantity}x {item.menuItem?.name || 'Ürün'}</span>
+                            <span>₺{(item.price * item.quantity).toLocaleString('tr-TR')}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="text-sm text-gray-500 bg-gray-50 p-3 rounded-lg flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-green-500" />
+              Ödenecek açık sipariş bulunmuyor.
+            </div>
+          )}
+        </div>
+
+        {/* Order History */}
+        <div>
+          <h4 className="text-sm font-bold text-gray-900 flex items-center gap-2 mb-3">
+            <Receipt className="w-4 h-4 text-gray-600" />
+            Sipariş Geçmişi
+          </h4>
+
+          {historyOrders.length > 0 ? (
+            <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
+              <div className="max-h-60 overflow-y-auto divide-y divide-gray-100">
+                {historyOrders.map(order => (
+                  <div key={order.id} className="p-3 text-sm hover:bg-gray-50">
+                    <div className="flex justify-between items-start mb-1">
+                      <div className="flex items-center gap-2">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase
+                          ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-700' :
+                            order.status === 'CANCELLED' ? 'bg-red-100 text-red-700' :
+                              'bg-yellow-100 text-yellow-700'}`}>
+                          {order.status}
+                        </span>
+                        <span className="text-gray-500 text-xs flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {new Date(order.createdAt).toLocaleString('tr-TR')}
+                        </span>
+                      </div>
+                      <span className="font-bold text-gray-900">₺{order.totalAmount.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span>
+                    </div>
+                    <ul className="pl-2 border-l-2 border-gray-100 ml-1 space-y-1 mt-2">
+                      {order.items.map(item => (
+                        <li key={item.id} className="flex justify-between text-xs text-gray-600">
+                          <span>{item.quantity}x {item.menuItem?.name}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-6 text-gray-500 bg-gray-50 rounded-xl text-sm">
+              Sipariş geçmişi bulunamadı.
+            </div>
+          )}
+        </div>
+
+        <div className="mt-6 flex justify-end">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors"
+          >
+            Kapat
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
