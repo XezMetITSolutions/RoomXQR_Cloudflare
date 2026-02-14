@@ -1,116 +1,26 @@
 'use client';
 
-<<<<<<< Updated upstream
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     FaQrcode, FaUtensils, FaShoppingCart, FaBell, FaMagic,
     FaChartLine, FaUsers, FaClock, FaCheckCircle, FaRocket,
     FaShieldAlt, FaStar, FaPhone, FaWhatsapp, FaChevronDown,
-    FaBrain, FaGlobe, FaDesktop,
-    FaArrowRight, FaCogs, FaCreditCard, FaLayerGroup,
-    FaConciergeBell, FaWallet, FaHeadset
+    FaBrain, FaCamera, FaGem, FaFire, FaHeart, FaGlobe, FaDesktop,
+    FaArrowRight, FaCogs, FaCreditCard, FaLayerGroup
 } from 'react-icons/fa';
-import { useLanguageStore } from '@/store/languageStore';
+import useLanguageStore from '@/store/useLanguageStore';
 import LandingLanguageToggle from '@/components/LandingLanguageToggle';
 import DemoRequestModal from '@/components/DemoRequestModal';
-=======
-import PremiumLanding from '@/components/PremiumLanding';
->>>>>>> Stashed changes
 
-interface MarketingCardProps {
-    key?: number | string;
-    feature: any;
-    t: (key: string) => string;
-    index: number;
-    onLearnMore: () => void;
-}
-
-const MarketingCard = ({ feature, t, index, onLearnMore }: MarketingCardProps) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-    const hasLongDesc = feature.desc && feature.desc.length > 100;
-
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05, duration: 0.4 }}
-            viewport={{ once: true, margin: "-50px" }}
-            className="group relative bg-white p-6 md:p-8 rounded-[2.5rem] shadow-lg hover:shadow-xl transition-all border border-slate-50 flex flex-col h-full"
-        >
-            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 
-                ${feature.color === 'blue' ? 'bg-blue-50 text-blue-600' :
-                    feature.color === 'emerald' ? 'bg-emerald-50 text-emerald-600' :
-                        feature.color === 'purple' ? 'bg-purple-50 text-purple-600' :
-                            feature.color === 'orange' ? 'bg-orange-50 text-orange-600' : 'bg-pink-50 text-pink-600'
-                } transition-transform group-hover:scale-110 shadow-sm`}>
-                <feature.icon className="text-2xl" />
-            </div>
-            <div className="mb-4">
-                <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full 
-                    ${feature.color === 'blue' ? 'bg-blue-100 text-blue-700' :
-                        feature.color === 'emerald' ? 'bg-emerald-100 text-emerald-700' :
-                            feature.color === 'purple' ? 'bg-purple-100 text-purple-700' :
-                                feature.color === 'orange' ? 'bg-orange-100 text-orange-700' : 'bg-pink-100 text-pink-700'
-                    }`}>
-                    {feature.badge}
-                </span>
-            </div>
-            <h3 className={`text-lg md:text-xl font-black mb-4 tracking-tight leading-tight 
-                ${feature.color === 'blue' ? 'text-blue-600' :
-                    feature.color === 'emerald' ? 'text-emerald-600' :
-                        feature.color === 'purple' ? 'text-purple-600' :
-                            feature.color === 'orange' ? 'text-orange-600' : 'text-pink-600'
-                }`}>
-                {feature.title}
-            </h3>
-            <div className="flex-grow overflow-hidden relative">
-                <p className={`text-slate-500 font-medium text-sm md:text-base leading-relaxed mb-4 ${!isExpanded && hasLongDesc ? 'line-clamp-3' : ''}`}>
-                    {feature.desc}
-                </p>
-                {hasLongDesc && (
-                    <button
-                        onClick={() => setIsExpanded(!isExpanded)}
-                        className={`text-xs font-black uppercase tracking-widest transition-colors mb-6 flex items-center gap-1
-                            ${feature.color === 'blue' ? 'text-blue-500 hover:text-blue-700' :
-                                feature.color === 'emerald' ? 'text-emerald-500 hover:text-emerald-700' :
-                                    feature.color === 'purple' ? 'text-purple-500 hover:text-purple-700' :
-                                        feature.color === 'orange' ? 'text-orange-500 hover:text-orange-700' : 'text-pink-500 hover:text-pink-700'
-                            }`}
-                    >
-                        {isExpanded ? t('showLess') : t('showMore')}
-                        <FaChevronDown className={`transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
-                    </button>
-                )}
-            </div>
-            <button
-                onClick={onLearnMore}
-                className="flex items-center gap-2 font-black text-xs md:text-sm text-slate-800 group-hover:gap-4 transition-all uppercase tracking-widest mt-auto border-t border-slate-50 pt-6"
-            >
-                {t('learnMore')} <FaArrowRight className={`
-                    ${feature.color === 'blue' ? 'text-blue-500' :
-                        feature.color === 'emerald' ? 'text-emerald-500' :
-                            feature.color === 'purple' ? 'text-purple-500' :
-                                feature.color === 'orange' ? 'text-orange-500' : 'text-pink-500'
-                    }`} />
-            </button>
-        </motion.div>
-    );
-};
-
-export default function HomePage() {
-<<<<<<< Updated upstream
-    const { getTranslation: t, currentLanguage } = useLanguageStore();
+export default function HomeContent() {
+    const { t } = useLanguageStore();
 
     useEffect(() => {
-        const title = t('metaTitle');
-        if (title && title !== 'metaTitle') {
-            document.title = `${title} - RoomXQR`;
-        } else {
-            document.title = "RoomXQR - Hotel Digital Transformation";
-        }
-    }, [t, currentLanguage]);
+        document.title = t('metaTitle');
+    }, [t]);
 
     const [openFAQ, setOpenFAQ] = useState<number | null>(null);
     const [showDemoModal, setShowDemoModal] = useState(false);
@@ -120,12 +30,12 @@ export default function HomePage() {
     };
 
     const faqs = [
-        { icon: FaQrcode, color: "blue-500", question: t('faq1Q'), answer: t('faq1A') },
-        { icon: FaMagic, color: "purple-500", question: t('faq2Q'), answer: t('faq2A') },
-        { icon: FaGlobe, color: "emerald-500", question: t('faq3Q'), answer: t('faq3A') },
-        { icon: FaCreditCard, color: "orange-500", question: t('faq4Q'), answer: t('faq4A') },
-        { icon: FaCogs, color: "blue-500", question: t('faq5Q'), answer: t('faq5A') },
-        { icon: FaStar, color: "yellow-500", question: t('faq6Q'), answer: t('faq6A') },
+        { icon: FaQrcode, color: "orange-500", question: t('faq1Q'), answer: t('faq1A') },
+        { icon: FaRocket, color: "blue-500", question: t('faq2Q'), answer: t('faq2A') },
+        { icon: FaShieldAlt, color: "green-500", question: t('faq3Q'), answer: t('faq3A') },
+        { icon: FaShoppingCart, color: "purple-500", question: t('faq4Q'), answer: t('faq4A') },
+        { icon: FaPhone, color: "red-500", question: t('faq5Q'), answer: t('faq5A') },
+        { icon: FaClock, color: "yellow-500", question: t('faq6Q'), answer: t('faq6A') },
         { icon: FaUtensils, color: "indigo-500", question: t('faq7Q'), answer: t('faq7A') },
         { icon: FaChartLine, color: "pink-500", question: t('faq8Q'), answer: t('faq8A') },
         { icon: FaStar, color: "yellow-500", question: t('referralFaqQ'), answer: t('referralFaqA') }
@@ -174,34 +84,17 @@ export default function HomePage() {
                         <br /><span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">{t('heroTitle3')}</span>
                     </motion.h1>
 
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ delay: 0.4 }}
-                        className="max-w-4xl mx-auto mb-10 md:mb-12 px-4"
+                        className="text-base md:text-xl mb-10 md:mb-12 text-slate-300 leading-relaxed max-w-3xl mx-auto font-medium px-4"
                     >
-                        <div className="flex flex-wrap justify-center gap-3 md:gap-4 mb-8">
-                            <motion.div
-                                whileHover={{ scale: 1.05 }}
-                                className="bg-blue-500/10 backdrop-blur-md text-blue-400 px-5 md:px-8 py-3 rounded-2xl border border-blue-500/20 text-xs md:text-lg font-black shadow-xl"
-                            >
-                                ⚡ %35 OPERASYONEL HIZ
-                            </motion.div>
-                            <motion.div
-                                whileHover={{ scale: 1.05 }}
-                                className="bg-emerald-500/10 backdrop-blur-md text-emerald-400 px-5 md:px-8 py-3 rounded-2xl border border-emerald-500/20 text-xs md:text-lg font-black shadow-xl"
-                            >
-                                📈 %40 CİRO ARTIŞI
-                            </motion.div>
-                        </div>
-                        <p className="text-lg md:text-2xl text-white font-bold leading-relaxed mb-4">
-                            {t('heroSubtitle1')}
-                        </p>
-                        <p className="text-slate-400 text-sm md:text-xl font-medium leading-relaxed">
-                            {t('heroSubtitle2')}
-                        </p>
-                    </motion.div>
+                        🚀 <span className="text-white font-bold">{t('heroSubtitle1')}</span>
+                        <br className="hidden md:block" />
+                        <span className="text-slate-400 text-sm md:text-lg">{t('heroSubtitle2')}</span>
+                    </motion.p>
 
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -237,7 +130,7 @@ export default function HomePage() {
                 </motion.div>
             </section>
 
-            {/* Premium Features */}
+            {/* Premium Features - Prominent & Compact */}
             <section className="py-16 md:py-24 bg-white">
                 <div className="container mx-auto px-4 max-w-6xl">
                     <div className="text-center mb-12 md:mb-16">
@@ -256,13 +149,13 @@ export default function HomePage() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                         {[
                             { icon: FaQrcode, title: t('qrMenuSystem'), color: "bg-orange-500", desc: t('valPropDigital') },
-                            { icon: FaConciergeBell, title: t('orderManagement'), color: "bg-blue-500", desc: t('valPropSpeed') },
-                            { icon: FaUtensils, title: t('aiTitle'), color: "bg-purple-500", desc: t('valPropSatisfy') },
+                            { icon: FaShoppingCart, title: t('orderManagement'), color: "bg-blue-500", desc: t('valPropSpeed') },
+                            { icon: FaBrain, title: t('aiTitle'), color: "bg-purple-500", desc: t('valPropSatisfy') },
                             { icon: FaChartLine, title: t('detailedReporting'), color: "bg-green-500", desc: t('valPropProfit') },
                             { icon: FaGlobe, title: t('multiLangTitle'), color: "bg-indigo-500", desc: t('valPropTrust') },
-                            { icon: FaBell, title: t('marketingAdsTitle'), color: "bg-yellow-500", desc: t('marketingAdsDesc') },
-                            { icon: FaWallet, title: t('allInOneTitle'), color: "bg-slate-600", desc: t('valPropDigital') },
-                            { icon: FaHeadset, title: t('support247'), color: "bg-red-500", desc: t('valPropTrust') }
+                            { icon: FaBell, title: t('marketingAdsTitle'), color: "bg-yellow-500", desc: t('adIncomeTitle') },
+                            { icon: FaCogs, title: t('allInOneTitle'), color: "bg-slate-600", desc: t('valPropDigital') },
+                            { icon: FaHeart, title: t('support247'), color: "bg-red-500", desc: t('valPropTrust') }
                         ].map((s, i) => (
                             <motion.div
                                 key={i}
@@ -283,7 +176,7 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* Success Stories */}
+            {/* Success Stories Section - Scaled Down */}
             <section className="py-16 md:py-24 bg-slate-50 relative overflow-hidden">
                 <div className="container mx-auto px-4">
                     <div className="max-w-6xl mx-auto rounded-[2.5rem] md:rounded-[4rem] bg-slate-900 overflow-hidden shadow-2xl flex flex-col lg:flex-row border border-white/5 relative">
@@ -308,7 +201,7 @@ export default function HomePage() {
 
                                 <div className="grid grid-cols-2 gap-3 md:gap-4 mb-10 md:mb-12">
                                     {[
-                                        { label: t('valPropSatisfy'), icon: FaStar, color: "text-pink-400" },
+                                        { label: t('valPropSatisfy'), icon: FaHeart, color: "text-pink-400" },
                                         { label: t('valPropProfit'), icon: FaChartLine, color: "text-emerald-400" },
                                         { label: t('valPropStaff'), icon: FaUsers, color: "text-blue-400" },
                                         { label: t('valPropSpeed'), icon: FaRocket, color: "text-orange-400" },
@@ -343,7 +236,7 @@ export default function HomePage() {
                                         { icon: FaChartLine, color: "text-emerald-400", pos: "-bottom-10 -right-10" },
                                         { icon: FaQrcode, color: "text-purple-400", pos: "-top-10 -right-10" },
                                         { icon: FaShieldAlt, color: "text-cyan-400", pos: "-bottom-10 -left-10" },
-                                        { icon: FaBell, color: "text-pink-400", pos: "top-1/2 -right-16 -translate-y-1/2" },
+                                        { icon: FaHeart, color: "text-pink-400", pos: "top-1/2 -right-16 -translate-y-1/2" },
                                         { icon: FaRocket, color: "text-orange-400", pos: "top-1/2 -left-16 -translate-y-1/2" }
                                     ].map((item, i) => (
                                         <motion.div key={i} animate={{ y: [0, -10, 0] }} transition={{ duration: 4, repeat: Infinity, delay: i * 0.7 }} className={`absolute ${item.pos} w-14 h-14 md:w-16 md:h-16 bg-white/10 backdrop-blur-2xl rounded-2xl border border-white/10 flex items-center justify-center text-xl md:text-2xl ${item.color} shadow-2xl`}>
@@ -368,32 +261,72 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* Marketing Grid */}
+            {/* Marketing Grid - Scaled Down & Color Titles */}
             <section className="py-16 md:py-24 bg-white">
                 <div className="container mx-auto px-4">
-                    <div className="text-center mb-16 px-4">
-                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-8 tracking-tight leading-tight">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
                             {t('marketingSectionTitle')}
                         </h2>
-                        <div className="h-1.5 w-32 bg-gradient-to-r from-blue-600 to-indigo-600 mx-auto rounded-full shadow-lg"></div>
+                        <div className="h-1.5 w-20 bg-blue-600 mx-auto rounded-full"></div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {[
                             { icon: FaUtensils, title: t('kitchenStatTitle'), desc: t('kitchenStatDesc'), color: "blue", badge: "Advanced" },
                             { icon: FaCreditCard, title: t('splitPaymentTitle'), desc: t('splitPaymentDesc'), color: "emerald", badge: "Exclusive" },
                             { icon: FaStar, title: t('socialGrowthTitle'), desc: t('socialGrowthDesc'), color: "orange", badge: "Growth" },
                             { icon: FaLayerGroup, title: t('multiBranchTitle'), desc: t('multiBranchDesc'), color: "purple", badge: "Enterprise" },
-                            { icon: FaGlobe, title: t('marketingMultiLangTitle'), desc: t('marketingMultiLangDesc'), color: "blue", badge: "Global" },
-                            { icon: FaRocket, title: t('aiTitle'), desc: t('aiDesc'), color: "pink", badge: "PROFIT BOOST" }
+                            { icon: FaMagic, title: t('aiTitle'), desc: t('aiDesc'), color: "pink", badge: "AI Powered" }
                         ].map((feature, i) => (
-                            <MarketingCard key={i} feature={feature} t={t} index={i} onLearnMore={() => setShowDemoModal(true)} />
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.05, duration: 0.4 }}
+                                viewport={{ once: true, margin: "-50px" }}
+                                className="group relative bg-white p-6 md:p-8 rounded-[2.5rem] shadow-lg hover:shadow-xl transition-all border border-slate-50 flex flex-col h-full"
+                            >
+                                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 
+                                    ${feature.color === 'blue' ? 'bg-blue-50 text-blue-600' :
+                                        feature.color === 'emerald' ? 'bg-emerald-50 text-emerald-600' :
+                                            feature.color === 'purple' ? 'bg-purple-50 text-purple-600' : 'bg-pink-50 text-pink-600'
+                                    } transition-transform group-hover:scale-110 shadow-sm`}>
+                                    <feature.icon className="text-2xl" />
+                                </div>
+                                <div className="mb-4">
+                                    <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full 
+                                        ${feature.color === 'blue' ? 'bg-blue-100 text-blue-700' :
+                                            feature.color === 'emerald' ? 'bg-emerald-100 text-emerald-700' :
+                                                feature.color === 'purple' ? 'bg-purple-100 text-purple-700' : 'bg-pink-100 text-pink-700'
+                                        }`}>
+                                        {feature.badge}
+                                    </span>
+                                </div>
+                                <h3 className={`text-lg md:text-xl font-black mb-4 tracking-tight leading-tight 
+                                    ${feature.color === 'blue' ? 'text-blue-600' :
+                                        feature.color === 'emerald' ? 'text-emerald-600' :
+                                            feature.color === 'purple' ? 'text-purple-600' : 'text-pink-600'
+                                    }`}>
+                                    {feature.title}
+                                </h3>
+                                <p className="text-slate-500 font-medium text-sm md:text-base leading-relaxed mb-8 flex-grow">
+                                    {feature.desc}
+                                </p>
+                                <button className="flex items-center gap-2 font-black text-xs md:text-sm text-slate-800 group-hover:gap-4 transition-all uppercase tracking-widest">
+                                    {t('learnMore')} <FaArrowRight className={`
+                                        ${feature.color === 'blue' ? 'text-blue-500' :
+                                            feature.color === 'emerald' ? 'text-emerald-500' :
+                                                feature.color === 'purple' ? 'text-purple-500' : 'text-pink-500'
+                                        }`} />
+                                </button>
+                            </motion.div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* Management & Control */}
+            {/* Management & Control - Simplified */}
             <section className="py-16 md:py-24 bg-slate-50 overflow-hidden">
                 <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto text-center mb-12 md:mb-16">
@@ -405,7 +338,7 @@ export default function HomePage() {
                         {[
                             { icon: FaCogs, title: t('mgmtMenuUpdate'), color: "bg-blue-600" },
                             { icon: FaMagic, title: t('mgmtStockHide'), color: "bg-emerald-600" },
-                            { icon: FaChartLine, title: t('mgmtCampaignDrive'), color: "bg-orange-600" },
+                            { icon: FaFire, title: t('mgmtCampaignDrive'), color: "bg-orange-600" },
                             { icon: FaBell, title: t('mgmtAnnounceDirect'), color: "bg-purple-600" }
                         ].map((item, i) => (
                             <motion.div
@@ -486,7 +419,7 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* Extra Income */}
+            {/* Extra Income - Compact */}
             <section className="py-16 md:py-24 bg-white overflow-hidden">
                 <div className="container mx-auto px-4">
                     <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-12 md:gap-20">
@@ -509,7 +442,7 @@ export default function HomePage() {
                                     whileHover={{ y: -10 }}
                                     className="aspect-square bg-slate-900 text-white rounded-[2.5rem] flex flex-col items-center justify-center p-6 text-center shadow-xl -mt-8 md:-mt-12 relative z-10"
                                 >
-                                    <div className="w-16 h-16 bg-emerald-500 text-white rounded-[1.5rem] flex items-center justify-center text-3xl mb-4 shadow-xl"><FaStar /></div>
+                                    <div className="w-16 h-16 bg-emerald-500 text-white rounded-[1.5rem] flex items-center justify-center text-3xl mb-4 shadow-xl"><FaGem /></div>
                                     <span className="font-black text-lg leading-tight uppercase tracking-tight">{t('premiumSpaceLabel')}</span>
                                 </motion.div>
                             </div>
@@ -530,38 +463,22 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* Fast Setup / Trust Section */}
-            <section className="py-16 md:py-24 bg-blue-600 relative overflow-hidden">
-                <div className="container mx-auto px-4 max-w-4xl relative z-10">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true, margin: "-50px" }}
-                        className="bg-white rounded-[2.5rem] md:rounded-[3.5rem] p-8 md:p-16 shadow-2xl"
-                    >
-                        <div className="mx-auto max-w-2xl text-center">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-[10px] md:text-xs font-black tracking-widest uppercase mb-6">
-                                <FaRocket />
-                                {t('noChangeTitle')}
-                            </div>
-                            <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight leading-tight">
-                                {t('noChangeSubtitle')}
-                            </h2>
-                            <p className="text-lg md:text-xl text-slate-500 font-medium leading-relaxed mb-10">
-                                {t('noChangeDesc')}
-                            </p>
-                            <button
-                                onClick={() => setShowDemoModal(true)}
-                                className="px-10 py-4 bg-blue-600 text-white rounded-2xl font-black text-lg uppercase tracking-widest shadow-xl transition-all hover:scale-105 active:scale-95 shadow-blue-500/20"
-                            >
-                                {t('noChangeFooter')}
-                            </button>
-                        </div>
-                    </motion.div>
+            {/* Trust Section */}
+            <section className="py-16 md:py-24 bg-slate-50 overflow-hidden">
+                <div className="container mx-auto px-4 max-w-6xl">
+                    <div className="bg-gradient-to-br from-blue-700 to-indigo-900 rounded-[3rem] p-10 md:p-20 text-white text-center relative shadow-2xl">
+                        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+                        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.5 }} className="relative z-10">
+                            <span className="text-blue-200 font-black tracking-[0.3em] text-[10px] md:text-xs uppercase block mb-6">{t('noChangeTitle')}</span>
+                            <h2 className="text-3xl md:text-6xl font-black mb-6 md:mb-8 leading-tight">{t('noChangeSubtitle')}</h2>
+                            <p className="text-lg md:text-2xl text-blue-100/80 mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed">{t('noChangeDesc')}</p>
+                            <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl text-lg md:text-xl font-black italic"><FaRocket className="text-emerald-400" /> "{t('noChangeFooter')}"</div>
+                        </motion.div>
+                    </div>
                 </div>
             </section>
 
-            {/* Consultative Pricing Section */}
+            {/* Pricing Section */}
             <section className="py-24 bg-white overflow-hidden">
                 <div className="container mx-auto px-4 max-w-7xl">
                     <div className="text-center mb-16 px-4">
@@ -577,81 +494,86 @@ export default function HomePage() {
                             {t('pricingTitle')}
                         </h2>
                         <div className="h-1.5 w-24 bg-blue-600 mx-auto rounded-full mb-8"></div>
-                        <p className="text-lg md:text-2xl text-slate-500 font-medium max-w-4xl mx-auto leading-relaxed">
-                            {t('customPricingDesc')}
+                        <p className="text-lg md:text-xl text-slate-500 font-bold max-w-2xl mx-auto mb-4 italic">
+                            🚀 {t('devTeamPromise')}
+                        </p>
+                        <p className="text-sm font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 w-fit mx-auto px-6 py-2 rounded-full border border-emerald-100 shadow-sm">
+                            {t('annualGift')}
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16 px-4">
-                        {/* Plans & Benefits Card */}
-                        <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true, margin: "-50px" }}
-                            className="bg-slate-50 rounded-[3rem] p-10 md:p-14 border border-slate-100 shadow-xl"
-                        >
-                            <h3 className="text-2xl md:text-3xl font-black text-slate-900 mb-8 flex items-center gap-4">
-                                <div className="p-3 bg-blue-600 text-white rounded-2xl shadow-lg"><FaLayerGroup /></div>
-                                {t('salesTermsTitle')}
-                            </h3>
-                            <div className="space-y-6 mb-12">
-                                {[
-                                    { text: t('term6Months'), icon: FaCheckCircle },
-                                    { text: t('term1Year'), icon: FaCheckCircle },
-                                    { text: t('term2Years'), icon: FaCheckCircle }
-                                ].map((term, i) => (
-                                    <div key={i} className="flex items-center gap-6 p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                                        <term.icon className="text-blue-600 text-2xl shrink-0" />
-                                        <span className="text-lg md:text-xl font-bold text-slate-800">{term.text}</span>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
+                        {[
+                            {
+                                title: t('planBasicTitle'),
+                                price: t('planBasicPrice'),
+                                desc: t('planBasicDesc'),
+                                features: [t('planBasicFeat1'), t('planBasicFeat2'), t('planBasicFeat3')],
+                                color: "blue",
+                                badge: "POPULAR"
+                            },
+                            {
+                                title: t('planProTitle'),
+                                price: t('planProPrice'),
+                                desc: t('planProDesc'),
+                                features: [t('planProFeat1'), t('planProFeat2'), t('planProFeat3')],
+                                color: "emerald",
+                                badge: "BEST VALUE",
+                                featured: true
+                            },
+                            {
+                                title: t('planEntTitle'),
+                                price: t('planEntPrice'),
+                                desc: t('planEntDesc'),
+                                features: [t('planEntFeat1'), t('planEntFeat2'), t('planEntFeat3')],
+                                color: "slate",
+                                badge: "CORPORATE"
+                            }
+                        ].map((plan, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, margin: "-50px" }}
+                                transition={{ delay: i * 0.05, duration: 0.4 }}
+                                className={`relative group p-8 md:p-12 rounded-[3rem] border transition-all h-full flex flex-col ${plan.featured
+                                    ? 'bg-slate-900 text-white border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.3)] scale-105 z-10'
+                                    : 'bg-white text-slate-900 border-slate-100 hover:border-blue-200 shadow-xl'
+                                    }`}
+                            >
+                                {plan.badge && (
+                                    <div className={`absolute -top-4 right-8 px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase ${plan.featured ? 'bg-emerald-500 text-white' : 'bg-blue-600 text-white'}`}>
+                                        {plan.badge}
                                     </div>
-                                ))}
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="bg-emerald-500 text-white p-6 rounded-2xl shadow-lg text-center">
-                                    <div className="text-[10px] font-black uppercase tracking-widest mb-2 opacity-80">FREE TRIAL</div>
-                                    <div className="text-lg font-black leading-tight">{t('benefit15Days')}</div>
+                                )}
+                                <h3 className="text-2xl font-black mb-4 uppercase tracking-tighter">{plan.title}</h3>
+                                <div className="mb-6">
+                                    <span className="text-4xl md:text-5xl font-black">{plan.price}</span>
+                                    {plan.price !== 'Custom' && plan.price !== 'Özel' && <span className="text-sm font-bold opacity-60 ml-2">TL</span>}
                                 </div>
-                                <div className="bg-slate-900 text-white p-6 rounded-2xl shadow-lg text-center">
-                                    <div className="text-[10px] font-black uppercase tracking-widest mb-2 opacity-80">24/7 LIVE</div>
-                                    <div className="text-lg font-black leading-tight">{t('benefit247')}</div>
+                                <p className={`mb-8 font-medium italic ${plan.featured ? 'text-slate-400' : 'text-slate-500'}`}>{plan.desc}</p>
+                                <div className="space-y-4 mb-12 flex-grow">
+                                    {plan.features.map((feat, fi) => (
+                                        <div key={fi} className="flex items-center gap-3">
+                                            <FaCheckCircle className={plan.featured ? 'text-emerald-400' : 'text-blue-600'} />
+                                            <span className="font-bold text-sm md:text-base">{feat}</span>
+                                        </div>
+                                    ))}
                                 </div>
-                            </div>
-                        </motion.div>
-
-                        {/* Evolution & Technology Card */}
-                        <motion.div
-                            initial={{ opacity: 0, x: 20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true, margin: "-50px" }}
-                            className="bg-blue-600 text-white rounded-[3rem] p-10 md:p-14 shadow-2xl relative overflow-hidden flex flex-col justify-center"
-                        >
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-[80px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
-                            <div className="relative z-10">
-                                <h3 className="text-2xl md:text-4xl font-black mb-8 leading-tight">
-                                    {t('systemEvolutionTitle')}
-                                </h3>
-                                <p className="text-lg md:text-xl text-blue-50 font-medium leading-relaxed mb-10 opacity-90">
-                                    {t('systemEvolutionDesc')}
-                                </p>
-                                <div className="p-8 bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] mb-10">
-                                    <p className="text-xl md:text-2xl font-black italic mb-6">
-                                        🚀 {t('pricingContactLead')}
-                                    </p>
-                                    <button
-                                        onClick={() => setShowDemoModal(true)}
-                                        className="w-full py-5 bg-white text-blue-600 rounded-2xl font-black text-xl uppercase tracking-widest shadow-2xl transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-4"
-                                    >
-                                        <FaPhone className="animate-bounce" /> {t('getQuoteBtn')}
-                                    </button>
-                                </div>
-                                <div className="flex items-center gap-4 text-blue-100 font-bold italic">
-                                    <FaStar className="text-yellow-400" /> {t('refundNote')}
-                                </div>
-                            </div>
-                        </motion.div>
+                                <button
+                                    onClick={() => setShowDemoModal(true)}
+                                    className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all ${plan.featured
+                                        ? 'bg-white text-slate-900 hover:bg-emerald-400 hover:text-white'
+                                        : 'bg-slate-900 text-white hover:bg-blue-600'
+                                        }`}
+                                >
+                                    {t('startNow')}
+                                </button>
+                            </motion.div>
+                        ))}
                     </div>
 
-                    <div className="mt-16 text-center">
+                    <div className="mt-16 text-center space-y-6">
                         <div className="inline-flex flex-wrap justify-center items-center gap-6 px-4">
                             <div className="flex items-center gap-4 bg-blue-50 border border-blue-100 px-8 py-4 rounded-[2rem] shadow-sm group hover:scale-105 transition-transform duration-300">
                                 <FaLayerGroup className="text-blue-600 text-3xl" />
@@ -659,13 +581,116 @@ export default function HomePage() {
                                     {t('branchDiscountNote')}
                                 </p>
                             </div>
+                            <div className="flex flex-col md:flex-row items-center gap-4 bg-slate-50 border border-slate-200 px-8 py-4 rounded-[2rem] shadow-sm group hover:scale-105 transition-transform duration-300">
+                                <div className="flex items-center gap-4">
+                                    <FaStar className="text-yellow-500 text-3xl animate-pulse" />
+                                    <p className="text-slate-700 font-extrabold text-sm md:text-base">
+                                        {t('refundNote')}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-20 max-w-4xl mx-auto">
+                        <div className="bg-slate-900 rounded-[3rem] p-10 md:p-16 text-white relative overflow-hidden shadow-2xl">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+                            <div className="relative z-10">
+                                <h3 className="text-2xl md:text-3xl font-black mb-10 text-center tracking-tight">{t('roiTitle')}</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-10">
+                                    <div className="text-center p-8 bg-white/5 rounded-3xl border border-white/10">
+                                        <div className="text-4xl md:text-5xl font-black text-emerald-400 mb-3">{t('roiGrowth')}</div>
+                                        <div className="text-lg font-bold text-slate-300 uppercase tracking-widest">{t('roiGrowthSub')}</div>
+                                    </div>
+                                    <div className="text-center p-8 bg-white/5 rounded-3xl border border-white/10">
+                                        <div className="text-4xl md:text-5xl font-black text-blue-400 mb-3">{t('roiEfficiency')}</div>
+                                        <div className="text-lg font-bold text-slate-300 uppercase tracking-widest">{t('roiEfficiencySub')}</div>
+                                    </div>
+                                </div>
+                                <p className="text-center text-slate-400 font-medium italic mb-2 px-4 italic leading-relaxed">
+                                    " {t('roiNote')} "
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
+            {/* Fast Setup Section */}
+            <section className="py-16 bg-blue-600 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-full">
+                    <div className="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full -mr-36 -mt-36 blur-3xl"></div>
+                    <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-400/20 rounded-full -ml-36 -mb-36 blur-3xl"></div>
+                </div>
+                <div className="container mx-auto px-4 max-w-4xl relative z-10">
+                    <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-2xl">
+                        <div className="mx-auto max-w-2xl text-center">
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black tracking-widest uppercase mb-4">
+                                <FaRocket />
+                                {t('instantSetupTitle')}
+                            </div>
+                            <h2 className="text-2xl md:text-4xl font-black text-slate-900 mb-4 tracking-tight leading-tight">
+                                {t('instantSetupTitle')}
+                            </h2>
+                            <p className="text-base text-slate-600 font-medium leading-relaxed mb-8">
+                                {t('instantSetupDesc')}
+                            </p>
+                            <div className="flex flex-wrap justify-center gap-3">
+                                <button
+                                    onClick={() => setShowDemoModal(true)}
+                                    className="px-6 py-3 bg-blue-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-200"
+                                >
+                                    {t('startNow')}
+                                </button>
+                                <a
+                                    href="https://wa.me/436608682201"
+                                    target="_blank"
+                                    className="px-6 py-3 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-emerald-100 transition-all flex items-center gap-2"
+                                >
+                                    <FaWhatsapp className="text-base" />
+                                    WhatsApp
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            {/* FAQ */}
+
+
+                {/* Reward Program Mini Section */}
+                <div className="mt-12 container mx-auto px-4 max-w-4xl">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-50px" }}
+                        className="bg-gradient-to-r from-indigo-600 to-blue-700 rounded-[2.5rem] p-8 md:p-12 text-white shadow-xl relative overflow-hidden"
+                    >
+                        <div className="absolute top-0 right-0 p-8 opacity-10">
+                            <FaStar className="text-9xl rotate-12" />
+                        </div>
+                        <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
+                            <div className="flex-1 text-center md:text-left">
+                                <span className="inline-block px-4 py-1.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black tracking-widest uppercase mb-4">
+                                    {t('referralProgramTitle')}
+                                </span>
+                                <h3 className="text-2xl md:text-3xl font-black mb-4">{t('referralPromoLine')}</h3>
+                                <p className="text-indigo-100 font-medium">{t('referralProgramDesc')}</p>
+                            </div>
+                            <div className="flex-shrink-0">
+                                <a
+                                    href="https://wa.me/436608682201"
+                                    target="_blank"
+                                    className="px-8 py-4 bg-white text-indigo-600 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-indigo-50 transition-all shadow-lg inline-block"
+                                >
+                                    {t('contactUs')}
+                                </a>
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
+            </section>
+
+            {/* FAQ Section */}
             <section className="py-24 bg-white px-4">
                 <div className="container mx-auto max-w-4xl">
                     <div className="text-center mb-12 md:mb-16">
@@ -712,6 +737,18 @@ export default function HomePage() {
                                         <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-emerald-400"><FaPhone /></div>
                                         +43 660 868 22 01
                                     </a>
+                                    <div className="flex items-center gap-4 text-slate-300 font-bold">
+                                        <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-blue-400"><FaGlobe /></div>
+                                        restxqr.com
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 className="text-[10px] font-black text-slate-500 mb-8 uppercase tracking-[0.3em]">{t('legalLinkSection')}</h4>
+                                <div className="flex flex-col gap-4 text-slate-400 font-bold">
+                                    <Link href="/datenschutz" className="hover:text-white transition-colors">{t('privacyPolicy')}</Link>
+                                    <Link href="/terms" className="hover:text-white transition-colors">{t('termsOfService')}</Link>
+                                    <Link href="/impressum" className="hover:text-white transition-colors">{t('legalInfo')}</Link>
                                 </div>
                             </div>
                         </div>
@@ -727,7 +764,4 @@ export default function HomePage() {
             <DemoRequestModal isOpen={showDemoModal} onClose={() => setShowDemoModal(false)} />
         </main>
     );
-=======
-    return <PremiumLanding />;
->>>>>>> Stashed changes
 }

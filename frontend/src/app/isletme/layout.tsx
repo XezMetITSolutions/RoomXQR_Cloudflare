@@ -5,13 +5,13 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguageStore, languages } from '@/store/languageStore';
-import { 
-  LayoutDashboard, 
-  Menu, 
-  Megaphone, 
-  Users, 
-  Settings, 
-  BarChart3, 
+import {
+  LayoutDashboard,
+  Menu,
+  Megaphone,
+  Users,
+  Settings,
+  BarChart3,
   Bell,
   LogOut,
   Hotel,
@@ -35,10 +35,26 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { user, logout, isLoading, hasPermission } = useAuth();
-  const { currentLanguage, setLanguage, getTranslation, getCurrentLanguage } = useLanguageStore();
-  
-  // Sadece TR, EN, DE, FR dillerini göster
-  const supportedLanguages = languages.filter(lang => ['tr', 'en', 'de', 'fr'].includes(lang.code));
+  const { currentLanguage, setLanguage, getTranslation, getCurrentLanguage, getSupportedLanguages } = useLanguageStore();
+
+  const [supportedLanguages, setSupportedLanguages] = useState(getSupportedLanguages());
+
+  // Ayarlar güncellendiğinde dilleri yenile
+  useEffect(() => {
+    const handleSettingsUpdate = () => {
+      setSupportedLanguages(getSupportedLanguages());
+    };
+    window.addEventListener('settings-updated', handleSettingsUpdate);
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'hotel-settings') {
+        handleSettingsUpdate();
+      }
+    });
+    return () => {
+      window.removeEventListener('settings-updated', handleSettingsUpdate);
+      window.removeEventListener('storage', handleSettingsUpdate);
+    };
+  }, [getSupportedLanguages]);
 
   // Navigation items with translations
   const navigation = useMemo(() => [
@@ -133,7 +149,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 </div>
               </div>
             </div>
-            
+
             {/* Mobile Navigation */}
             <nav className="px-3 space-y-2">
               {filteredNavigation.map((item) => {
@@ -144,20 +160,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     key={item.name}
                     href={item.href}
                     onClick={() => setSidebarOpen(false)}
-                    className={`w-full group flex items-center px-4 py-3 text-base font-medium rounded-xl transition-all duration-200 ${
-                      isItemActive
+                    className={`w-full group flex items-center px-4 py-3 text-base font-medium rounded-xl transition-all duration-200 ${isItemActive
                         ? 'bg-gradient-to-r from-yellow-50 to-yellow-100 text-yellow-900 shadow-sm border border-yellow-200'
                         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                    }`}
+                      }`}
                   >
-                    <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 ${
-                      isItemActive 
-                        ? 'bg-yellow-500 shadow-sm' 
+                    <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 ${isItemActive
+                        ? 'bg-yellow-500 shadow-sm'
                         : 'bg-gray-100 group-hover:bg-gray-200'
-                    }`}>
-                      <Icon className={`h-5 w-5 ${
-                        isItemActive ? 'text-white' : `${item.color} group-hover:scale-110`
-                      }`} />
+                      }`}>
+                      <Icon className={`h-5 w-5 ${isItemActive ? 'text-white' : `${item.color} group-hover:scale-110`
+                        }`} />
                     </div>
                     <span className="ml-4 truncate">{item.name}</span>
                     {isItemActive && (
@@ -168,7 +181,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               })}
             </nav>
           </div>
-          
+
           {/* Mobile Footer */}
           <div className="flex-shrink-0 border-t border-gray-100 p-4">
             <button
@@ -226,27 +239,24 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             {/* Navigation */}
             <div className="flex-1 flex flex-col pt-4 pb-4 overflow-y-auto">
               <nav className="flex-1 px-3 space-y-2">
-              {filteredNavigation.map((item) => {
-                const Icon = item.icon;
+                {filteredNavigation.map((item) => {
+                  const Icon = item.icon;
                   const isItemActive = pathname === item.href;
-                return (
+                  return (
                     <div key={item.name} className="relative group">
-                  <Link
-                    href={item.href}
-                        className={`w-full group flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${
-                          isItemActive
+                      <Link
+                        href={item.href}
+                        className={`w-full group flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${isItemActive
                             ? 'bg-gradient-to-r from-yellow-50 to-yellow-100 text-yellow-900 shadow-sm border border-yellow-200'
                             : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:shadow-sm'
-                        }`}
+                          }`}
                       >
-                        <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
-                          isItemActive 
-                            ? 'bg-yellow-500 shadow-sm' 
+                        <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${isItemActive
+                            ? 'bg-yellow-500 shadow-sm'
                             : 'bg-gray-100 group-hover:bg-gray-200'
-                        }`}>
-                          <Icon className={`h-4 w-4 ${
-                            isItemActive ? 'text-white' : `${item.color} group-hover:scale-110`
-                          }`} />
+                          }`}>
+                          <Icon className={`h-4 w-4 ${isItemActive ? 'text-white' : `${item.color} group-hover:scale-110`
+                            }`} />
                         </div>
                         {!sidebarCollapsed && (
                           <span className="ml-3 truncate">{item.name}</span>
@@ -255,28 +265,27 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                           <div className="ml-auto w-2 h-2 bg-yellow-500 rounded-full"></div>
                         )}
                       </Link>
-                      
+
                       {/* Tooltip for collapsed state */}
                       {sidebarCollapsed && (
                         <div className="absolute left-full ml-3 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg">
-                    {item.name}
+                          {item.name}
                           <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-900 rotate-45"></div>
                         </div>
                       )}
                     </div>
-                );
-              })}
-            </nav>
-          </div>
+                  );
+                })}
+              </nav>
+            </div>
 
             {/* Footer */}
             <div className="flex-shrink-0 border-t border-gray-100 p-3">
               <div className="relative group">
-            <button
-              onClick={handleLogout}
-                  className={`w-full group flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:bg-red-50 hover:text-red-700 ${
-                    sidebarCollapsed ? 'justify-center' : ''
-                  }`}
+                <button
+                  onClick={handleLogout}
+                  className={`w-full group flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:bg-red-50 hover:text-red-700 ${sidebarCollapsed ? 'justify-center' : ''
+                    }`}
                 >
                   <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center bg-gray-100 group-hover:bg-red-100 transition-all duration-200">
                     <LogOut className="h-4 w-4 text-gray-500 group-hover:text-red-500" />
@@ -285,11 +294,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     <span className="ml-3 truncate">{getTranslation('sidebar.logout')}</span>
                   )}
                 </button>
-                
+
                 {/* Tooltip for collapsed state */}
                 {sidebarCollapsed && (
                   <div className="absolute left-full ml-3 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg">
-              {getTranslation('sidebar.logout')}
+                    {getTranslation('sidebar.logout')}
                     <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-900 rotate-45"></div>
                   </div>
                 )}
@@ -304,13 +313,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         {/* Mobile top bar */}
         <div className="lg:hidden bg-white border-b border-gray-200 px-4 py-3 shadow-sm">
           <div className="flex items-center justify-between">
-          <button
-            type="button"
+            <button
+              type="button"
               className="inline-flex items-center justify-center h-10 w-10 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 transition-all duration-200"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <ChevronRight className="h-6 w-6" />
-          </button>
+              onClick={() => setSidebarOpen(true)}
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center shadow-sm">
                 <Hotel className="h-5 w-5 text-white" />
@@ -337,7 +346,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   </span>
                   <ChevronDown className="w-4 h-4 text-gray-600" />
                 </button>
-                
+
                 {/* Dil Seçenekleri Dropdown */}
                 {showLanguageSelector && (
                   <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
@@ -348,11 +357,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                           setLanguage(lang.code);
                           setShowLanguageSelector(false);
                         }}
-                        className={`w-full px-4 py-3 text-left transition-colors flex items-center space-x-3 ${
-                          currentLanguage === lang.code 
-                            ? 'bg-hotel-gold bg-opacity-10' 
+                        className={`w-full px-4 py-3 text-left transition-colors flex items-center space-x-3 ${currentLanguage === lang.code
+                            ? 'bg-hotel-gold bg-opacity-10'
                             : 'hover:bg-gray-50'
-                        }`}
+                          }`}
                       >
                         <span className="text-lg">{lang.flag}</span>
                         <div>

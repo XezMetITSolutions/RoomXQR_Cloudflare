@@ -641,7 +641,7 @@ export const translations: Record<string, Translations> = {
     'legalLinkSection': 'YASAL',
     'privacyPolicy': 'Gizlilik Politikası',
     'termsOfService': 'Kullanım Şartları',
-    'legalInfo': 'Künye (Impressum)',
+    'legalInfo': 'Künye',
   },
 
   en: {

@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  Users, 
-  Menu, 
-  ShoppingCart, 
-  Bell, 
-  TrendingUp, 
+import {
+  Users,
+  Menu,
+  ShoppingCart,
+  Bell,
+  TrendingUp,
   DollarSign,
   Globe,
   QrCode,
@@ -21,11 +21,19 @@ export default function AdminDashboard() {
   const { token, user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
-  
-  const { currentLanguage, setLanguage, getTranslation, getCurrentLanguage } = useLanguageStore();
-  
-  // Sadece TR, EN, DE, FR dillerini göster
-  const supportedLanguages = languages.filter(lang => ['tr', 'en', 'de', 'fr'].includes(lang.code));
+
+  const { currentLanguage, setLanguage, getTranslation, getCurrentLanguage, getSupportedLanguages } = useLanguageStore();
+
+  const [supportedLanguages, setSupportedLanguages] = useState(getSupportedLanguages());
+
+  // Ayarlar güncellendiğinde dilleri yenile
+  useEffect(() => {
+    const handleSettingsUpdate = () => {
+      setSupportedLanguages(getSupportedLanguages());
+    };
+    window.addEventListener('settings-updated', handleSettingsUpdate);
+    return () => window.removeEventListener('settings-updated', handleSettingsUpdate);
+  }, [getSupportedLanguages]);
 
   // Browser tab title'ını ayarla
   useEffect(() => {
@@ -124,11 +132,11 @@ export default function AdminDashboard() {
   useEffect(() => {
     const loadData = async () => {
       if (!token || !user) return;
-      
+
       try {
         setIsLoading(true);
         const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
-        
+
         // URL'den tenant slug'ını al
         let tenantSlug = 'demo';
         if (typeof window !== 'undefined') {
@@ -205,14 +213,14 @@ export default function AdminDashboard() {
             // Room ID'yi düzelt (room-101 -> 101)
             const roomId = order.roomId || '';
             const roomNumber = roomId.replace('room-', '') || '';
-            
+
             // Items'ı düzelt (menuItem relation'dan name al)
             const itemsText = order.items?.map((item: any) => {
               // Debug için log
               if (!item.menuItem && !item.name) {
                 console.warn('Order item without name:', item);
               }
-              
+
               // Önce menuItem relation'dan name al, yoksa item.name, yoksa menuItemId'den türet, yoksa varsayılan
               const getTranslation = useLanguageStore.getState().getTranslation;
               let itemName = getTranslation('dashboard.unknown_product');
@@ -224,10 +232,10 @@ export default function AdminDashboard() {
                 // menuItemId varsa ama relation yüklenmemişse, ID'yi göster
                 itemName = `${getTranslation('dashboard.product_id')}${item.menuItemId.substring(0, 8)}`;
               }
-              
+
               return `${item.quantity}x ${itemName}`;
             }).join(', ') || 'Sipariş detayı yok';
-            
+
             // Status'u düzelt (PENDING -> Pending, PREPARING -> Preparing, etc.)
             let statusText = 'Pending';
             if (order.status === 'PENDING') statusText = 'Pending';
@@ -236,7 +244,7 @@ export default function AdminDashboard() {
             else if (order.status === 'DELIVERED') statusText = 'Delivered';
             else if (order.status === 'CANCELLED') statusText = 'Cancelled';
             else statusText = order.status || 'Pending';
-            
+
             return {
               id: order.id || order.orderNumber || `ORD-${Date.now()}`,
               room: roomNumber,
@@ -308,7 +316,7 @@ export default function AdminDashboard() {
             <h1 className="text-2xl font-bold text-gray-900">{getTranslation('dashboard.title')}</h1>
             <p className="text-gray-600">{getTranslation('dashboard.subtitle')}</p>
           </div>
-          
+
           {/* Dil Seçici */}
           <div className="relative language-selector">
             <button
@@ -321,7 +329,7 @@ export default function AdminDashboard() {
               </span>
               <ChevronDown className="w-4 h-4 text-gray-600" />
             </button>
-            
+
             {/* Dil Seçenekleri Dropdown */}
             {showLanguageSelector && (
               <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
@@ -332,11 +340,10 @@ export default function AdminDashboard() {
                       setLanguage(lang.code);
                       setShowLanguageSelector(false);
                     }}
-                    className={`w-full px-4 py-3 text-left transition-colors flex items-center space-x-3 ${
-                      currentLanguage === lang.code 
-                        ? 'bg-hotel-gold bg-opacity-10' 
+                    className={`w-full px-4 py-3 text-left transition-colors flex items-center space-x-3 ${currentLanguage === lang.code
+                        ? 'bg-hotel-gold bg-opacity-10'
                         : 'hover:bg-gray-50'
-                    }`}
+                      }`}
                   >
                     <span className="text-lg">{lang.flag}</span>
                     <div>
@@ -367,9 +374,8 @@ export default function AdminDashboard() {
                   <p className="text-sm font-medium text-gray-600">{stat.name}</p>
                   <div className="flex items-baseline">
                     <p className="text-2xl font-semibold text-gray-900">{stat.value}</p>
-                    <p className={`ml-2 text-sm font-medium ${
-                      stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
-                    }`}>
+                    <p className={`ml-2 text-sm font-medium ${stat.changeType === 'positive' ? 'text-green-600' : 'text-red-600'
+                      }`}>
                       {stat.change}
                     </p>
                   </div>
@@ -440,22 +446,22 @@ export default function AdminDashboard() {
               </div>
             ) : recentRequests.length > 0 ? (
               recentRequests.map((request) => (
-              <div key={request.id} className="px-6 py-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium text-gray-900">#{request.id}</span>
-                      <span className="text-sm text-gray-500">{getTranslation('dashboard.room')} {request.room}</span>
+                <div key={request.id} className="px-6 py-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium text-gray-900">#{request.id}</span>
+                        <span className="text-sm text-gray-500">{getTranslation('dashboard.room')} {request.room}</span>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">{request.type}</p>
+                      <p className="text-xs text-gray-500 mt-1">{request.time}</p>
                     </div>
-                    <p className="text-sm text-gray-600 mt-1">{request.type}</p>
-                    <p className="text-xs text-gray-500 mt-1">{request.time}</p>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(request.priority)}`}>
+                      {request.priority}
+                    </span>
                   </div>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(request.priority)}`}>
-                    {request.priority}
-                  </span>
                 </div>
-              </div>
-            ))
+              ))
             ) : (
               <div className="px-6 py-8 text-center text-gray-500">
                 <p>{getTranslation('dashboard.no_requests')}</p>
@@ -474,42 +480,42 @@ export default function AdminDashboard() {
       <div className="hotel-card p-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">{getTranslation('dashboard.quick_actions')}</h3>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <button 
+          <button
             onClick={() => router.push('/isletme/qr-kod')}
             className="flex items-center p-4 border-2 border-hotel-gold rounded-lg hover:bg-hotel-gold hover:text-white transition-colors"
           >
             <QrCode className="w-5 h-5 mr-3" />
             <span className="text-sm font-medium">{getTranslation('dashboard.create_qr')}</span>
           </button>
-          <button 
+          <button
             onClick={() => router.push('/isletme/menu')}
             className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
           >
             <Menu className="w-5 h-5 text-hotel-gold mr-3" />
             <span className="text-sm font-medium text-gray-700">{getTranslation('dashboard.edit_menu')}</span>
           </button>
-          <button 
+          <button
             onClick={() => router.push('/isletme/announcements')}
             className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
           >
             <Bell className="w-5 h-5 text-hotel-gold mr-3" />
             <span className="text-sm font-medium text-gray-700">{getTranslation('dashboard.add_announcement')}</span>
           </button>
-          <button 
+          <button
             onClick={() => router.push('/isletme/users')}
             className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
           >
             <Users className="w-5 h-5 text-hotel-gold mr-3" />
             <span className="text-sm font-medium text-gray-700">{getTranslation('dashboard.add_staff')}</span>
           </button>
-          <button 
+          <button
             onClick={() => router.push('/isletme/analytics')}
             className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
           >
             <TrendingUp className="w-5 h-5 text-hotel-gold mr-3" />
             <span className="text-sm font-medium text-gray-700">{getTranslation('dashboard.view_reports')}</span>
           </button>
-          <button 
+          <button
             onClick={() => router.push('/isletme/settings?tab=social')}
             className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
           >

@@ -14,13 +14,21 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
-  
+
   const { login, user } = useAuth();
   const router = useRouter();
-  const { currentLanguage, setLanguage, getTranslation, getCurrentLanguage } = useLanguageStore();
-  
-  // Sadece TR, EN, DE, FR dillerini göster
-  const supportedLanguages = languages.filter(lang => ['tr', 'en', 'de', 'fr'].includes(lang.code));
+  const { currentLanguage, setLanguage, getTranslation, getCurrentLanguage, getSupportedLanguages } = useLanguageStore();
+
+  const [supportedLanguages, setSupportedLanguages] = useState(getSupportedLanguages());
+
+  // Ayarlar güncellendiğinde dilleri yenile
+  useEffect(() => {
+    const handleSettingsUpdate = () => {
+      setSupportedLanguages(getSupportedLanguages());
+    };
+    window.addEventListener('settings-updated', handleSettingsUpdate);
+    return () => window.removeEventListener('settings-updated', handleSettingsUpdate);
+  }, [getSupportedLanguages]);
 
   useEffect(() => {
     // localStorage'da varsa otomatik doldur
@@ -48,44 +56,44 @@ export default function LoginPage() {
       } else {
         localStorage.removeItem('remembered_email');
       }
-      
+
       console.log('🚀 Starting login process...');
       const success = await login(email, password);
       console.log('✅ Login function returned:', success);
-      
+
       if (success) {
         // State'in güncellenmesi için kısa bir süre bekle
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         // Token'ın localStorage'da olduğunu kontrol et
         const savedToken = localStorage.getItem('auth_token');
         const savedUserData = localStorage.getItem('user_data');
-        
-        console.log('🔍 Login check:', { 
-          hasToken: !!savedToken, 
+
+        console.log('🔍 Login check:', {
+          hasToken: !!savedToken,
           hasUserData: !!savedUserData,
           tokenLength: savedToken?.length,
           userDataLength: savedUserData?.length
         });
-        
+
         if (savedToken && savedUserData) {
           try {
             const userData = JSON.parse(savedUserData);
             const userRole = userData.role;
             const userPermissions = userData.permissions || [];
-            
-            console.log('✅ Login successful, user data:', { 
-              role: userRole, 
+
+            console.log('✅ Login successful, user data:', {
+              role: userRole,
               permissions: userPermissions,
               fullUserData: userData
             });
-            
+
             // Kullanıcının role'üne veya permissions'ına göre yönlendir
             let redirectPath = '/isletme'; // Varsayılan
-            
+
             // Role'e göre yönlendirme (büyük/küçük harf duyarsız)
             const roleUpper = (userRole || '').toUpperCase();
-            
+
             if (roleUpper === 'RECEPTION' || userPermissions.includes('reception')) {
               redirectPath = '/reception';
               console.log('📍 Redirecting to RECEPTION panel');
@@ -102,10 +110,10 @@ export default function LoginPage() {
               console.log('⚠️ Unknown role, defaulting to /isletme:', roleUpper);
               redirectPath = '/isletme';
             }
-            
+
             console.log('🔄 Final redirect path:', redirectPath);
             setIsLoading(false); // Yönlendirmeden önce loading'i kapat
-            
+
             // Yönlendirmeyi yap
             window.location.href = redirectPath; // router.push yerine window.location.href kullan
           } catch (error) {
@@ -167,7 +175,7 @@ export default function LoginPage() {
             </span>
             <ChevronDown className="w-4 h-4 text-gray-600" />
           </button>
-          
+
           {/* Dil Seçenekleri Dropdown */}
           {showLanguageSelector && (
             <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
@@ -178,11 +186,10 @@ export default function LoginPage() {
                     setLanguage(lang.code);
                     setShowLanguageSelector(false);
                   }}
-                  className={`w-full px-4 py-3 text-left transition-colors flex items-center space-x-3 ${
-                    currentLanguage === lang.code 
-                      ? 'bg-hotel-gold bg-opacity-10' 
+                  className={`w-full px-4 py-3 text-left transition-colors flex items-center space-x-3 ${currentLanguage === lang.code
+                      ? 'bg-hotel-gold bg-opacity-10'
                       : 'hover:bg-gray-50'
-                  }`}
+                    }`}
                 >
                   <span className="text-lg">{lang.flag}</span>
                   <div>
@@ -195,7 +202,7 @@ export default function LoginPage() {
           )}
         </div>
       </div>
-      
+
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <div className="flex items-center space-x-2">
