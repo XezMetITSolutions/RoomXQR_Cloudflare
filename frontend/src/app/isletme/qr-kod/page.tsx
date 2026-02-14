@@ -1042,13 +1042,24 @@ export default function QRKodPage() {
             <div className="flex items-center gap-4">
               <h3 className="text-lg font-medium text-gray-900">Hızlı Oda Seçimi</h3>
               {selectedRoomIds.length > 0 && (
-                <button
-                  onClick={() => handleDeleteRooms(selectedRoomIds)}
-                  className="px-3 py-1 bg-red-100 text-red-600 rounded-lg text-xs font-semibold hover:bg-red-200 flex items-center gap-1 transition-colors"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  ({selectedRoomIds.length}) Seçileni Sil
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      const allIds = (useGeneratedRooms ? generatedRooms : rooms).map((r: any) => r.id);
+                      setSelectedRoomIds(allIds);
+                    }}
+                    className="px-3 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-semibold hover:bg-blue-200 flex items-center gap-1 transition-colors"
+                  >
+                    Tümünü Seç
+                  </button>
+                  <button
+                    onClick={() => handleDeleteRooms(selectedRoomIds)}
+                    className="px-3 py-1 bg-red-100 text-red-600 rounded-lg text-xs font-semibold hover:bg-red-200 flex items-center gap-1 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    ({selectedRoomIds.length}) Seçileni Sil
+                  </button>
+                </div>
               )}
             </div>
             <div className="text-sm text-gray-500">
@@ -1097,8 +1108,8 @@ export default function QRKodPage() {
                           toggleRoomSelection(room.id);
                         }}
                         className={`absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center shadow-sm transition-all ${selectedRoomIds.includes(room.id)
-                            ? 'bg-blue-600 text-white scale-110'
-                            : 'bg-white text-gray-400 opacity-0 group-hover:opacity-100'
+                          ? 'bg-blue-600 text-white scale-110'
+                          : 'bg-white text-gray-400 opacity-0 group-hover:opacity-100'
                           }`}
                       >
                         {selectedRoomIds.includes(room.id) ? (
