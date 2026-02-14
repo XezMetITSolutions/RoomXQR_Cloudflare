@@ -20,6 +20,7 @@ import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
 import nodemailer from 'nodemailer'
 import jwt from 'jsonwebtoken'
+import crypto from 'crypto'
 
 // Load environment variables
 dotenv.config()
@@ -1271,11 +1272,12 @@ app.get('/api/guest-token/verify', tenantMiddleware, async (req: Request, res: R
   }
 })
 
-// SABİT QR (Permanent Key) için: Odadaki aktif misafiri getir
+// Oda + token eşleşmesi: Token yoksa veya eşleşmezse isim dönülmez (yan odaya link ile girilmesi engellenir)
 app.get('/api/rooms/:number/active-guest', tenantMiddleware, async (req: Request, res: Response) => {
   try {
     const tenantId = getTenantId(req)
     const { number } = req.params
+    const token = (req.query.token as string) || ''
 
     const guest = await prisma.guest.findFirst({
       where: {
@@ -1290,17 +1292,32 @@ app.get('/api/rooms/:number/active-guest', tenantMiddleware, async (req: Request
         firstName: true,
         lastName: true,
         checkIn: true,
-        checkOut: true
+        checkOut: true,
+        accessToken: true,
+        hotelId: true
       }
     })
 
     if (!guest) {
-      res.json({ guestName: null })
+      res.json({ guestName: null, hotelName: null })
       return
+    }
+
+    // Token zorunlu: eşleşmezse veya checkout sonrası (accessToken null) isim verilmez
+    if (!token || guest.accessToken !== token) {
+      res.json({ guestName: null, hotelName: null })
+      return
+    }
+
+    let hotelName = ''
+    if (guest.hotelId) {
+      const h = await prisma.hotel.findUnique({ where: { id: guest.hotelId }, select: { name: true } })
+      hotelName = h?.name || ''
     }
 
     res.json({
       guestName: `${guest.firstName} ${guest.lastName}`,
+      hotelName,
       checkIn: guest.checkIn,
       checkOut: guest.checkOut
     })
@@ -1372,6 +1389,7 @@ app.post('/api/guests/checkin', tenantMiddleware, async (req: Request, res: Resp
       });
     }
 
+    const accessToken = crypto.randomBytes(32).toString('hex')
     guest = await prisma.guest.create({
       data: {
         firstName: firstName || 'Misafir',
@@ -1382,6 +1400,7 @@ app.post('/api/guests/checkin', tenantMiddleware, async (req: Request, res: Resp
         checkIn: checkInDate,
         checkOut: checkOutDate,
         isActive: true,
+        accessToken,
         roomId: room.id,
         hotelId: room.hotelId,
         tenantId
@@ -1400,7 +1419,8 @@ app.post('/api/guests/checkin', tenantMiddleware, async (req: Request, res: Resp
 
     res.json({
       success: true,
-      guest
+      guest,
+      accessToken
     })
 
   } catch (error) {
@@ -2133,6 +2153,7 @@ app.get('/api/rooms', tenantMiddleware, async (req: Request, res: Response) => {
       return {
         roomId: room.id,
         number: room.number,
+        name: (room as any).name ?? undefined,
         floor: room.floor,
         type: room.type,
         status: room.isOccupied ? 'occupied' : 'vacant',
@@ -2167,12 +2188,13 @@ app.post('/api/guests/checkout', tenantMiddleware, async (req: Request, res: Res
     })
 
     if (guest) {
-      // Update guest check-out
+      // Update guest check-out; accessToken iptal (QR/link artık çalışmaz)
       await prisma.guest.update({
         where: { id: guest.id },
         data: {
           checkOut: new Date(),
-          isActive: false
+          isActive: false,
+          accessToken: null
         }
       })
     }
@@ -2255,12 +2277,14 @@ app.get('/api/setup/columns-status', tenantMiddleware, authMiddleware, async (re
   try {
     const cols = await prisma.$queryRaw<{ table_name: string; column_name: string }[]>`
       SELECT table_name, column_name FROM information_schema.columns
-      WHERE table_schema = 'public' AND table_name IN ('orders', 'menu_items', 'guest_requests')
+      WHERE table_schema = 'public' AND table_name IN ('orders', 'menu_items', 'guest_requests', 'guests', 'rooms')
     `
     const orders = { paymentMethod: cols.some(c => c.table_name === 'orders' && c.column_name === 'paymentMethod') }
     const menu_items = { translations: cols.some(c => c.table_name === 'menu_items' && c.column_name === 'translations') }
     const guest_requests = { tenantId: cols.some(c => c.table_name === 'guest_requests' && c.column_name === 'tenantId') }
-    res.json({ orders, menu_items, guest_requests, columns: cols })
+    const guests = { accessToken: cols.some(c => c.table_name === 'guests' && c.column_name === 'accessToken') }
+    const rooms = { name: cols.some(c => c.table_name === 'rooms' && c.column_name === 'name') }
+    res.json({ orders, menu_items, guest_requests, guests, rooms, columns: cols })
   } catch (e: any) {
     console.error('Columns status error:', e)
     res.status(500).json({ message: e?.message || 'Sütun durumu alınamadı' })
@@ -2270,7 +2294,7 @@ app.get('/api/setup/columns-status', tenantMiddleware, authMiddleware, async (re
 // Eksik sütunları oluştur (idempotent)
 app.post('/api/setup/ensure-columns', tenantMiddleware, authMiddleware, async (req: Request, res: Response) => {
   try {
-    const results: { orders_paymentMethod?: string; menu_items_translations?: string; guest_requests_tenantId?: string } = {}
+    const results: { orders_paymentMethod?: string; menu_items_translations?: string; guest_requests_tenantId?: string; guests_accessToken?: string; rooms_name?: string } = {}
     const hasPaymentMethod = await prisma.$queryRaw<{ exists: boolean }[]>`
       SELECT EXISTS (
         SELECT 1 FROM information_schema.columns
@@ -2318,6 +2342,30 @@ app.post('/api/setup/ensure-columns', tenantMiddleware, authMiddleware, async (r
       }
     } else {
       results.guest_requests_tenantId = 'zaten_mevcut'
+    }
+    const hasGuestsAccessToken = await prisma.$queryRaw<{ exists: boolean }[]>`
+      SELECT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'guests' AND column_name = 'accessToken'
+      ) as exists
+    `
+    if (!hasGuestsAccessToken[0]?.exists) {
+      await prisma.$executeRawUnsafe('ALTER TABLE "public"."guests" ADD COLUMN IF NOT EXISTS "accessToken" TEXT;')
+      results.guests_accessToken = 'eklendi'
+    } else {
+      results.guests_accessToken = 'zaten_mevcut'
+    }
+    const hasRoomsName = await prisma.$queryRaw<{ exists: boolean }[]>`
+      SELECT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'rooms' AND column_name = 'name'
+      ) as exists
+    `
+    if (!hasRoomsName[0]?.exists) {
+      await prisma.$executeRawUnsafe('ALTER TABLE "public"."rooms" ADD COLUMN IF NOT EXISTS "name" TEXT;')
+      results.rooms_name = 'eklendi'
+    } else {
+      results.rooms_name = 'zaten_mevcut'
     }
     res.json({ success: true, results })
   } catch (e: any) {

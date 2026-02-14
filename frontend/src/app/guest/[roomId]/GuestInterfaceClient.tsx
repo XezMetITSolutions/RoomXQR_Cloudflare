@@ -54,6 +54,22 @@ function formatGuestGreeting(fullName: string): string {
   return `Sayın ${firstName} ${lastInitial}.`;
 }
 
+/** Otel adına göre "X Oteline hoş geldiniz" eki (Türkçe sesli uyum) */
+function hotelWelcomeSuffix(hotelName: string): string {
+  if (!hotelName || !hotelName.trim()) return 'Hoş Geldiniz';
+  const t = hotelName.trim();
+  const last = t.slice(-1).toLowerCase();
+  const vowels = ['a', 'e', 'ı', 'i', 'o', 'ö', 'u', 'ü'];
+  if (vowels.includes(last)) return `${t}'ye Hoş Geldiniz`;
+  const nameLower = t.toLowerCase();
+  let lastVowel: string | null = null;
+  for (let i = nameLower.length - 1; i >= 0; i--) {
+    if (vowels.includes(nameLower[i])) { lastVowel = nameLower[i]; break; }
+  }
+  if (lastVowel === 'a' || lastVowel === 'ı' || lastVowel === 'o' || lastVowel === 'u') return `${t}'a Hoş Geldiniz`;
+  return `${t}'e Hoş Geldiniz`;
+}
+
 export default function GuestInterfaceClient({ roomId, initialLang, guestName, guestToken }: GuestInterfaceClientProps) {
   const router = useRouter();
   const [showSurvey, setShowSurvey] = useState(false);
@@ -76,45 +92,27 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
     }
   }, [initialLang, setLanguage]);
 
-  // Sabit QR (Permanent Key) Mantığı: Token yoksa bile odadaki aktif misafiri bul
+  // Token zorunlu: Sadece doğru token ile oda eşleşirse isim gösterilir (linke 102 yazıp yan oda çözülemez)
   useEffect(() => {
     const numericRoomId = roomId.replace(/^room-/, '');
-    const tenant = typeof window !== 'undefined' ? (() => {
-      const h = window.location.hostname.split('.')[0];
-      return h && h !== 'www' && h !== 'roomxqr' && h !== 'roomxqr-backend' ? h : 'demo';
-    })() : 'demo';
-
-    if (guestToken) {
-      // 1. Durum: Tokenlı Link (Dinamik/Güvenli)
-      fetch(`/api/guest-token/verify?token=${encodeURIComponent(guestToken)}&roomId=${encodeURIComponent(numericRoomId)}`, {
-        headers: { 'x-tenant': tenant },
+    const url = guestToken
+      ? `/api/rooms/${numericRoomId}/active-guest?token=${encodeURIComponent(guestToken)}`
+      : `/api/rooms/${numericRoomId}/active-guest`;
+    fetch(url)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d && d.guestName) {
+          setResolvedGuestName(d.guestName);
+          if (d.hotelName) setHotelName(d.hotelName);
+        } else if (guestName && !guestToken) {
+          setResolvedGuestName(guestName);
+        }
+        setGuestNameResolved(true);
       })
-        .then((r) => r.json())
-        .then((d) => {
-          if (d && d.guestName) setResolvedGuestName(d.guestName);
-          setGuestNameResolved(true);
-        })
-        .catch(() => setGuestNameResolved(true));
-    } else {
-      // 2. Durum: Sabit QR (Permanent Key) - Odadaki aktif misafiri sorgula
-      fetch(`/api/rooms/${numericRoomId}/active-guest`, {
-        headers: { 'x-tenant': tenant },
-      })
-        .then((r) => r.json())
-        .then((d) => {
-          if (d && d.guestName) {
-            setResolvedGuestName(d.guestName);
-          } else if (guestName) {
-            // Legacy/Fallback desteği
-            setResolvedGuestName(guestName);
-          }
-          setGuestNameResolved(true);
-        })
-        .catch(() => {
-          if (guestName) setResolvedGuestName(guestName);
-          setGuestNameResolved(true);
-        });
-    }
+      .catch(() => {
+        if (guestName && !guestToken) setResolvedGuestName(guestName);
+        setGuestNameResolved(true);
+      });
   }, [guestToken, roomId, guestName]);
 
   const displayGuestName = guestNameResolved ? resolvedGuestName : undefined;
@@ -287,15 +285,16 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
     }
   }, [hotelName, roomId, addNotification]);
 
-  // Sayfa başlığını otel adı ile güncelle
+  // Sayfa başlığını misafir + otel ile güncelle
   useEffect(() => {
-    if (hotelName) {
-      const title = formatWelcomeMessage(hotelName);
-      document.title = title;
+    if (displayGuestName && hotelName) {
+      document.title = `${formatGuestGreeting(displayGuestName)} ${hotelWelcomeSuffix(hotelName)}`;
+    } else if (hotelName) {
+      document.title = formatWelcomeMessage(hotelName);
     } else {
       document.title = 'Hoş Geldiniz';
     }
-  }, [hotelName]);
+  }, [hotelName, displayGuestName]);
 
 
   if (showSurvey) {
@@ -309,16 +308,13 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
         <div className="w-full max-w-md px-4 mb-4 flex items-center justify-between">
           <div className="flex-1">
             <h1 className="text-xl sm:text-2xl font-bold" style={{ color: theme.textColor }}>
-              {hotelName
-                ? formatWelcomeMessage(hotelName, currentLanguage)
-                : safeGetTranslation('room.welcome', 'Hoş Geldiniz')
+              {displayGuestName && hotelName
+                ? `${formatGuestGreeting(displayGuestName)} ${hotelWelcomeSuffix(hotelName)}`
+                : hotelName
+                  ? formatWelcomeMessage(hotelName, currentLanguage)
+                  : safeGetTranslation('room.welcome', 'Hoş Geldiniz')
               }
             </h1>
-            {displayGuestName && (
-              <p className="text-sm sm:text-base mt-1 opacity-90" style={{ color: theme.textColor }}>
-                {formatGuestGreeting(displayGuestName)}
-              </p>
-            )}
           </div>
           <div className="flex items-center gap-2">
             <div className="relative">
@@ -373,16 +369,13 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
       <div className="w-full max-w-md px-4 mb-4 flex items-center justify-between">
         <div className="flex-1">
           <h1 className="text-xl sm:text-2xl font-bold" style={{ color: theme.textColor }}>
-            {hotelName
-              ? formatWelcomeMessage(hotelName, currentLanguage)
-              : safeGetTranslation('room.welcome', 'Hoş Geldiniz')
+            {displayGuestName && hotelName
+              ? `${formatGuestGreeting(displayGuestName)} ${hotelWelcomeSuffix(hotelName)}`
+              : hotelName
+                ? formatWelcomeMessage(hotelName, currentLanguage)
+                : safeGetTranslation('room.welcome', 'Hoş Geldiniz')
             }
           </h1>
-          {displayGuestName && (
-            <p className="text-sm sm:text-base mt-1 opacity-90" style={{ color: theme.textColor }}>
-              {formatGuestGreeting(displayGuestName)}
-            </p>
-          )}
         </div>
 
         <div className="flex items-center gap-2">

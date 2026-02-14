@@ -18,6 +18,8 @@ interface ColumnStatus {
   orders: { paymentMethod: boolean };
   menu_items: { translations: boolean };
   guest_requests?: { tenantId: boolean };
+  guests?: { accessToken: boolean };
+  rooms?: { name: boolean };
 }
 
 export default function EksikSutunlarPage() {
@@ -73,6 +75,8 @@ export default function EksikSutunlarPage() {
       if (r.guest_requests_tenantId === 'atlandi_tenant_yok') {
         text += ' guest_requests.tenantId atlandı (veritabanında tenant yok).';
       }
+      if (r.guests_accessToken === 'eklendi') text += ' guests.accessToken eklendi.';
+      if (r.rooms_name === 'eklendi') text += ' rooms.name eklendi.';
       setMessage({ type: 'success', text });
       await fetchStatus();
     } catch (e: any) {
@@ -87,6 +91,8 @@ export default function EksikSutunlarPage() {
         { table: 'orders', column: 'paymentMethod', label: 'Ödeme yöntemi (sipariş)', ok: status.orders?.paymentMethod },
         { table: 'menu_items', column: 'translations', label: 'Çeviriler (menü)', ok: status.menu_items?.translations },
         { table: 'guest_requests', column: 'tenantId', label: 'Tenant (misafir talepleri)', ok: status.guest_requests?.tenantId },
+        { table: 'guests', column: 'accessToken', label: 'Misafir link token (QR güvenliği)', ok: status.guests?.accessToken },
+        { table: 'rooms', column: 'name', label: 'Oda adı (opsiyonel)', ok: status.rooms?.name },
       ]
     : [];
 
@@ -184,7 +190,7 @@ export default function EksikSutunlarPage() {
       <div className="rounded-lg bg-amber-50 border border-amber-200 p-4 text-sm text-amber-800">
         <p className="font-medium mb-1">Ne işe yarar?</p>
         <p className="text-amber-700">
-          Özellikle production ortamında migration çalıştırılmamışsa <strong>orders.paymentMethod</strong>, <strong>menu_items.translations</strong> veya <strong>guest_requests.tenantId</strong> sütunları eksik olabilir; bu da sipariş listesinde 500 hatası, menü çevirilerinde veya misafir talebi oluşturmada sorunlara yol açar. Bu sayfadan &quot;Eksik sütunları oluştur&quot; ile güvenle ekleyebilirsiniz (zaten varsa tekrar eklenmez).
+          Özellikle production ortamında migration çalıştırılmamışsa <strong>orders.paymentMethod</strong>, <strong>menu_items.translations</strong>, <strong>guest_requests.tenantId</strong>, <strong>guests.accessToken</strong> (misafir QR token) veya <strong>rooms.name</strong> (oda adı) sütunları eksik olabilir. Bu sayfadan &quot;Eksik sütunları oluştur&quot; ile güvenle ekleyebilirsiniz (zaten varsa tekrar eklenmez).
         </p>
       </div>
     </div>

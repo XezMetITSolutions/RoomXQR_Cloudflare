@@ -676,25 +676,60 @@ function CheckInModal({
     d.setDate(d.getDate() + 1);
     return d.toISOString().slice(0, 10);
   });
+  const [guestLink, setGuestLink] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!firstName.trim() || !lastName.trim()) return;
     setSubmitting(true);
     try {
-      await ApiService.checkInGuest(roomId, {
+      const result = await ApiService.checkInGuest(roomId, {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         checkIn: new Date(checkIn).toISOString(),
         checkOut: new Date(checkOut).toISOString(),
       });
       onSuccess();
+      if (result.accessToken && typeof window !== 'undefined') {
+        const base = window.location.origin;
+        const lang = 'tr';
+        setGuestLink(`${base}/${lang}/guest/${roomNumber}?token=${encodeURIComponent(result.accessToken)}`);
+      } else {
+        onClose();
+      }
     } catch (err) {
       console.error(err);
     } finally {
       setSubmitting(false);
     }
   };
+
+  if (guestLink) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+        <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-green-800">Check-in tamamlandı</h3>
+            <button type="button" onClick={() => { setGuestLink(null); onClose(); }} className="p-1 rounded-lg hover:bg-gray-100">
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
+          </div>
+          <p className="text-sm text-gray-600 mb-2">Misafir linki (QR ile aynı; odaya yapıştırılacak):</p>
+          <div className="flex gap-2">
+            <input readOnly value={guestLink} className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 bg-gray-50" />
+            <button
+              type="button"
+              onClick={() => { navigator.clipboard.writeText(guestLink); }}
+              className="px-4 py-2 rounded-lg bg-amber-600 text-white text-sm font-medium whitespace-nowrap"
+            >
+              Kopyala
+            </button>
+          </div>
+          <p className="text-xs text-gray-500 mt-2">Checkout sonrası bu link iptal olur; yeni misafir için yeni link üretilir.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">

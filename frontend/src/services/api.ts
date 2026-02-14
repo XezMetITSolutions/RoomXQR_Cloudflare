@@ -38,6 +38,7 @@ export interface RoomStatus {
   checkIn?: string;
   checkOut?: string;
   number?: string;
+  name?: string;
   floor?: number;
   type?: string;
 }
@@ -490,7 +491,7 @@ export class ApiService {
     email?: string;
     phone?: string;
     language?: string;
-  }): Promise<{ success: boolean; qrCode?: string }> {
+  }): Promise<{ success: boolean; qrCode?: string; accessToken?: string }> {
     try {
       const headers = this.getHeaders();
       const response = await fetch(`${API_BASE_URL}/guests/checkin`, {
@@ -504,10 +505,9 @@ export class ApiService {
 
       if (!response.ok) throw new Error('Failed to check in guest');
       const data = await response.json();
-      return { success: true, qrCode: data.qrCode };
+      return { success: true, qrCode: data.qrCode, accessToken: data.accessToken };
     } catch (error) {
       console.error('Error checking in guest:', error);
-      // Mock başarılı yanıt
       const guestName = `${guestData.firstName} ${guestData.lastName}`;
       const qrCode = this.generateMockGuestQR(roomId, guestName);
       return { success: true, qrCode };

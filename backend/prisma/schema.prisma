@@ -114,6 +114,7 @@ model UserPermission {
 model Room {
   id          String   @id @default(cuid())
   number      String
+  name        String?  // Opsiyonel oda adı (örn. "Kalan", "Manzara")
   floor       Int
   type        RoomType
   capacity    Int
@@ -136,17 +137,18 @@ model Room {
 }
 
 model Guest {
-  id          String   @id @default(cuid())
-  firstName   String
-  lastName    String
-  email       String?
-  phone       String?
-  language    String   @default("tr")
-  checkIn     DateTime
-  checkOut    DateTime?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(cuid())
+  firstName    String
+  lastName     String
+  email        String?
+  phone        String?
+  language     String   @default("tr")
+  accessToken  String?  // QR/link ile eşleşir; checkout'ta iptal edilir
+  checkIn      DateTime
+  checkOut     DateTime?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   // Relations
   tenantId    String
