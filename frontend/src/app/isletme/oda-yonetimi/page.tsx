@@ -127,13 +127,24 @@ export default function OdaYonetimiPage() {
     loadData();
   }, [loadData]);
 
+  // Helper function for consistent room ID matching
+  const matchesRoom = useCallback((orderRoomId: string, targetRoomNum: string) => {
+    // Normalize both inputs: remove 'room-' prefix (case insensitive), trim whitespace
+    const n1 = String(orderRoomId || '').replace(/^room-/i, '').trim();
+    const n2 = String(targetRoomNum || '').replace(/^room-/i, '').trim();
+    return n1 === n2;
+  }, []);
+
   const roomDebt = useCallback((roomId: string, roomNumber: string) => {
-    const norm = (id: string) => (id || '').replace(/^room-/, '');
+    // We can use the passed roomNumber which is already normalized in the loop,
+    // or re-normalize roomId just to be safe. "matchesRoom" handles normalization.
+    const norm = (id: string) => (id || '').replace(/^room-/i, '').trim();
     const num = norm(roomId) || roomNumber;
+
     return orders
-      .filter(o => (norm(o.roomId) || o.roomId) === num && (o.status === 'DELIVERED' || o.status === 'READY'))
+      .filter(o => matchesRoom(o.roomId, num) && (o.status === 'DELIVERED' || o.status === 'READY'))
       .reduce((sum, o) => sum + o.totalAmount, 0);
-  }, [orders]);
+  }, [orders, matchesRoom]);
 
   const normRoomNum = (val: any) => String(val ?? '').replace(/^room-/, '').trim();
   // Katlara göre grupla; aynı numara tek satır
@@ -455,11 +466,14 @@ function RoomDetailModal({
   onClose: () => void;
   onEdit: () => void;
 }) {
-  const norm = (id: string) => (id || '').replace(/^room-/, '');
+  const norm = (id: string) => (id || '').replace(/^room-/i, '').trim();
   const roomNum = norm(room.number ?? room.roomId);
 
-  // Filter orders for this room
-  const roomOrders = orders.filter(o => (norm(o.roomId) || o.roomId) === roomNum);
+  // Filter orders for this room using robust matching
+  const roomOrders = orders.filter(o => {
+    const orderRoom = (String(o.roomId) || '').replace(/^room-/i, '').trim();
+    return orderRoom === roomNum;
+  });
 
   // Unpaid orders (Debt)
   const unpaidOrders = roomOrders.filter(o => o.status === 'DELIVERED' || o.status === 'READY');
