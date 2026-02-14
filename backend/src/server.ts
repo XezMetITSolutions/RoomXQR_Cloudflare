@@ -1918,20 +1918,30 @@ app.post('/api/requests', tenantMiddleware, async (req: Request, res: Response) 
   }
 })
 
-app.patch('/api/requests/:id', async (req: Request, res: Response) => {
+app.patch('/api/requests/:id', tenantMiddleware, async (req: Request, res: Response) => {
   try {
+    const tenantId = getTenantId(req)
     const { id } = req.params
     const { status, notes } = req.body
+    const normalizedStatus = status != null ? String(status).toUpperCase() : undefined
+    const validStatuses = ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']
+    const statusValue = normalizedStatus && validStatuses.includes(normalizedStatus) ? normalizedStatus : undefined
 
-    const request = await prisma.guestRequest.update({
-      where: { id },
-      data: { status, notes, updatedAt: new Date() }
+    const request = await prisma.guestRequest.updateMany({
+      where: { id, tenantId },
+      data: {
+        ...(statusValue && { status: statusValue as any }),
+        ...(notes !== undefined && { notes }),
+        updatedAt: new Date()
+      }
     })
-
-    // Emit real-time notification
-    io.emit('request-updated', request)
-
-    res.json(request); return;
+    if (request.count === 0) {
+      res.status(404).json({ message: 'Request not found' })
+      return
+    }
+    const updated = await prisma.guestRequest.findUnique({ where: { id } })
+    if (updated) io.emit('request-updated', updated)
+    res.json(updated); return;
   } catch (error) {
     console.error('Request update error:', error)
     res.status(500).json({ message: 'Database error' })
