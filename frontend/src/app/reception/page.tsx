@@ -59,7 +59,7 @@ export default function ReceptionPanel() {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [lastRequestCount, setLastRequestCount] = useState(0);
 
-  const [lastRequestCount, setLastRequestCount] = useState(0);
+
 
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr.onrender.com';
   const API_BASE_URL = /\/api\/?$/.test(API_BASE) ? API_BASE.replace(/\/$/, '') : `${API_BASE.replace(/\/$/, '')}/api`;
