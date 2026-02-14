@@ -63,7 +63,7 @@ export interface Order {
   createdAt: Date;
   deliveryTime?: Date;
   paymentStatus: 'pending' | 'paid' | 'failed';
-  paymentMethod?: 'cash' | 'card' | 'room_charge';
+  paymentMethod?: 'cash' | 'card' | 'pos' | 'room_charge';
   specialInstructions?: string;
 }
 

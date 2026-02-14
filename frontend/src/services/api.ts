@@ -530,9 +530,21 @@ export class ApiService {
       return { success: true, qrCode: data.qrCode };
     } catch (error) {
       console.error('Error checking out guest:', error);
-      // Mock başarılı yanıt - QR kodu sıfırla
       const qrCode = this.generateMockGuestQR(roomId, '');
       return { success: true, qrCode };
+    }
+  }
+
+  static async updateGuest(roomId: string, data: { firstName?: string; lastName?: string; checkIn?: string; checkOut?: string }): Promise<void> {
+    const headers = this.getHeaders();
+    const response = await fetch(`${API_BASE_URL}/guests/update`, {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify({ roomId, ...data }),
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || 'Misafir güncellenemedi');
     }
   }
 

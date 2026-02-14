@@ -23,7 +23,8 @@ import {
   Info,
   Globe,
   ChevronDown,
-  BedDouble
+  BedDouble,
+  Database
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -71,6 +72,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: getTranslation('sidebar.notifications'), href: '/isletme/notifications', icon: Bell, key: 'notifications', color: 'text-pink-600' },
     { name: getTranslation('sidebar.analytics'), href: '/isletme/analytics', icon: BarChart3, key: 'analytics', color: 'text-indigo-600' },
     { name: getTranslation('sidebar.settings'), href: '/isletme/settings', icon: Settings, key: 'settings', color: 'text-gray-600' },
+    { name: getTranslation('sidebar.database_columns'), href: '/isletme/eksik-sutunlar', icon: Database, key: 'eksik-sutunlar', color: 'text-slate-600' },
   ], [getTranslation, currentLanguage]);
 
   // Auth kontrolü

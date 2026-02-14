@@ -224,6 +224,7 @@ export const translations: Record<string, Translations> = {
     'sidebar.notifications': 'Bildirimler',
     'sidebar.analytics': 'Analitik',
     'sidebar.settings': 'Ayarlar',
+    'sidebar.database_columns': 'Eksik Sütunlar',
     'sidebar.panels': 'Paneller',
     'sidebar.room_management': 'Oda Yönetimi',
 
@@ -835,6 +836,7 @@ export const translations: Record<string, Translations> = {
     'sidebar.notifications': 'Notifications',
     'sidebar.analytics': 'Analytics',
     'sidebar.settings': 'Settings',
+    'sidebar.database_columns': 'Database Columns',
     'sidebar.panels': 'Panels',
     'sidebar.room_management': 'Room Management',
 
@@ -1457,6 +1459,7 @@ export const translations: Record<string, Translations> = {
     'sidebar.notifications': 'Benachrichtigungen',
     'sidebar.analytics': 'Analytik',
     'sidebar.settings': 'Einstellungen',
+    'sidebar.database_columns': 'Fehlende Spalten',
     'sidebar.room_management': 'Zimmerverwaltung',
 
     // Page Titles
@@ -2061,6 +2064,7 @@ export const translations: Record<string, Translations> = {
     'sidebar.notifications': 'Notifications',
     'sidebar.analytics': 'Analytique',
     'sidebar.settings': 'Paramètres',
+    'sidebar.database_columns': 'Colonnes manquantes',
     'sidebar.room_management': 'Gestion des Chambres',
 
     // Page Titles

@@ -15,6 +15,7 @@ import {
   ChevronDown,
   Loader2,
   X,
+  Pencil,
 } from 'lucide-react';
 
 interface OrderRow {
@@ -35,6 +36,8 @@ export default function OdaYonetimiPage() {
   const [checkOutConfirm, setCheckOutConfirm] = useState<{ roomId: string; number: string; guestName: string; debt: number } | null>(null);
   const [expandedFloors, setExpandedFloors] = useState<Set<number>>(new Set());
   const [submitting, setSubmitting] = useState(false);
+  const [selectedFloorTab, setSelectedFloorTab] = useState<number | 'all'>('all');
+  const [editGuestModal, setEditGuestModal] = useState<{ roomId: string; number: string; guestName: string; checkIn: string; checkOut: string } | null>(null);
 
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr.onrender.com';
   const API_BASE_URL = /\/api\/?$/.test(API_BASE) ? API_BASE.replace(/\/$/, '') : `${API_BASE.replace(/\/$/, '')}/api`;
@@ -130,6 +133,7 @@ export default function OdaYonetimiPage() {
   }, {});
 
   const floorNumbers = Object.keys(roomsByFloor).map(Number).sort((a, b) => a - b);
+  const floorsToShow = selectedFloorTab === 'all' ? floorNumbers : [selectedFloorTab];
 
   useEffect(() => {
     if (rooms.length > 0 && expandedFloors.size === 0) {
@@ -157,6 +161,26 @@ export default function OdaYonetimiPage() {
         <p className="text-gray-600 mt-1">
           Tüm odaları katlara göre görüntüleyin, dolu/boş durumu, misafir bilgileri ve çıkışta alınacak borçları yönetin.
         </p>
+        {/* Kat sekmeleri (Registerkarte) */}
+        <div className="flex flex-wrap gap-2 mt-4">
+          <button
+            type="button"
+            onClick={() => setSelectedFloorTab('all')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${selectedFloorTab === 'all' ? 'bg-amber-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+          >
+            Tüm Odalar
+          </button>
+          {floorNumbers.map(floor => (
+            <button
+              key={floor}
+              type="button"
+              onClick={() => setSelectedFloorTab(floor)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${selectedFloorTab === floor ? 'bg-amber-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+            >
+              {floor}. Kat
+            </button>
+          ))}
+        </div>
       </div>
 
       {error && (
@@ -177,7 +201,7 @@ export default function OdaYonetimiPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {floorNumbers.map(floor => {
+          {floorsToShow.map(floor => {
             const floorRooms = roomsByFloor[floor] || [];
             const isOpen = expandedFloors.has(floor);
             return (
@@ -231,22 +255,35 @@ export default function OdaYonetimiPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-2 flex-shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => setEditGuestModal({
+                                roomId: room.roomId,
+                                number: num,
+                                guestName: room.guestName || '',
+                                checkIn: room.checkIn ? new Date(room.checkIn).toISOString().slice(0, 10) : '',
+                                checkOut: room.checkOut ? new Date(room.checkOut).toISOString().slice(0, 10) : '',
+                              })}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-sm font-medium"
+                              title="Düzenle"
+                            >
+                              <Pencil className="w-4 h-4" />
+                              Düzenle
+                            </button>
                             {occupied ? (
-                              <>
-                                <button
-                                  type="button"
-                                  onClick={() => setCheckOutConfirm({
-                                    roomId: room.roomId,
-                                    number: num,
-                                    guestName: room.guestName || 'Misafir',
-                                    debt,
-                                  })}
-                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-sm font-medium"
-                                >
-                                  <LogOut className="w-4 h-4" />
-                                  Çıkış
-                                </button>
-                              </>
+                              <button
+                                type="button"
+                                onClick={() => setCheckOutConfirm({
+                                  roomId: room.roomId,
+                                  number: num,
+                                  guestName: room.guestName || 'Misafir',
+                                  debt,
+                                })}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-sm font-medium"
+                              >
+                                <LogOut className="w-4 h-4" />
+                                Çıkış
+                              </button>
                             ) : (
                               <button
                                 type="button"
@@ -279,6 +316,24 @@ export default function OdaYonetimiPage() {
             setCheckInModal(null);
             loadData();
           }}
+          submitting={submitting}
+          setSubmitting={setSubmitting}
+        />
+      )}
+
+      {/* Düzenle misafir modal */}
+      {editGuestModal && (
+        <EditGuestModal
+          roomNumber={editGuestModal.number}
+          initialGuestName={editGuestModal.guestName}
+          initialCheckIn={editGuestModal.checkIn}
+          initialCheckOut={editGuestModal.checkOut}
+          onClose={() => setEditGuestModal(null)}
+          onSuccess={() => {
+            setEditGuestModal(null);
+            loadData();
+          }}
+          roomId={editGuestModal.roomId}
           submitting={submitting}
           setSubmitting={setSubmitting}
         />
@@ -442,6 +497,124 @@ function CheckInModal({
             >
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
               Giriş yap
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function EditGuestModal({
+  roomId,
+  roomNumber,
+  initialGuestName,
+  initialCheckIn,
+  initialCheckOut,
+  onClose,
+  onSuccess,
+  submitting,
+  setSubmitting,
+}: {
+  roomId: string;
+  roomNumber: string;
+  initialGuestName: string;
+  initialCheckIn: string;
+  initialCheckOut: string;
+  onClose: () => void;
+  onSuccess: () => void;
+  submitting: boolean;
+  setSubmitting: (v: boolean) => void;
+}) {
+  const parts = (initialGuestName || '').trim().split(/\s+/);
+  const [firstName, setFirstName] = useState(parts[0] || '');
+  const [lastName, setLastName] = useState(parts.slice(1).join(' ') || '');
+  const [checkIn, setCheckIn] = useState(initialCheckIn || new Date().toISOString().slice(0, 10));
+  const [checkOut, setCheckOut] = useState(initialCheckOut || (() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return d.toISOString().slice(0, 10);
+  })());
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      await ApiService.updateGuest(roomId, {
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        checkIn: new Date(checkIn).toISOString(),
+        checkOut: new Date(checkOut).toISOString(),
+      });
+      onSuccess();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">Oda {roomNumber} – Düzenle</h3>
+          <button type="button" onClick={onClose} className="p-1 rounded-lg hover:bg-gray-100">
+            <X className="w-5 h-5 text-gray-500" />
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Ad</label>
+            <input
+              type="text"
+              value={firstName}
+              onChange={e => setFirstName(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Soyad</label>
+            <input
+              type="text"
+              value={lastName}
+              onChange={e => setLastName(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Giriş tarihi</label>
+            <input
+              type="date"
+              value={checkIn}
+              onChange={e => setCheckIn(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Çıkış tarihi</label>
+            <input
+              type="date"
+              value={checkOut}
+              onChange={e => setCheckOut(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900"
+            />
+          </div>
+          <div className="flex gap-3 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+            >
+              İptal
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="flex-1 px-4 py-2 rounded-lg bg-amber-600 text-white hover:bg-amber-700 disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Pencil className="w-4 h-4" />}
+              Kaydet
             </button>
           </div>
         </form>

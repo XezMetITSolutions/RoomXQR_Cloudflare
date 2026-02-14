@@ -2183,7 +2183,96 @@ app.post('/api/guests/checkout', tenantMiddleware, async (req: Request, res: Res
   }
 })
 
+// Update active guest (name, check-in/out dates)
+app.patch('/api/guests/update', tenantMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = getTenantId(req)
+    const { roomId, firstName, lastName, checkIn, checkOut } = req.body || {}
+    if (!roomId || typeof roomId !== 'string') {
+      res.status(400).json({ message: 'roomId gerekli.' })
+      return
+    }
+    const formattedRoomId = String(roomId).startsWith('room-') ? roomId : `room-${roomId}`
+    const guest = await prisma.guest.findFirst({
+      where: {
+        roomId: formattedRoomId,
+        tenantId,
+        isActive: true,
+        checkOut: null
+      }
+    })
+    if (!guest) {
+      res.status(404).json({ message: 'Bu odada aktif misafir yok.' })
+      return
+    }
+    const data: { firstName?: string; lastName?: string; checkIn?: Date; checkOut?: Date } = {}
+    if (firstName !== undefined) data.firstName = String(firstName).trim()
+    if (lastName !== undefined) data.lastName = String(lastName).trim()
+    if (checkIn) data.checkIn = new Date(checkIn)
+    if (checkOut) data.checkOut = new Date(checkOut)
+    await prisma.guest.update({
+      where: { id: guest.id },
+      data
+    })
+    res.status(200).json({ message: 'Misafir güncellendi.' })
+  } catch (error) {
+    console.error('Guest update error:', error)
+    res.status(500).json({ message: 'Database error' })
+  }
+})
+
 // generate-guest-qr endpoint removed - QR codes are permanent and should not change
+
+// Eksik sütunları kontrol et (işletme paneli sayfası için)
+app.get('/api/setup/columns-status', tenantMiddleware, authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const cols = await prisma.$queryRaw<{ table_name: string; column_name: string }[]>`
+      SELECT table_name, column_name FROM information_schema.columns
+      WHERE table_schema = 'public' AND table_name IN ('orders', 'menu_items')
+    `
+    const orders = { paymentMethod: cols.some(c => c.table_name === 'orders' && c.column_name === 'paymentMethod') }
+    const menu_items = { translations: cols.some(c => c.table_name === 'menu_items' && c.column_name === 'translations') }
+    res.json({ orders, menu_items, columns: cols })
+  } catch (e: any) {
+    console.error('Columns status error:', e)
+    res.status(500).json({ message: e?.message || 'Sütun durumu alınamadı' })
+  }
+})
+
+// Eksik sütunları oluştur (idempotent)
+app.post('/api/setup/ensure-columns', tenantMiddleware, authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const results: { orders_paymentMethod?: string; menu_items_translations?: string } = {}
+    const hasPaymentMethod = await prisma.$queryRaw<{ exists: boolean }[]>`
+      SELECT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'orders' AND column_name = 'paymentMethod'
+      ) as exists
+    `
+    if (!hasPaymentMethod[0]?.exists) {
+      await prisma.$executeRawUnsafe('ALTER TABLE "orders" ADD COLUMN "paymentMethod" TEXT;')
+      results.orders_paymentMethod = 'eklendi'
+    } else {
+      results.orders_paymentMethod = 'zaten_mevcut'
+    }
+    const hasTranslations = await prisma.$queryRaw<{ exists: boolean }[]>`
+      SELECT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'menu_items' AND column_name = 'translations'
+      ) as exists
+    `
+    if (!hasTranslations[0]?.exists) {
+      await prisma.$executeRawUnsafe('ALTER TABLE "menu_items" ADD COLUMN "translations" JSONB;')
+      results.menu_items_translations = 'eklendi'
+    } else {
+      results.menu_items_translations = 'zaten_mevcut'
+    }
+    res.json({ success: true, results })
+  } catch (e: any) {
+    console.error('Ensure columns error:', e)
+    res.status(500).json({ message: e?.message || 'Sütunlar oluşturulamadı' })
+  }
+})
 
 // CRM Integration - Get guest data by room
 app.get('/api/crm/guest/:roomId', tenantMiddleware, async (req: Request, res: Response) => {
@@ -2331,10 +2420,17 @@ app.get('/api/orders', tenantMiddleware, async (req: Request, res: Response) => 
 
     res.json(orders);
     return;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Orders fetch error:', error)
+    // Sütun eksikse (örn. paymentMethod migration henüz çalışmamışsa) boş dizi dön, panel açılsın
+    const msg = error?.message || ''
+    if (msg.includes('paymentMethod') || msg.includes('column') || msg.includes('does not exist')) {
+      console.warn('Orders table may be missing paymentMethod column. Run: npx prisma migrate deploy')
+      res.json([])
+      return
+    }
     res.status(500).json({ message: 'Database error' })
-    return;
+    return
   }
 })
 

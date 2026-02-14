@@ -172,7 +172,8 @@ export default function KitchenPanel() {
               items: items,
               totalAmount: parseFloat(order.totalAmount) || 0,
               status: status,
-              paymentStatus: 'paid' as const, // Backend'de payment status yoksa varsayılan olarak paid
+              paymentStatus: 'paid' as const,
+              paymentMethod: order.paymentMethod || undefined,
               specialInstructions: order.notes || '',
               createdAt: new Date(order.createdAt),
               deliveryTime: order.status === 'DELIVERED' ? new Date(order.updatedAt) : undefined,
@@ -508,7 +509,7 @@ export default function KitchenPanel() {
             <div key={order.id} className="hotel-card p-6 hover:shadow-lg transition-shadow">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <div className="flex items-center space-x-3 mb-3">
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
                     <span className="text-lg font-semibold text-gray-900">
                       Oda {order.roomId}
                     </span>
@@ -524,6 +525,9 @@ export default function KitchenPanel() {
                     </span>
                     <span className="text-sm text-gray-600">
                       {new Date(order.createdAt).toLocaleString('tr-TR')}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {order.paymentMethod === 'cash' ? 'Nakit' : order.paymentMethod === 'pos' ? 'POS' : order.paymentMethod === 'room_charge' ? 'Çıkışta' : order.paymentMethod === 'card' ? 'Kart' : ''}
                     </span>
                     {order.status === 'preparing' && (
                       <span className="text-sm text-orange-600 font-medium">
@@ -553,8 +557,18 @@ export default function KitchenPanel() {
                       <h4 className="font-medium text-gray-900 mb-2">Sipariş Bilgileri:</h4>
                       <div className="space-y-1 text-sm text-gray-600">
                         <div className="flex justify-between">
+                          <span>Sipariş No:</span>
+                          <span className="font-medium text-gray-900 font-mono">{order.id.slice(0, 8)}</span>
+                        </div>
+                        <div className="flex justify-between">
                           <span>Toplam Tutar:</span>
                           <span className="font-medium text-gray-900">{order.totalAmount.toFixed(2)}₺</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Ödeme:</span>
+                          <span className="font-medium text-gray-900">
+                            {order.paymentMethod === 'cash' ? 'Nakit' : order.paymentMethod === 'pos' ? 'POS' : order.paymentMethod === 'room_charge' ? 'Çıkışta' : order.paymentMethod === 'card' ? 'Kart' : '—'}
+                          </span>
                         </div>
                         <div className="flex justify-between">
                           <span>Tahmini Süre:</span>
