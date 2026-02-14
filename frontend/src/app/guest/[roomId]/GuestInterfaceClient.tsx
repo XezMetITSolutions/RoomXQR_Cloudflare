@@ -57,6 +57,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName }:
   // Guest info artık kullanılmıyor - soyisim sorusu kaldırıldı
   const [hotelName, setHotelName] = useState<string>('');
   const [activityImages, setActivityImages] = useState<{ title: string; imageUrl: string }[]>([]);
+  const [slideIndex, setSlideIndex] = useState(0);
   const { addNotification } = useNotifications();
 
   // Dil store'u
@@ -128,6 +129,16 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName }:
 
     loadHotelName();
   }, []);
+
+  // Slideshow: aktivite görselleri sürekli döner
+  const activityList = activityImages.length > 0 ? activityImages : DEFAULT_ACTIVITY_IMAGES;
+  useEffect(() => {
+    if (activityList.length <= 1) return;
+    const t = setInterval(() => {
+      setSlideIndex((prev) => (prev + 1) % activityList.length);
+    }, 4000);
+    return () => clearInterval(t);
+  }, [activityList.length]);
 
   // Hydration kontrolü
   useEffect(() => {
@@ -373,30 +384,30 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName }:
         </div>
       </div>
 
-      {/* Duyuru Banner */}
+      {/* Üstte sürekli dönen slideshow - yazısız tek görsel */}
       <div className="w-full max-w-md mb-4 px-4">
-        <AnnouncementBanner roomId={roomId} />
-      </div>
-
-      {/* Otel aktiviteleri görselleri - API yoksa varsayılan liste kullanılır */}
-      <div className="w-full max-w-md mb-4 px-4">
-        <p className="text-sm font-medium mb-2" style={{ color: theme.textColor }}>Otel Aktiviteleri</p>
-        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin" style={{ scrollbarWidth: 'thin' }}>
-          {(activityImages.length > 0 ? activityImages : DEFAULT_ACTIVITY_IMAGES).map((item, idx) => (
-            <div key={idx} className="flex-shrink-0 w-36 rounded-xl overflow-hidden shadow-md border" style={{ borderColor: theme.borderColor }}>
-              <div className="relative w-36 h-28 bg-gray-100">
-                <img
-                  src={item.imageUrl}
-                  alt={item.title}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-              <p className="text-xs font-medium py-1.5 px-2 text-center" style={{ color: theme.textColor }}>{item.title}</p>
+        <div className="relative w-full h-44 sm:h-52 rounded-2xl overflow-hidden shadow-lg border" style={{ borderColor: theme.borderColor }}>
+          {activityList.map((item, idx) => (
+            <div
+              key={idx}
+              className="absolute inset-0 transition-opacity duration-700 ease-in-out"
+              style={{ opacity: idx === slideIndex ? 1 : 0, zIndex: idx === slideIndex ? 1 : 0 }}
+            >
+              <img
+                src={item.imageUrl}
+                alt=""
+                className="w-full h-full object-cover"
+                loading={idx === 0 ? 'eager' : 'lazy'}
+                referrerPolicy="no-referrer"
+              />
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Duyuru Banner */}
+      <div className="w-full max-w-md mb-4 px-4">
+        <AnnouncementBanner roomId={roomId} />
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full max-w-md mb-4 px-4">
