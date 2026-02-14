@@ -2092,6 +2092,24 @@ app.post('/api/rooms/bulk-delete', tenantMiddleware, authMiddleware, async (req:
   }
 })
 
+// Delete ALL rooms for tenant
+app.post('/api/rooms/delete-all', tenantMiddleware, authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = getTenantId(req)
+
+    const result = await prisma.room.updateMany({
+      where: { tenantId },
+      data: { isActive: false }
+    })
+
+    res.json({ message: `${result.count} odanın tamamı silindi.` }); return;
+  } catch (error) {
+    console.error('Delete all rooms error:', error)
+    res.status(500).json({ message: 'Database error' })
+    return;
+  }
+})
+
 // Rooms endpoint to get all rooms with status
 app.get('/api/rooms', tenantMiddleware, async (req: Request, res: Response) => {
   try {

@@ -1061,6 +1061,49 @@ export default function QRKodPage() {
                   </button>
                 </div>
               )}
+              <button
+                onClick={async () => {
+                  if (!confirm('DİKKAT! Oteldeki TÜM odalar silinecektir. Bu işlem geri alınamaz. Emin misiniz?')) return;
+
+                  try {
+                    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr.onrender.com';
+                    let tenantSlug = 'demo';
+                    if (typeof window !== 'undefined') {
+                      const hostname = window.location.hostname;
+                      const subdomain = hostname.split('.')[0];
+                      if (subdomain && subdomain !== 'www' && subdomain !== 'roomxqr') {
+                        tenantSlug = subdomain;
+                      }
+                    }
+
+                    const response = await fetch(`${API_BASE_URL}/api/rooms/delete-all`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                        'x-tenant': tenantSlug
+                      }
+                    });
+
+                    if (response.ok) {
+                      setRooms([]);
+                      setGeneratedRooms([]);
+                      setSelectedRoomIds([]);
+                      localStorage.removeItem('qrKod_generatedRooms');
+                      alert('Tüm odalar başarıyla silindi.');
+                    } else {
+                      alert('Odalar silinirken bir hata oluştu.');
+                    }
+                  } catch (error) {
+                    console.error('Delete all error:', error);
+                    alert('Bir hata oluştu.');
+                  }
+                }}
+                className="px-3 py-1 text-red-600 hover:text-red-700 text-xs font-medium flex items-center gap-1 transition-colors opacity-60 hover:opacity-100"
+              >
+                <X className="w-3.5 h-3.5" />
+                Sistemi Sıfırla (Tümünü Sil)
+              </button>
             </div>
             <div className="text-sm text-gray-500">
               {(useGeneratedRooms ? generatedRooms : rooms).length} oda
