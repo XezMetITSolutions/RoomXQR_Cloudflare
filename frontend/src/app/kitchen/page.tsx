@@ -195,7 +195,7 @@ export default function KitchenPanel() {
 
           // Odaları çek
           const roomsData = token ? await ApiService.getRooms(token) : [];
-          setRooms(roomsData);
+          setRooms(Array.isArray(roomsData) ? roomsData : []);
         }
       } catch (error) {
         console.error('Sipariş yükleme hatası:', error);
