@@ -46,7 +46,8 @@ export async function POST(request: Request) {
         roomId: formattedRoomId,
         firstName,
         lastName,
-        checkIn, // checkin endpoint might ignore this if it handles dates differently, but sending it anyway
+        checkIn,
+        checkOut,
         language: 'tr' // Default
       }),
     });
@@ -63,14 +64,15 @@ export async function POST(request: Request) {
             roomId: roomId,
             firstName,
             lastName,
+            checkIn,
+            checkOut,
             language: 'tr'
           }),
         });
         const retryData = await retryRes.json().catch(() => ({}));
         if (retryRes.ok) {
-          // Checkin successful, return token structure if needed or just success
           return NextResponse.json({
-            token: retryData.token || 'mock-token',
+            success: true,
             guest: retryData.guest
           });
         }
@@ -80,7 +82,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({
-      token: data.token || 'mock-token',
+      success: true,
       guest: data.guest
     });
   } catch (error) {

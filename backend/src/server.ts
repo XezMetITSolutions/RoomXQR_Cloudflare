@@ -1388,28 +1388,11 @@ app.post('/api/guests/checkin', tenantMiddleware, async (req: Request, res: Resp
       }
     })
 
-    // 4. Token oluştur
-    const token = jwt.sign(
-      {
-        guestId: guest.id,
-        roomId: formattedRoomId,
-        tenantId,
-        role: 'guest'
-      },
-      process.env.JWT_SECRET || 'secret',
-      { expiresIn: '7d' }
-    )
-
-    // 5. QR Kod oluştur (opsiyonel, frontend zaten oluşturabiliyor)
-    const qrCode = `https://grandhotel.roomxqr.com/guest/${formattedRoomId}?token=${token}`
-
     console.log(`✅ Guest check-in successful: ${firstName} ${lastName} -> ${formattedRoomId}`);
 
     res.json({
       success: true,
-      guest,
-      token,
-      qrCode
+      guest
     })
 
   } catch (error) {
@@ -2098,64 +2081,7 @@ app.get('/api/rooms', tenantMiddleware, async (req: Request, res: Response) => {
   }
 })
 
-// Guest Check-in/Check-out endpoints
-app.post('/api/guests/checkin', tenantMiddleware, async (req: Request, res: Response) => {
-  try {
-    const tenantId = getTenantId(req)
-    const { roomId, firstName, lastName, email, phone, language } = req.body
-
-    // Check if room exists
-    const room = await prisma.room.findFirst({
-      where: {
-        id: roomId,
-        tenantId,
-        isActive: true
-      }
-    })
-
-    if (!room) {
-      return res.status(404).json({ message: 'Room not found' })
-    }
-
-    // Create guest
-    const guest = await prisma.guest.create({
-      data: {
-        firstName,
-        lastName,
-        email,
-        phone,
-        language: language || 'tr',
-        checkIn: new Date(),
-        tenantId,
-        hotelId: 'default-hotel-id', // You'll need to get this from request
-        roomId: room.id
-      }
-    })
-
-    // Update room status
-    await prisma.room.update({
-      where: { id: room.id },
-      data: {
-        isOccupied: true,
-        qrCode: `room-${room.number}-${firstName.toLowerCase()}-${lastName.toLowerCase()}`
-      }
-    })
-
-    // Generate QR code with guest name
-    const qrCode = `room-${room.number}-${firstName.toLowerCase()}-${lastName.toLowerCase()}`
-
-    res.status(201).json({
-      message: 'Guest checked in successfully',
-      guest,
-      qrCode
-    })
-    return
-  } catch (error) {
-    console.error('Guest check-in error:', error)
-    res.status(500).json({ message: 'Database error' })
-    return
-  }
-})
+// Guest Check-in/Check-out endpoints (duplicate removed - primary handler is above)
 
 app.post('/api/guests/checkout', tenantMiddleware, async (req: Request, res: Response) => {
   try {
@@ -2196,15 +2122,13 @@ app.post('/api/guests/checkout', tenantMiddleware, async (req: Request, res: Res
       await prisma.room.update({
         where: { id: room.id },
         data: {
-          isOccupied: false,
-          qrCode: `room-${room.number}`
+          isOccupied: false
         }
       })
     }
 
     res.status(200).json({
-      message: 'Guest checked out successfully',
-      qrCode: `room-${room?.number || 'unknown'}`
+      message: 'Guest checked out successfully'
     })
   } catch (error) {
     console.error('Guest check-out error:', error)
@@ -2213,43 +2137,7 @@ app.post('/api/guests/checkout', tenantMiddleware, async (req: Request, res: Res
   }
 })
 
-// Generate guest-specific QR code
-app.post('/api/rooms/:roomId/generate-guest-qr', tenantMiddleware, async (req: Request, res: Response) => {
-  try {
-    const tenantId = getTenantId(req)
-    const { roomId } = req.params
-    const { guestName } = req.body
-
-    const room = await prisma.room.findFirst({
-      where: {
-        id: roomId,
-        tenantId,
-        isActive: true
-      }
-    })
-
-    if (!room) {
-      return res.status(404).json({ message: 'Room not found' })
-    }
-
-    const qrCode = guestName
-      ? `room-${room.number}-${guestName.replace(/\s+/g, '-').toLowerCase()}`
-      : `room-${room.number}`
-
-    // Update room QR code
-    await prisma.room.update({
-      where: { id: room.id },
-      data: { qrCode }
-    })
-
-    res.status(200).json({ qrCode })
-    return
-  } catch (error) {
-    console.error('QR generation error:', error)
-    res.status(500).json({ message: 'Database error' })
-    return
-  }
-})
+// generate-guest-qr endpoint removed - QR codes are permanent and should not change
 
 // CRM Integration - Get guest data by room
 app.get('/api/crm/guest/:roomId', tenantMiddleware, async (req: Request, res: Response) => {
