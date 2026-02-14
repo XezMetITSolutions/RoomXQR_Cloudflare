@@ -17,6 +17,7 @@ function getTenantSlug() {
 interface ColumnStatus {
   orders: { paymentMethod: boolean };
   menu_items: { translations: boolean };
+  guest_requests?: { tenantId: boolean };
 }
 
 export default function EksikSutunlarPage() {
@@ -67,7 +68,12 @@ export default function EksikSutunlarPage() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.message || 'İşlem başarısız');
-      setMessage({ type: 'success', text: 'Eksik sütunlar oluşturuldu.' });
+      const r = data.results || {};
+      let text = 'Eksik sütunlar oluşturuldu.';
+      if (r.guest_requests_tenantId === 'atlandi_tenant_yok') {
+        text += ' guest_requests.tenantId atlandı (veritabanında tenant yok).';
+      }
+      setMessage({ type: 'success', text });
       await fetchStatus();
     } catch (e: any) {
       setMessage({ type: 'error', text: e?.message || 'Sütunlar oluşturulamadı' });
@@ -80,6 +86,7 @@ export default function EksikSutunlarPage() {
     ? [
         { table: 'orders', column: 'paymentMethod', label: 'Ödeme yöntemi (sipariş)', ok: status.orders?.paymentMethod },
         { table: 'menu_items', column: 'translations', label: 'Çeviriler (menü)', ok: status.menu_items?.translations },
+        { table: 'guest_requests', column: 'tenantId', label: 'Tenant (misafir talepleri)', ok: status.guest_requests?.tenantId },
       ]
     : [];
 
@@ -177,7 +184,7 @@ export default function EksikSutunlarPage() {
       <div className="rounded-lg bg-amber-50 border border-amber-200 p-4 text-sm text-amber-800">
         <p className="font-medium mb-1">Ne işe yarar?</p>
         <p className="text-amber-700">
-          Özellikle production ortamında migration çalıştırılmamışsa <strong>orders.paymentMethod</strong> veya <strong>menu_items.translations</strong> sütunları eksik olabilir; bu da sipariş listesinde 500 hatası veya menü çevirilerinde sorunlara yol açar. Bu sayfadan &quot;Eksik sütunları oluştur&quot; ile güvenle ekleyebilirsiniz (zaten varsa tekrar eklenmez).
+          Özellikle production ortamında migration çalıştırılmamışsa <strong>orders.paymentMethod</strong>, <strong>menu_items.translations</strong> veya <strong>guest_requests.tenantId</strong> sütunları eksik olabilir; bu da sipariş listesinde 500 hatası, menü çevirilerinde veya misafir talebi oluşturmada sorunlara yol açar. Bu sayfadan &quot;Eksik sütunları oluştur&quot; ile güvenle ekleyebilirsiniz (zaten varsa tekrar eklenmez).
         </p>
       </div>
     </div>

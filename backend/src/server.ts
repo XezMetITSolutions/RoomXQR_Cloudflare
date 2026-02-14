@@ -2245,11 +2245,12 @@ app.get('/api/setup/columns-status', tenantMiddleware, authMiddleware, async (re
   try {
     const cols = await prisma.$queryRaw<{ table_name: string; column_name: string }[]>`
       SELECT table_name, column_name FROM information_schema.columns
-      WHERE table_schema = 'public' AND table_name IN ('orders', 'menu_items')
+      WHERE table_schema = 'public' AND table_name IN ('orders', 'menu_items', 'guest_requests')
     `
     const orders = { paymentMethod: cols.some(c => c.table_name === 'orders' && c.column_name === 'paymentMethod') }
     const menu_items = { translations: cols.some(c => c.table_name === 'menu_items' && c.column_name === 'translations') }
-    res.json({ orders, menu_items, columns: cols })
+    const guest_requests = { tenantId: cols.some(c => c.table_name === 'guest_requests' && c.column_name === 'tenantId') }
+    res.json({ orders, menu_items, guest_requests, columns: cols })
   } catch (e: any) {
     console.error('Columns status error:', e)
     res.status(500).json({ message: e?.message || 'Sütun durumu alınamadı' })
@@ -2259,7 +2260,7 @@ app.get('/api/setup/columns-status', tenantMiddleware, authMiddleware, async (re
 // Eksik sütunları oluştur (idempotent)
 app.post('/api/setup/ensure-columns', tenantMiddleware, authMiddleware, async (req: Request, res: Response) => {
   try {
-    const results: { orders_paymentMethod?: string; menu_items_translations?: string } = {}
+    const results: { orders_paymentMethod?: string; menu_items_translations?: string; guest_requests_tenantId?: string } = {}
     const hasPaymentMethod = await prisma.$queryRaw<{ exists: boolean }[]>`
       SELECT EXISTS (
         SELECT 1 FROM information_schema.columns
@@ -2283,6 +2284,30 @@ app.post('/api/setup/ensure-columns', tenantMiddleware, authMiddleware, async (r
       results.menu_items_translations = 'eklendi'
     } else {
       results.menu_items_translations = 'zaten_mevcut'
+    }
+    const hasGuestRequestsTenantId = await prisma.$queryRaw<{ exists: boolean }[]>`
+      SELECT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'guest_requests' AND column_name = 'tenantId'
+      ) as exists
+    `
+    if (!hasGuestRequestsTenantId[0]?.exists) {
+      const tenantCount = await prisma.$queryRaw<{ count: bigint }[]>`SELECT COUNT(*) as count FROM "public"."tenants"`
+      if (Number(tenantCount[0]?.count ?? 0) === 0) {
+        results.guest_requests_tenantId = 'atlandi_tenant_yok'
+      } else {
+        await prisma.$executeRawUnsafe('ALTER TABLE "public"."guest_requests" ADD COLUMN IF NOT EXISTS "tenantId" TEXT;')
+        await prisma.$executeRawUnsafe('UPDATE "public"."guest_requests" gr SET "tenantId" = (SELECT t.id FROM "public"."tenants" t LIMIT 1) WHERE gr."tenantId" IS NULL;')
+        await prisma.$executeRawUnsafe('ALTER TABLE "public"."guest_requests" ALTER COLUMN "tenantId" SET NOT NULL;')
+        try {
+          await prisma.$executeRawUnsafe('ALTER TABLE "public"."guest_requests" ADD CONSTRAINT "guest_requests_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "public"."tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;')
+        } catch (fkErr: any) {
+          if (!String(fkErr?.message || '').includes('already exists')) throw fkErr
+        }
+        results.guest_requests_tenantId = 'eklendi'
+      }
+    } else {
+      results.guest_requests_tenantId = 'zaten_mevcut'
     }
     res.json({ success: true, results })
   } catch (e: any) {
