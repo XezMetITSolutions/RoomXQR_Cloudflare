@@ -432,13 +432,13 @@ export default function KitchenPanel() {
               rooms
                 .filter(room => selectedFloor === 'all' || (room.floor || 1) === selectedFloor)
                 .map((room) => {
-                  const roomNum = room.number || room.roomId.replace(/^room-/, '');
+                  const roomNum = String(room.number ?? room.roomId.replace(/^room-/, '')).trim();
                   const hasActiveOrder = orders.some(o =>
-                    (o.roomId.replace(/^room-/, '') || o.roomId) === roomNum && o.status === 'pending'
+                    String(o.roomId || '').replace(/^room-/, '') === roomNum && o.status === 'pending'
                   );
                   return (
                     <div
-                      key={room.roomId}
+                      key={roomNum}
                       onClick={() => setSearchTerm(roomNum)}
                       className={`
                       p-3 rounded-lg border-2 text-center transition-all cursor-pointer relative overflow-hidden hover:shadow-md
@@ -560,15 +560,6 @@ export default function KitchenPanel() {
                           <span>Tahmini Süre:</span>
                           <span className="font-medium text-gray-900">
                             {calculateTotalPreparationTime(order)} dk
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Ödeme Durumu:</span>
-                          <span className={`px-2 py-1 rounded-full text-xs ${order.paymentStatus === 'paid'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                            }`}>
-                            {order.paymentStatus === 'paid' ? 'ÖDENDİ' : 'BEKLEMEDE'}
                           </span>
                         </div>
                       </div>

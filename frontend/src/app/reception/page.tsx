@@ -799,13 +799,13 @@ export default function ReceptionPanel() {
               rooms
                 .filter(room => selectedFloor === 'all' || (room.floor || 1) === selectedFloor)
                 .map((room) => {
-                  const roomNum = room.number || room.roomId.replace(/^room-/, '');
+                  const roomNum = String(room.number ?? room.roomId.replace(/^room-/, '')).trim();
                   const hasActiveRequest = requests.some(r =>
-                    (r.roomId.replace(/^room-/, '') || r.roomId) === roomNum && r.status === 'pending'
+                    String(r.roomId || '').replace(/^room-/, '') === roomNum && r.status === 'pending'
                   );
                   return (
                     <div
-                      key={room.roomId}
+                      key={roomNum}
                       onClick={() => setSearchTerm(roomNum)}
                       className={`
                       p-3 rounded-lg border-2 text-center transition-all cursor-pointer relative overflow-hidden hover:shadow-md

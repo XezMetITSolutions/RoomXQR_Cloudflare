@@ -260,9 +260,10 @@ export class ApiService {
       });
 
       // Aynı oda numarası için birden fazla kayıt olabilir (id "101" ve "room-101"). Numaraya göre tekilleştir.
+      // Anahtar her zaman string olmalı (backend number'ı bazen number bazen string dönebilir).
       const byNumber = new Map<string, RoomStatus>();
       for (const r of mapped) {
-        const num = r.number || r.roomId.replace(/^room-/, '');
+        const num = String(r.number ?? r.roomId.replace(/^room-/, '')).trim();
         const existing = byNumber.get(num);
         if (!existing) {
           byNumber.set(num, r);
