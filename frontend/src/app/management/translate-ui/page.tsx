@@ -2,17 +2,36 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Globe, Loader2, CheckCircle, XCircle, Play } from 'lucide-react';
+import { useLanguageStore } from '@/store/languageStore';
+import { Globe, Loader2, CheckCircle, XCircle, Play, Download } from 'lucide-react';
 import Link from 'next/link';
+
+function downloadJson(filename: string, obj: Record<string, string>) {
+  const blob = new Blob([JSON.stringify(obj, null, 0)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export default function TranslateUiPage() {
   const { token } = useAuth();
+  const setLoadedTranslations = useLanguageStore((s) => s.setLoadedTranslations);
   const [running, setRunning] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string; log?: string } | null>(null);
+  const [files, setFiles] = useState<{
+    tr: Record<string, string>;
+    de: Record<string, string>;
+    en: Record<string, string>;
+    ru: Record<string, string>;
+  } | null>(null);
 
   const runScript = async () => {
     setRunning(true);
     setMessage(null);
+    setFiles(null);
     try {
       const res = await fetch('/api/translate-ui/run', {
         method: 'POST',
@@ -22,9 +41,14 @@ export default function TranslateUiPage() {
       if (data.success) {
         setMessage({
           type: 'success',
-          text: data.message || 'Çeviriler oluşturuldu.',
-          log: data.log,
+          text: data.message || 'Çeviriler hazır.',
         });
+        if (data.files) {
+          setFiles(data.files);
+          ['tr', 'de', 'en', 'ru'].forEach((lang) => {
+            setLoadedTranslations(lang, data.files[lang]);
+          });
+        }
       } else {
         setMessage({
           type: 'error',
@@ -48,7 +72,7 @@ export default function TranslateUiPage() {
           Arayüz Çevirileri (4 Dil)
         </h1>
         <p className="text-gray-600 mt-1">
-          Tüm site metinlerini (admin paneli, müşteri QR, menü vb.) Türkçe kaynaktan DeepL ile Almanca, İngilizce ve Rusçaya çevirir. Çıktı dosyaları <code className="bg-gray-100 px-1 rounded">public/locales/</code> altına yazılır.
+          Tüm site metinlerini (admin paneli, müşteri QR, menü vb.) Türkçe kaynaktan DeepL ile Almanca, İngilizce ve Rusçaya çevirir. Çeviriler oturumda hemen yüklenir; kalıcı kullanım için dosyaları indirip <code className="bg-gray-100 px-1 rounded">public/locales/</code> altına koyabilirsiniz.
         </p>
       </div>
 
@@ -66,7 +90,7 @@ export default function TranslateUiPage() {
             ) : (
               <XCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
             )}
-            <div>
+            <div className="flex-1">
               <p>{message.text}</p>
               {message.log && (
                 <pre className="mt-2 text-xs overflow-auto max-h-32 bg-black/5 p-2 rounded whitespace-pre-wrap">
@@ -78,9 +102,28 @@ export default function TranslateUiPage() {
         </div>
       )}
 
+      {files && (
+        <div className="rounded-lg border border-green-200 bg-green-50/50 p-4">
+          <p className="text-sm font-medium text-green-800 mb-2">Çeviriler bu oturumda yüklendi. Dosya indir (kalıcı kullanım için):</p>
+          <div className="flex flex-wrap gap-2">
+            {(['tr', 'de', 'en', 'ru'] as const).map((lang) => (
+              <button
+                key={lang}
+                type="button"
+                onClick={() => downloadJson(`${lang}.json`, files[lang])}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-green-300 text-green-800 text-sm font-medium hover:bg-green-100"
+              >
+                <Download className="w-4 h-4" />
+                {lang}.json
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="rounded-lg border border-gray-200 bg-gray-50/50 p-6">
         <p className="text-gray-700 mb-4">
-          Sunucuda <strong>DEEPL_API_KEY</strong> veya <strong>DEEPL_API</strong> ortam değişkeni tanımlı olmalı. Script birkaç dakika sürebilir (yüzlerce metin DeepL ile çevrilir).
+          Sunucuda <strong>DEEPL_API_KEY</strong> veya <strong>DEEPL_API</strong> ortam değişkeni tanımlı olmalı. İşlem birkaç dakika sürebilir (yüzlerce metin DeepL ile çevrilir).
         </p>
         <button
           type="button"

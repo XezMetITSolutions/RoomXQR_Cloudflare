@@ -1,11 +1,40 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { spawn } from 'child_process';
-import path from 'path';
-import fs from 'fs';
+import { NextResponse } from 'next/server';
+import trSource from '@/data/tr-source.json';
 
 export const maxDuration = 120;
 
-export async function POST(request: NextRequest) {
+const LANG_MAP: Record<string, string> = { de: 'DE', en: 'EN', ru: 'RU' };
+const BATCH_SIZE = 50;
+
+async function translateBatch(
+  texts: string[],
+  targetLang: string,
+  apiKey: string
+): Promise<string[]> {
+  const body = new URLSearchParams();
+  body.append('source_lang', 'TR');
+  body.append('target_lang', LANG_MAP[targetLang] || targetLang.toUpperCase());
+  texts.forEach((t) => body.append('text', t));
+  const url = apiKey.includes('free')
+    ? 'https://api-free.deepl.com/v2/translate'
+    : 'https://api.deepl.com/v2/translate';
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `DeepL-Auth-Key ${apiKey}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: body.toString(),
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`DeepL ${res.status}: ${err}`);
+  }
+  const data = (await res.json()) as { translations?: Array<{ text?: string }> };
+  return (data.translations || []).map((t) => t?.text || '');
+}
+
+export async function POST() {
   try {
     const apiKey = process.env.DEEPL_API_KEY || process.env.DEEPL_API;
     if (!apiKey) {
@@ -15,58 +44,43 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const cwd = process.cwd();
-    const scriptPath = path.join(cwd, 'scripts', 'translate-ui-with-deepl.js');
-    if (!fs.existsSync(scriptPath)) {
+    const tr = trSource as Record<string, string>;
+    const keys = Object.keys(tr);
+    if (keys.length === 0) {
       return NextResponse.json(
-        { success: false, message: 'Script bulunamadı: frontend/scripts/translate-ui-with-deepl.js' },
-        { status: 404 }
+        { success: false, message: 'tr-source.json boş veya bulunamadı.' },
+        { status: 500 }
       );
     }
 
-    return await new Promise<NextResponse>((resolve) => {
-      const child = spawn('node', [scriptPath], {
-        cwd,
-        env: { ...process.env, DEEPL_API_KEY: apiKey, DEEPL_API: apiKey },
-      });
+    const result: { tr: Record<string, string>; de: Record<string, string>; en: Record<string, string>; ru: Record<string, string> } = {
+      tr: { ...tr },
+      de: {},
+      en: {},
+      ru: {},
+    };
 
-      let stdout = '';
-      let stderr = '';
+    for (const lang of ['de', 'en', 'ru'] as const) {
+      for (let i = 0; i < keys.length; i += BATCH_SIZE) {
+        const chunk = keys.slice(i, i + BATCH_SIZE);
+        const texts = chunk.map((k) => tr[k]);
+        const translated = await translateBatch(texts, lang, apiKey);
+        chunk.forEach((k, j) => {
+          result[lang][k] = translated[j] || tr[k];
+        });
+        await new Promise((r) => setTimeout(r, 300));
+      }
+    }
 
-      child.stdout?.on('data', (chunk) => { stdout += chunk.toString(); });
-      child.stderr?.on('data', (chunk) => { stderr += chunk.toString(); });
-
-      child.on('close', (code) => {
-        if (code === 0) {
-          resolve(
-            NextResponse.json({
-              success: true,
-              message: 'Çeviriler oluşturuldu. tr, de, en, ru dosyaları public/locales altına yazıldı.',
-              log: stdout.trim() || undefined,
-            })
-          );
-        } else {
-          resolve(
-            NextResponse.json(
-              {
-                success: false,
-                message: stderr.trim() || stdout.trim() || `Script çıkış kodu: ${code}`,
-                log: stdout.trim() || undefined,
-              },
-              { status: 500 }
-            )
-          );
-        }
-      });
-
-      child.on('error', (err) => {
-        resolve(
-          NextResponse.json(
-            { success: false, message: err?.message || 'Script çalıştırılamadı.' },
-            { status: 500 }
-          )
-        );
-      });
+    return NextResponse.json({
+      success: true,
+      message: 'Çeviriler hazır. Aşağıdaki dosyaları indirip public/locales/ altına koyun veya indir butonlarını kullanın.',
+      files: {
+        tr: result.tr,
+        de: result.de,
+        en: result.en,
+        ru: result.ru,
+      },
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Bilinmeyen hata';
