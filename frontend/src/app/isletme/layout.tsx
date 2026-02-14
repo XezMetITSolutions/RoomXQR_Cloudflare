@@ -67,7 +67,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: getTranslation('sidebar.notifications'), href: '/isletme/notifications', icon: Bell, key: 'notifications', color: 'text-pink-600' },
     { name: getTranslation('sidebar.analytics'), href: '/isletme/analytics', icon: BarChart3, key: 'analytics', color: 'text-indigo-600' },
     { name: getTranslation('sidebar.settings'), href: '/isletme/settings', icon: Settings, key: 'settings', color: 'text-gray-600' },
-  ], [getTranslation]);
+  ], [getTranslation, currentLanguage]);
 
   // Auth kontrolü
   useEffect(() => {
@@ -161,13 +161,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     href={item.href}
                     onClick={() => setSidebarOpen(false)}
                     className={`w-full group flex items-center px-4 py-3 text-base font-medium rounded-xl transition-all duration-200 ${isItemActive
-                        ? 'bg-gradient-to-r from-yellow-50 to-yellow-100 text-yellow-900 shadow-sm border border-yellow-200'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      ? 'bg-gradient-to-r from-yellow-50 to-yellow-100 text-yellow-900 shadow-sm border border-yellow-200'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                       }`}
                   >
                     <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 ${isItemActive
-                        ? 'bg-yellow-500 shadow-sm'
-                        : 'bg-gray-100 group-hover:bg-gray-200'
+                      ? 'bg-yellow-500 shadow-sm'
+                      : 'bg-gray-100 group-hover:bg-gray-200'
                       }`}>
                       <Icon className={`h-5 w-5 ${isItemActive ? 'text-white' : `${item.color} group-hover:scale-110`
                         }`} />
@@ -247,13 +247,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       <Link
                         href={item.href}
                         className={`w-full group flex items-center px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 ${isItemActive
-                            ? 'bg-gradient-to-r from-yellow-50 to-yellow-100 text-yellow-900 shadow-sm border border-yellow-200'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:shadow-sm'
+                          ? 'bg-gradient-to-r from-yellow-50 to-yellow-100 text-yellow-900 shadow-sm border border-yellow-200'
+                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:shadow-sm'
                           }`}
                       >
                         <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${isItemActive
-                            ? 'bg-yellow-500 shadow-sm'
-                            : 'bg-gray-100 group-hover:bg-gray-200'
+                          ? 'bg-yellow-500 shadow-sm'
+                          : 'bg-gray-100 group-hover:bg-gray-200'
                           }`}>
                           <Icon className={`h-4 w-4 ${isItemActive ? 'text-white' : `${item.color} group-hover:scale-110`
                             }`} />
@@ -358,8 +358,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                           setShowLanguageSelector(false);
                         }}
                         className={`w-full px-4 py-3 text-left transition-colors flex items-center space-x-3 ${currentLanguage === lang.code
-                            ? 'bg-hotel-gold bg-opacity-10'
-                            : 'hover:bg-gray-50'
+                          ? 'bg-hotel-gold bg-opacity-10'
+                          : 'hover:bg-gray-50'
                           }`}
                       >
                         <span className="text-lg">{lang.flag}</span>
