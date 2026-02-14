@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguageStore } from '@/store/languageStore';
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  EyeOff, 
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
+  EyeOff,
   Search,
   Filter,
   Shield,
@@ -71,11 +71,11 @@ export default function UsersManagement() {
   useEffect(() => {
     const loadUsers = async () => {
       if (!token || !user) return;
-      
+
       try {
         setIsLoading(true);
         const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
-        
+
         // URL'den tenant slug'ını al
         let tenantSlug = 'demo';
         if (typeof window !== 'undefined') {
@@ -96,7 +96,7 @@ export default function UsersManagement() {
         if (response.ok) {
           const data = await response.json();
           const usersData = Array.isArray(data) ? data : (data.users || []);
-          
+
           // API'den gelen veriyi formatla
           const formattedUsers = usersData.map((u: any) => ({
             id: u.id,
@@ -111,7 +111,7 @@ export default function UsersManagement() {
             hotelId: u.hotelId,
             permissions: u.permissions?.map((p: any) => p.pageKey || p) || []
           }));
-          
+
           setUsers(formattedUsers);
         }
       } catch (error) {
@@ -178,10 +178,14 @@ export default function UsersManagement() {
   };
 
   const filteredUsers = users.filter(user => {
-    const matchesSearch = 
-      user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const fName = user.firstName || '';
+    const lName = user.lastName || '';
+    const email = user.email || '';
+
+    const matchesSearch =
+      fName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = selectedRole === 'all' || user.role === selectedRole;
     return matchesSearch && matchesRole;
   });
@@ -192,7 +196,7 @@ export default function UsersManagement() {
       if (!userToToggle) return;
 
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
-      
+
       // URL'den tenant slug'ını al
       let tenantSlug = 'demo';
       if (typeof window !== 'undefined') {
@@ -204,7 +208,7 @@ export default function UsersManagement() {
       }
 
       const newActiveStatus = !userToToggle.isActive;
-      
+
       const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
         method: 'PUT',
         headers: {
@@ -216,8 +220,8 @@ export default function UsersManagement() {
       });
 
       if (response.ok) {
-        setUsers(users => 
-          users.map(user => 
+        setUsers(users =>
+          users.map(user =>
             user.id === id ? { ...user, isActive: newActiveStatus } : user
           )
         );
@@ -234,7 +238,7 @@ export default function UsersManagement() {
 
     try {
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
-      
+
       // URL'den tenant slug'ını al
       let tenantSlug = 'demo';
       if (typeof window !== 'undefined') {
@@ -282,7 +286,7 @@ export default function UsersManagement() {
 
     try {
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
-      
+
       // URL'den tenant slug'ını al
       let tenantSlug = 'demo';
       if (typeof window !== 'undefined') {
@@ -304,8 +308,8 @@ export default function UsersManagement() {
       });
 
       if (response.ok) {
-        setUsers(users => 
-          users.map(user => 
+        setUsers(users =>
+          users.map(user =>
             user.id === selectedUser.id ? { ...user, permissions: selectedPermissions } : user
           )
         );
@@ -319,8 +323,8 @@ export default function UsersManagement() {
 
   const togglePermission = (pageKey: string) => {
     // Her zaman tıklanabilir olmalı, rol kontrolü yok
-    setSelectedPermissions(prev => 
-      prev.includes(pageKey) 
+    setSelectedPermissions(prev =>
+      prev.includes(pageKey)
         ? prev.filter(p => p !== pageKey)
         : [...prev, pageKey]
     );
@@ -331,7 +335,7 @@ export default function UsersManagement() {
 
     try {
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
-      
+
       // URL'den tenant slug'ını al
       let tenantSlug = 'demo';
       if (typeof window !== 'undefined') {
@@ -384,11 +388,11 @@ export default function UsersManagement() {
 
       if (response.ok) {
         const savedUser = await response.json();
-        
+
         if (selectedUser) {
           // Edit existing user
-          setUsers(users => 
-            users.map(user => 
+          setUsers(users =>
+            users.map(user =>
               user.id === selectedUser.id ? { ...user, ...userData, ...savedUser } : user
             )
           );
@@ -524,113 +528,111 @@ export default function UsersManagement() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10">
-                        <div className="h-10 w-10 rounded-full bg-hotel-gold flex items-center justify-center">
-                          <span className="text-sm font-medium text-white">
-                            {user.firstName[0]}{user.lastName[0]}
-                          </span>
+                  <tr key={user.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10">
+                          <div className="h-10 w-10 rounded-full bg-hotel-gold flex items-center justify-center">
+                            <span className="text-sm font-medium text-white">
+                              {(user.firstName || '?')[0].toUpperCase()}{(user.lastName || '?')[0].toUpperCase()}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">
+                            {user.firstName} {user.lastName}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            ID: {user.id}
+                          </div>
                         </div>
                       </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
-                          {user.firstName} {user.lastName}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          ID: {user.id}
-                        </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center space-x-2">
+                        {getRoleIcon(user.role)}
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
+                          {getRoleLabel(user.role)}
+                        </span>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center space-x-2">
-                      {getRoleIcon(user.role)}
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
-                        {getRoleLabel(user.role)}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 flex items-center space-x-1">
-                      <Mail className="w-4 h-4 text-gray-400" />
-                      <span>{user.email}</span>
-                    </div>
-                    {user.phone && (
-                      <div className="text-sm text-gray-500 flex items-center space-x-1 mt-1">
-                        <Phone className="w-4 h-4 text-gray-400" />
-                        <span>{user.phone}</span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900 flex items-center space-x-1">
+                        <Mail className="w-4 h-4 text-gray-400" />
+                        <span>{user.email}</span>
                       </div>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {user.lastLogin ? (
+                      {user.phone && (
+                        <div className="text-sm text-gray-500 flex items-center space-x-1 mt-1">
+                          <Phone className="w-4 h-4 text-gray-400" />
+                          <span>{user.phone}</span>
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {user.lastLogin ? (
+                        <div className="text-sm text-gray-900">
+                          {new Date(user.lastLogin).toLocaleDateString('tr-TR')}
+                        </div>
+                      ) : (
+                        <span className="text-sm text-gray-500">{getTranslation('users.no_login')}</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {new Date(user.lastLogin).toLocaleDateString('tr-TR')}
+                        <span className="font-medium">{user.permissions?.length || 0}</span> {getTranslation('users.pages')}
                       </div>
-                    ) : (
-                      <span className="text-sm text-gray-500">{getTranslation('users.no_login')}</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      <span className="font-medium">{user.permissions?.length || 0}</span> {getTranslation('users.pages')}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {user.permissions?.slice(0, 2).map(p => {
-                        const page = availablePages.find(ap => ap.key === p);
-                        return page?.label;
-                      }).join(', ')}
-                      {user.permissions && user.permissions.length > 2 && '...'}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      user.isActive 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {user.isActive ? getTranslation('common.active') : getTranslation('common.inactive')}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex items-center justify-end space-x-2">
-                      <button
-                        onClick={() => managePermissions(user)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
-                        title={getTranslation('users.manage_permissions')}
-                      >
-                        <Shield className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => toggleActive(user.id)}
-                        className={`p-2 rounded-lg ${
-                          user.isActive 
-                            ? 'text-green-600 hover:bg-green-50' 
-                            : 'text-red-600 hover:bg-red-50'
-                        }`}
-                        title={user.isActive ? getTranslation('users.make_inactive') : getTranslation('users.make_active')}
-                      >
-                        {user.isActive ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                      </button>
-                      <button
-                        onClick={() => editUser(user)}
-                        className="p-2 text-hotel-gold hover:bg-yellow-50 rounded-lg"
-                        title={getTranslation('users.edit')}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => deleteUser(user.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-                        title={getTranslation('users.delete')}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+                      <div className="text-xs text-gray-500">
+                        {user.permissions?.slice(0, 2).map(p => {
+                          const page = availablePages.find(ap => ap.key === p);
+                          return page?.label;
+                        }).join(', ')}
+                        {user.permissions && user.permissions.length > 2 && '...'}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.isActive
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
+                        }`}>
+                        {user.isActive ? getTranslation('common.active') : getTranslation('common.inactive')}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex items-center justify-end space-x-2">
+                        <button
+                          onClick={() => managePermissions(user)}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                          title={getTranslation('users.manage_permissions')}
+                        >
+                          <Shield className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => toggleActive(user.id)}
+                          className={`p-2 rounded-lg ${user.isActive
+                              ? 'text-green-600 hover:bg-green-50'
+                              : 'text-red-600 hover:bg-red-50'
+                            }`}
+                          title={user.isActive ? getTranslation('users.make_inactive') : getTranslation('users.make_active')}
+                        >
+                          {user.isActive ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                        </button>
+                        <button
+                          onClick={() => editUser(user)}
+                          className="p-2 text-hotel-gold hover:bg-yellow-50 rounded-lg"
+                          title={getTranslation('users.edit')}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => deleteUser(user.id)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                          title={getTranslation('users.delete')}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
                 ))}
               </tbody>
             </table>
@@ -650,7 +652,7 @@ export default function UsersManagement() {
 
       {/* Add/Edit Modal */}
       {(showAddModal || showEditModal) && (
-        <div 
+        <div
           className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
@@ -676,7 +678,7 @@ export default function UsersManagement() {
                 <X className="w-6 h-6" />
               </button>
             </div>
-            
+
             <form onSubmit={handleFormSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -692,7 +694,7 @@ export default function UsersManagement() {
                     placeholder="Ad"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Soyad *
@@ -707,7 +709,7 @@ export default function UsersManagement() {
                   />
                 </div>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   E-posta *
@@ -721,7 +723,7 @@ export default function UsersManagement() {
                   placeholder="ornek@hotel.com"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Telefon
@@ -734,12 +736,12 @@ export default function UsersManagement() {
                   placeholder="+90 555 123 4567"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Rol *
                 </label>
-                <select 
+                <select
                   name="role"
                   defaultValue={selectedUser?.role || ''}
                   required
@@ -752,7 +754,7 @@ export default function UsersManagement() {
                   ))}
                 </select>
               </div>
-              
+
               {showAddModal && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -768,7 +770,7 @@ export default function UsersManagement() {
                 </div>
               )}
             </form>
-            
+
             <div className="flex justify-end space-x-3 mt-6">
               <button
                 type="button"
@@ -781,7 +783,7 @@ export default function UsersManagement() {
               >
                 İptal
               </button>
-              <button 
+              <button
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
@@ -812,7 +814,7 @@ export default function UsersManagement() {
 
       {/* Yetki Yönetimi Modal */}
       {showPermissionsModal && selectedUser && (
-        <div 
+        <div
           className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
@@ -841,16 +843,15 @@ export default function UsersManagement() {
                 <X className="w-6 h-6" />
               </button>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {availablePages.map((page) => (
                 <div
                   key={page.key}
-                  className={`border-2 rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${
-                    selectedPermissions.includes(page.key)
+                  className={`border-2 rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${selectedPermissions.includes(page.key)
                       ? 'border-hotel-gold bg-yellow-50'
                       : 'border-gray-200 hover:border-gray-300'
-                  }`}
+                    }`}
                   onClick={() => togglePermission(page.key)}
                 >
                   <div className="flex items-start space-x-3">
@@ -888,7 +889,7 @@ export default function UsersManagement() {
                 >
                   İptal
                 </button>
-                <button 
+                <button
                   type="button"
                   onClick={savePermissions}
                   className="px-4 py-2 bg-hotel-gold text-white rounded-lg hover:bg-hotel-navy transition-colors"
