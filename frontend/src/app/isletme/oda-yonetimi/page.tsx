@@ -61,18 +61,20 @@ export default function OdaYonetimiPage() {
           },
         }),
       ]);
-      // Aynı oda numarası için tek kayıt (101 ile room-101 birleştir)
+      // Numarayı her zaman sadece rakam kısmına indirge (room-101 veya "room-101" -> 101)
+      const normNum = (val: any) => String(val ?? '').replace(/^room-/, '').trim();
       const rawRooms = Array.isArray(roomsData) ? roomsData : [];
       const byNum = new Map<string, RoomStatus>();
       for (const r of rawRooms) {
-        const num = String(r.number ?? r.roomId?.replace(/^room-/, '') ?? '').trim();
+        const num = normNum(r.number ?? r.roomId);
+        if (!num) continue;
         const existing = byNum.get(num);
         if (!existing) {
-          byNum.set(num, r);
+          byNum.set(num, { ...r, number: num });
         } else {
-          if (r.status === 'occupied' && existing.status !== 'occupied') byNum.set(num, r);
-          else if (r.roomId === `room-${num}` && existing.roomId !== `room-${num}`) byNum.set(num, r);
-          else byNum.set(num, existing);
+          if (r.status === 'occupied' && existing.status !== 'occupied') byNum.set(num, { ...r, number: num });
+          else if (normNum(r.roomId) === num && normNum(existing.roomId) !== num) byNum.set(num, { ...r, number: num });
+          else byNum.set(num, { ...existing, number: num });
         }
       }
       setRooms(Array.from(byNum.values()));
@@ -109,20 +111,20 @@ export default function OdaYonetimiPage() {
       .reduce((sum, o) => sum + o.totalAmount, 0);
   }, [orders]);
 
-  // Katlara göre grupla; aynı numara tek satır (101 / room-101 tekilleştirme)
+  const normRoomNum = (val: any) => String(val ?? '').replace(/^room-/, '').trim();
+  // Katlara göre grupla; aynı numara tek satır
   const roomsByFloor = rooms.reduce<Record<number, RoomStatus[]>>((acc, r) => {
     const floor = typeof r.floor === 'number' ? r.floor : parseInt(String(r.floor), 10) || 1;
-    const num = String(r.number ?? r.roomId?.replace(/^room-/, '') ?? '').trim();
+    const num = normRoomNum(r.number ?? r.roomId);
+    if (!num) return acc;
     if (!acc[floor]) acc[floor] = [];
     const atFloor = acc[floor];
-    const existingIdx = atFloor.findIndex(
-      x => String(x.number ?? x.roomId?.replace(/^room-/, '') ?? '').trim() === num
-    );
+    const existingIdx = atFloor.findIndex(x => normRoomNum(x.number ?? x.roomId) === num);
     if (existingIdx === -1) atFloor.push(r);
     else {
       const existing = atFloor[existingIdx];
       if (r.status === 'occupied' && existing.status !== 'occupied') atFloor[existingIdx] = r;
-      else if (r.roomId === `room-${num}` && existing.roomId !== `room-${num}`) atFloor[existingIdx] = r;
+      else if (normRoomNum(r.roomId) === num && normRoomNum(existing.roomId) !== num) atFloor[existingIdx] = r;
     }
     return acc;
   }, {});
@@ -192,7 +194,7 @@ export default function OdaYonetimiPage() {
                 {isOpen && (
                   <div className="divide-y divide-gray-100">
                     {floorRooms.map(room => {
-                      const num = String(room.number ?? room.roomId?.replace(/^room-/, '') ?? '').trim();
+                      const num = normRoomNum(room.number ?? room.roomId);
                       const occupied = room.status === 'occupied';
                       const debt = roomDebt(room.roomId, num);
                       return (

@@ -1532,7 +1532,7 @@ app.get('/api/orders', tenantMiddleware, async (req: Request, res: Response) => 
 app.post('/api/orders', tenantMiddleware, async (req: Request, res: Response) => {
   try {
     const tenantId = getTenantId(req)
-    const { roomId, guestId, items, notes } = req.body
+    const { roomId, guestId, items, notes, paymentMethod } = req.body
 
     if (!roomId || !guestId || !items || !Array.isArray(items) || items.length === 0) {
       res.status(400).json({ message: 'roomId, guestId, and items are required' }); return;
@@ -1652,7 +1652,7 @@ app.post('/api/orders', tenantMiddleware, async (req: Request, res: Response) =>
     // Generate order number
     const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 
-    // Create order
+    // Create order (paymentMethod: card | cash | pos | room_charge)
     const order = await prisma.order.create({
       data: {
         orderNumber,
@@ -1662,6 +1662,7 @@ app.post('/api/orders', tenantMiddleware, async (req: Request, res: Response) =>
         hotelId: hotel.id,
         totalAmount,
         notes,
+        paymentMethod: paymentMethod && ['card', 'cash', 'pos', 'room_charge'].includes(String(paymentMethod)) ? String(paymentMethod) : null,
         items: {
           create: (items as RequestItem[]).map((item: RequestItem) => ({
             menuItemId: item.menuItemId,

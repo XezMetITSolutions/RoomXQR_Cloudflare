@@ -259,24 +259,26 @@ export class ApiService {
         } as RoomStatus;
       });
 
-      // Aynı oda numarası için birden fazla kayıt olabilir (id "101" ve "room-101"). Numaraya göre tekilleştir.
-      // Anahtar her zaman string olmalı (backend number'ı bazen number bazen string dönebilir).
+      // Aynı oda numarası için birden fazla kayıt olabilir (id "101" ve "room-101", number bazen "room-101").
+      // Numarayı her zaman sadece rakam kısmına indirge (room-101 -> 101).
+      const normNum = (val: any) => String(val ?? '').replace(/^room-/, '').trim();
       const byNumber = new Map<string, RoomStatus>();
       for (const r of mapped) {
-        const num = String(r.number ?? r.roomId.replace(/^room-/, '')).trim();
+        const num = normNum(r.number ?? r.roomId);
+        if (!num) continue;
         const existing = byNumber.get(num);
         if (!existing) {
-          byNumber.set(num, r);
+          byNumber.set(num, { ...r, number: num });
         } else {
-          // Dolu veya room-XXX formatında olanı tercih et
           const prefer = (a: RoomStatus, b: RoomStatus) => {
             if (a.status === 'occupied' && b.status !== 'occupied') return a;
             if (b.status === 'occupied' && a.status !== 'occupied') return b;
-            if (a.roomId === `room-${num}`) return a;
-            if (b.roomId === `room-${num}`) return b;
+            if (String(a.roomId).replace(/^room-/, '') === num && String(b.roomId).replace(/^room-/, '') !== num) return a;
+            if (String(b.roomId).replace(/^room-/, '') === num && String(a.roomId).replace(/^room-/, '') !== num) return b;
             return a;
           };
-          byNumber.set(num, prefer(r, existing));
+          const chosen = prefer(r, existing);
+          byNumber.set(num, { ...chosen, number: num });
         }
       }
       return Array.from(byNumber.values());

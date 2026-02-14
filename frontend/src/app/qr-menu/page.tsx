@@ -66,7 +66,6 @@ export default function QRMenuPage() {
   const [cart, setCart] = useState<{ lineId: string; id: string; quantity: number; note?: string }[]>([]);
   const [productModal, setProductModal] = useState<any | null>(null);
   const [showCart, setShowCart] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
   const [cartNote, setCartNote] = useState('');
   const [orderStatus, setOrderStatus] = useState<'idle' | 'payment' | 'finalized'>('idle');
 
@@ -674,22 +673,10 @@ export default function QRMenuPage() {
     });
   };
 
-  // Sipariş onay akışı
-
-  // Siparişi onayla - önce onay modalına git
+  // Siparişi onayla - doğrudan ödemeye geç (emin misiniz adımı kaldırıldı)
   const handleOrder = () => {
-    setShowConfirmation(true);
     setShowCart(false);
-  };
-  // Onay modalından ödemeye geç
-  const handleProceedToPayment = () => {
-    setShowConfirmation(false);
     setOrderStatus('payment');
-  };
-  // Onay modalından sepete geri dön
-  const handleBackToCart = () => {
-    setShowConfirmation(false);
-    setShowCart(true);
   };
 
   // Hydration kontrolü - client-side rendering bekleniyor
@@ -1040,17 +1027,6 @@ export default function QRMenuPage() {
             getTranslation={getTranslation}
           />
         )}
-        {/* Onay Modalı */}
-        {showConfirmation && (
-          <ConfirmationModal
-            items={getCartItems()}
-            note={cartNote}
-            total={getCartTotal()}
-            onProceed={handleProceedToPayment}
-            onBack={handleBackToCart}
-            getTranslation={getTranslation}
-          />
-        )}
         {/* Ödeme Modalı */}
         {orderStatus === 'payment' && (
           <PaymentModal
@@ -1377,124 +1353,11 @@ function CartModal({ items, note, setNote, onClose, onOrder, setCartQuantity, re
                   className="w-full py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg transition-all duration-200 shadow-lg hover:shadow-xl"
                   style={{ background: theme.gradientColors?.length ? `linear-gradient(135deg, ${theme.gradientColors[2]} 0%, ${theme.gradientColors[3]} 100%)` : theme.secondaryColor, color: 'white' }}
                 >
-                  Siparişi Onayla
+                  Siparişi onayla ve ödemeye geç
                 </button>
               </div>
             </>
           )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ConfirmationModal({ items, note, total, onProceed, onBack, getTranslation }: {
-  items: any[];
-  note: string;
-  total: number;
-  onProceed: () => void;
-  onBack: () => void;
-  getTranslation: (key: string) => string;
-}) {
-  const theme = useThemeStore();
-
-  return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) {
-          onBack();
-        }
-      }}
-    >
-      <div className="rounded-3xl max-w-lg w-full shadow-2xl max-h-[95vh] overflow-hidden mx-2 sm:mx-0" style={{ background: theme.cardBackground }}>
-        <div className="flex justify-between items-center p-6" style={{ borderBottom: `1px solid ${theme.borderColor}` }}>
-          <h2 className="text-2xl font-bold" style={{ color: theme.textColor }}>Siparişinizi Onaylayın</h2>
-          <button
-            onClick={onBack}
-            className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-            style={{ background: theme.borderColor }}
-          >
-            <X className="w-5 h-5" style={{ color: theme.textColor }} />
-          </button>
-        </div>
-
-        <div className="overflow-y-auto max-h-[calc(95vh-120px)]">
-          <div className="p-6">
-            {/* Uyarı Mesajı */}
-            <div className="rounded-xl p-4 mb-6" style={{ background: `${theme.accentColor}20`, border: `1px solid ${theme.accentColor}40` }}>
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: theme.accentColor }}>
-                  <span className="text-white text-sm font-bold">!</span>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1" style={{ color: theme.textColor }}>Önemli Uyarı</h3>
-                  <p className="text-sm" style={{ color: theme.textColor }}>
-                    Siparişinizden emin misiniz? Ödeme yaptıktan sonra değişiklik yapamazsınız.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Sipariş Özeti */}
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold mb-3" style={{ color: theme.textColor }}>Sipariş Özeti</h3>
-              <div className="space-y-2">
-                {items.map(item => (
-                  <div key={item.lineId || item.id} className="flex justify-between items-center">
-                    <div className="flex items-center space-x-3">
-                      <div className="relative w-10 h-10 rounded-lg overflow-hidden">
-                        {item.image ? (
-                          <NextImage src={item.image} alt={item.name} fill sizes="40px" className="object-cover" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center" style={{ background: `${theme.primaryColor}20` }}>
-                            <span className="text-xs font-bold" style={{ color: theme.primaryColor }}>{item.name.charAt(0)}</span>
-                          </div>
-                        )}
-                      </div>
-                      <div>
-                        <div className="font-medium" style={{ color: theme.textColor }}>{item.name}</div>
-                        <div className="text-sm" style={{ color: theme.textColor }}>x {item.quantity}{item.note ? ` · ${item.note}` : ''}</div>
-                      </div>
-                    </div>
-                    <div className="text-sm font-semibold" style={{ color: theme.textColor }}>{item.price * item.quantity}₺</div>
-                  </div>
-                ))}
-              </div>
-              {note && (
-                <div className="mt-3 p-3 rounded-lg" style={{ background: theme.borderColor }}>
-                  <div className="text-sm font-medium mb-1" style={{ color: theme.textColor }}>Özel İstek:</div>
-                  <div className="text-sm" style={{ color: theme.textColor }}>{note}</div>
-                </div>
-              )}
-            </div>
-
-            {/* Toplam */}
-            <div className="pt-4 mb-6" style={{ borderTop: `1px solid ${theme.borderColor}` }}>
-              <div className="flex justify-between items-center">
-                <span className="text-lg font-semibold" style={{ color: theme.textColor }}>Toplam</span>
-                <span className="text-2xl font-bold" style={{ color: theme.primaryColor }}>{total}₺</span>
-              </div>
-            </div>
-
-            {/* Butonlar */}
-            <div className="flex gap-3">
-              <button
-                onClick={onBack}
-                className="flex-1 py-3 rounded-xl font-semibold transition-colors"
-                style={{ background: theme.borderColor, color: theme.textColor }}
-              >
-                Değiştir
-              </button>
-              <button
-                onClick={onProceed}
-                className="flex-1 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
-                style={{ background: theme.gradientColors?.length ? `linear-gradient(135deg, ${theme.gradientColors[2]} 0%, ${theme.gradientColors[3]} 100%)` : theme.secondaryColor, color: 'white' }}
-              >
-                Ödemeye Geç
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -1510,7 +1373,7 @@ function PaymentModal({ items, note, total, roomId, onPaymentSuccess, onBack, ge
   onBack: () => void;
   getTranslation: (key: string) => string;
 }) {
-  const [selectedPayment, setSelectedPayment] = useState<'card' | 'cash' | 'room'>('card');
+  const [selectedPayment, setSelectedPayment] = useState<'cash' | 'pos' | 'card' | 'room'>('cash');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const theme = useThemeStore();
 
@@ -1558,7 +1421,8 @@ function PaymentModal({ items, note, total, roomId, onPaymentSuccess, onBack, ge
           roomId: roomIdFormatted,
           guestId: guestId,
           items: orderItems,
-          notes: note || undefined
+          notes: note || undefined,
+          paymentMethod: selectedPayment === 'room' ? 'room_charge' : selectedPayment === 'pos' ? 'pos' : selectedPayment
         }),
       });
 
@@ -1642,67 +1506,61 @@ function PaymentModal({ items, note, total, roomId, onPaymentSuccess, onBack, ge
               <h3 className="text-lg font-semibold mb-4" style={{ color: theme.textColor }}>Ödeme Yöntemi</h3>
               <div className="space-y-3">
                 <button
-                  onClick={() => setSelectedPayment('card')}
-                  className={`w-full p-3 sm:p-4 rounded-xl border-2 transition-all ${selectedPayment === 'card'
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  style={selectedPayment === 'card'
-                    ? { borderColor: theme.secondaryColor, background: `${theme.secondaryColor}20` }
-                    : { borderColor: theme.borderColor }
-                  }
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: theme.secondaryColor }}>
-                      <span className="text-white text-sm font-bold">💳</span>
-                    </div>
-                    <div className="text-left">
-                      <div className="font-semibold" style={{ color: theme.textColor }}>Kredi/Banka Kartı</div>
-                      <div className="text-sm" style={{ color: theme.textColor }}>Online ödeme</div>
-                    </div>
-                  </div>
-                </button>
-
-                <button
+                  type="button"
                   onClick={() => setSelectedPayment('cash')}
-                  className={`w-full p-3 sm:p-4 rounded-xl border-2 transition-all ${selectedPayment === 'cash'
-                    ? 'border-green-500 bg-green-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  style={selectedPayment === 'cash'
-                    ? { borderColor: theme.accentColor, background: `${theme.accentColor}20` }
-                    : { borderColor: theme.borderColor }
-                  }
+                  className={`w-full p-3 sm:p-4 rounded-xl border-2 transition-all text-left ${selectedPayment === 'cash' ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-gray-300'}`}
+                  style={selectedPayment === 'cash' ? { borderColor: theme.accentColor, background: `${theme.accentColor}20` } : { borderColor: theme.borderColor }}
                 >
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: theme.accentColor }}>
                       <span className="text-white text-sm font-bold">💰</span>
                     </div>
-                    <div className="text-left">
-                      <div className="font-semibold" style={{ color: theme.textColor }}>Nakit Ödeme</div>
-                      <div className="text-sm" style={{ color: theme.textColor }}>Teslimatta öde</div>
+                    <div>
+                      <div className="font-semibold" style={{ color: theme.textColor }}>Nakit</div>
                     </div>
                   </div>
                 </button>
 
                 <button
+                  type="button"
+                  onClick={() => setSelectedPayment('pos')}
+                  className={`w-full p-3 sm:p-4 rounded-xl border-2 transition-all text-left ${selectedPayment === 'pos' ? 'border-teal-500 bg-teal-50' : 'border-gray-200 hover:border-gray-300'}`}
+                  style={selectedPayment === 'pos' ? { borderColor: '#0d9488', background: 'rgba(20,184,166,0.15)' } : { borderColor: theme.borderColor }}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-teal-500">
+                      <span className="text-white text-sm font-bold">📱</span>
+                    </div>
+                    <div>
+                      <div className="font-semibold" style={{ color: theme.textColor }}>POS Cihazı istiyorum</div>
+                    </div>
+                  </div>
+                </button>
+
+                <div className="w-full p-3 sm:p-4 rounded-xl border-2 border-gray-200 bg-gray-100 opacity-75 cursor-not-allowed" style={{ borderColor: theme.borderColor }}>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gray-400">
+                      <span className="text-white text-sm font-bold">💳</span>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-500">Kredi Kartı / Online Ödeme</div>
+                      <div className="text-xs text-gray-500">Yakında aktifleşecek</div>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
                   onClick={() => setSelectedPayment('room')}
-                  className={`w-full p-3 sm:p-4 rounded-xl border-2 transition-all ${selectedPayment === 'room'
-                    ? 'border-purple-500 bg-purple-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  style={selectedPayment === 'room'
-                    ? { borderColor: theme.primaryColor, background: `${theme.primaryColor}20` }
-                    : { borderColor: theme.borderColor }
-                  }
+                  className={`w-full p-3 sm:p-4 rounded-xl border-2 transition-all text-left ${selectedPayment === 'room' ? 'border-purple-500 bg-purple-50' : 'border-gray-200 hover:border-gray-300'}`}
+                  style={selectedPayment === 'room' ? { borderColor: theme.primaryColor, background: `${theme.primaryColor}20` } : { borderColor: theme.borderColor }}
                 >
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: theme.primaryColor }}>
                       <span className="text-white text-sm font-bold">🏨</span>
                     </div>
-                    <div className="text-left">
-                      <div className="font-semibold" style={{ color: theme.textColor }}>Oda Hesabına</div>
-                      <div className="text-sm" style={{ color: theme.textColor }}>Çıkışta öde</div>
+                    <div>
+                      <div className="font-semibold" style={{ color: theme.textColor }}>Çıkışta ödeyeceğim</div>
                     </div>
                   </div>
                 </button>
@@ -1718,9 +1576,9 @@ function PaymentModal({ items, note, total, roomId, onPaymentSuccess, onBack, ge
             >
               {isSubmitting ? 'Gönderiliyor...' : (
                 <>
-                  {selectedPayment === 'card' && '💳 Kart ile Öde'}
-                  {selectedPayment === 'cash' && '💰 Nakit ile Öde'}
-                  {selectedPayment === 'room' && '🏨 Oda Hesabına Ekle'}
+                  {selectedPayment === 'cash' && '💰 Nakit ile Sipariş Ver'}
+                  {selectedPayment === 'pos' && '📱 POS ile Sipariş Ver'}
+                  {selectedPayment === 'room' && '🏨 Çıkışta Öde - Sipariş Ver'}
                 </>
               )}
             </button>
