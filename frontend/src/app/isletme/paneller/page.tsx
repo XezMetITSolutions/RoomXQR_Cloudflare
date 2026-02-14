@@ -76,16 +76,6 @@ export default function PanelsPage() {
     }, [token]);
 
     const panels = [
-        { name: 'İşletme Özeti (Dashboard)', route: '/isletme', key: 'dashboard', icon: LayoutDashboard, color: 'bg-blue-500' },
-        { name: 'QR Kod Yönetimi', route: '/isletme/qr-kod', key: 'qr-kod', icon: QrCode, color: 'bg-emerald-500' },
-        { name: 'Dijital Menü Yönetimi', route: '/isletme/menu', key: 'menu', icon: Menu, color: 'text-purple-600' },
-        { name: 'Duyuru Paneli', route: '/isletme/announcements', key: 'announcements', icon: Megaphone, color: 'bg-orange-500' },
-        { name: 'Otel Kimlik Bilgileri', route: '/isletme/hotel-info', key: 'hotel-info', icon: Info, color: 'bg-cyan-500' },
-        { name: 'Personel & Yetki Yönetimi', route: '/isletme/users', key: 'users', icon: Users, color: 'bg-green-500' },
-        { name: 'Canlı Bildirimler', route: '/isletme/notifications', key: 'notifications', icon: Bell, color: 'bg-pink-500' },
-        { name: 'Detaylı Analitik', route: '/isletme/analytics', key: 'analytics', icon: BarChart3, color: 'bg-indigo-500' },
-        { name: 'Sistem Ayarları', route: '/isletme/settings', key: 'settings', icon: Settings, color: 'bg-gray-500' },
-        { name: 'Destek & Yardım', route: '/isletme/support', key: 'support', icon: Info, color: 'bg-blue-400' },
         { name: 'Mutfak / Sipariş Paneli', route: '/kitchen', key: 'kitchen', icon: ChefHat, color: 'bg-orange-600' },
         { name: 'Resepsiyon / Talep Paneli', route: '/reception', key: 'reception', icon: Hotel, color: 'bg-amber-500' },
     ];
