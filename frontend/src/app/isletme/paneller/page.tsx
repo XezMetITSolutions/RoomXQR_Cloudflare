@@ -112,8 +112,8 @@ export default function PanelsPage() {
                                 <h3 className="text-lg font-bold text-gray-900">Misafir Karşılama Arayüzü</h3>
                                 <p className="text-sm text-gray-500">Müşterilerin QR kod okuttuğunda gördüğü ana ekran.</p>
                                 <div className="mt-1 flex items-center space-x-2 text-indigo-600 font-mono text-xs">
-                                    <span>{getFullUrl('/guest/demo')}</span>
-                                    <a href="/guest/demo" target="_blank" rel="noopener noreferrer">
+                                    <span>{getFullUrl('/guest/101')}</span>
+                                    <a href="/guest/101" target="_blank" rel="noopener noreferrer">
                                         <ExternalLink className="w-3 h-3 cursor-pointer hover:scale-110 transition-transform" />
                                     </a>
                                 </div>

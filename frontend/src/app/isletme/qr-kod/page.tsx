@@ -1038,40 +1038,40 @@ export default function QRKodPage() {
                 onClick={async () => {
                   setSelectedRoom(roomToSelect);
                   const name = guestNameInput.trim();
-                  if (!name) {
-                    setQRCodeURL(`${baseURL}/guest/${roomToSelect}`);
-                    setShowGuestModal(false);
-                    setRoomToSelect(null);
-                    return;
-                  }
-                  setGuestTokenLoading(true);
-                  try {
-                    const tenant = (() => {
-                      const h = window.location.hostname.split('.')[0];
-                      return h && h !== 'www' && h !== 'roomxqr' && h !== 'roomxqr-backend' ? h : 'demo';
-                    })();
 
-                    const r = await fetch('/api/guest-token', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json', 'x-tenant': tenant },
-                      body: JSON.stringify({
-                        roomId: roomToSelect,
-                        guestName: name,
-                        checkIn: guestCheckIn,
-                        checkOut: guestCheckOut || null
-                      })
-                    });
+                  // Varsayılan olarak kalıcı linki kullan
+                  setQRCodeURL(`${baseURL}/guest/${roomToSelect}`);
 
-                    const d = await r.json().catch(() => ({}));
-                    if (d.token) {
-                      setQRCodeURL(`${baseURL}/guest/${roomToSelect}?g=${encodeURIComponent(d.token)}`);
-                    } else {
-                      setQRCodeURL(`${baseURL}/guest/${roomToSelect}?guest=${encodeURIComponent(name)}`);
+                  // Eğer isim girilmişse, token oluşturulabilir ama öncelik sabit link
+                  if (name) {
+                    setGuestTokenLoading(true);
+                    try {
+                      const tenant = (() => {
+                        const h = window.location.hostname.split('.')[0];
+                        return h && h !== 'www' && h !== 'roomxqr' && h !== 'roomxqr-backend' ? h : 'demo';
+                      })();
+
+                      const r = await fetch('/api/guest-token', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'x-tenant': tenant },
+                        body: JSON.stringify({
+                          roomId: roomToSelect,
+                          guestName: name,
+                          checkIn: guestCheckIn,
+                          checkOut: guestCheckOut || null
+                        })
+                      });
+
+                      const d = await r.json().catch(() => ({}));
+                      // SADECE kullanıcı özellikle isterse tokenlı link kullanılabilir 
+                      // ama şu anki basitlik isteği üzerine kalıcı linki EZMİYORUZ.
+                      // setQRCodeURL(`${baseURL}/guest/${roomToSelect}?g=${encodeURIComponent(d.token)}`);
+                    } catch (err) {
+                      console.error('Token fetch error:', err);
                     }
-                  } catch (err) {
-                    setQRCodeURL(`${baseURL}/guest/${roomToSelect}?guest=${encodeURIComponent(name)}`);
+                    setGuestTokenLoading(false);
                   }
-                  setGuestTokenLoading(false);
+
                   setShowGuestModal(false);
                   setRoomToSelect(null);
                 }}
