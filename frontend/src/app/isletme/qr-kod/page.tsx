@@ -73,7 +73,7 @@ export default function QRKodPage() {
     try {
       if (token) {
         // ApiService yerine direkt fetch kullanıyoruz çünkü ApiService token yönetimi şu an bu panel için tam entegre değiş
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr.onrender.com';
 
         let tenantSlug = 'demo';
         if (typeof window !== 'undefined') {
@@ -117,7 +117,7 @@ export default function QRKodPage() {
     if (!confirm(`${ids.length} odayı silmek istediğinize emin misiniz?`)) return;
 
     try {
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr.onrender.com';
       let tenantSlug = 'demo';
       if (typeof window !== 'undefined') {
         const hostname = window.location.hostname;
@@ -219,7 +219,7 @@ export default function QRKodPage() {
 
       try {
         setIsLoading(true);
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr.onrender.com';
 
         // URL'den tenant slug'ını al
         let tenantSlug = 'demo';

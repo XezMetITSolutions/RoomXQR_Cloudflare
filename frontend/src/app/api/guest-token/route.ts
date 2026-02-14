@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr.onrender.com';
 
 function getTenantSlug(request: Request): string {
   const url = new URL(request.url);
@@ -18,12 +18,11 @@ function getTenantSlug(request: Request): string {
 
 export async function POST(request: Request) {
   try {
+    const { roomId, guestName, checkIn, checkOut } = await request.json();
     const tenantSlug = getTenantSlug(request);
-    const body = await request.json().catch(() => ({}));
-    const { roomId, guestName, checkIn, checkOut } = body;
 
-    if (!roomId || !guestName) {
-      return NextResponse.json({ message: 'roomId ve guestName gerekli.' }, { status: 400 });
+    if (!roomId) {
+      return NextResponse.json({ message: 'Oda numarası gereklidir.' }, { status: 400 });
     }
 
     // Split name
@@ -78,16 +77,12 @@ export async function POST(request: Request) {
           return NextResponse.json({ success: true, guest: retryData.guest });
         }
       }
-
       return NextResponse.json(data || { message: 'Check-in yapılamadı.' }, { status: res.status });
     }
 
-    return NextResponse.json({
-      success: true,
-      guest: data.guest
-    });
+    return NextResponse.json({ success: true, guest: data.guest });
   } catch (error) {
     console.error('Guest token error:', error);
-    return NextResponse.json({ message: 'Sunucu hatası.' }, { status: 500 });
+    return NextResponse.json({ message: 'Sunucu hatası oluştu.' }, { status: 500 });
   }
 }

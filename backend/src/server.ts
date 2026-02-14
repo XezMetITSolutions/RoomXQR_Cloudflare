@@ -213,7 +213,9 @@ app.get('/', (req: Request, res: Response) => {
       rooms: '/api/rooms',
       guests: '/api/guests',
       requests: '/api/requests',
-      orders: '/api/orders'
+      orders: '/api/orders',
+      rooms_delete: '/api/rooms/delete',
+      rooms_bulk_delete: '/api/rooms/bulk-delete'
     },
     documentation: 'https://github.com/XezMetITSolutions/roomapp-unified',
     timestamp: new Date().toISOString()
