@@ -1035,12 +1035,12 @@ export default function QRKodPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Oda {roomToSelect} – Misafir Adı</h3>
+              <h3 className="text-lg font-semibold text-gray-900">Oda {roomToSelect} – Misafir Atama</h3>
               <button onClick={() => { setShowGuestModal(false); setRoomToSelect(null); }} className="p-1 rounded-lg hover:bg-gray-100 text-gray-500">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <p className="text-sm text-gray-600 mb-3">Misafir bilgilerini doğrulayın. Bu bilgiler QR kodun içine (token bazlı) gömülecektir. Yeni bir misafir geldiğinde yeni tarihli bir QR kod üretmeniz önerilir.</p>
+            <p className="text-sm text-gray-600 mb-3">Bu odaya yeni bir misafir girişi yapın. <b>Sabit QR kod modelinde</b> QR kodun fiziksel olarak değişmesine gerek yoktur; bu işlem sadece misafiri sistemde bu oda ile eşleştirir.</p>
 
             <div className="space-y-4 mb-4">
               <div>
@@ -1103,7 +1103,11 @@ export default function QRKodPage() {
 
                       const r = await fetch('/api/guest-token', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'x-tenant': tenant },
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'x-tenant': tenant,
+                          'Authorization': `Bearer ${token}`
+                        },
                         body: JSON.stringify({
                           roomId: roomToSelect,
                           guestName: name,
@@ -1163,7 +1167,7 @@ export default function QRKodPage() {
                 className="px-4 py-2 bg-hotel-gold text-white rounded-lg hover:bg-hotel-navy disabled:opacity-50 font-medium"
                 disabled={guestTokenLoading}
               >
-                {guestTokenLoading ? '...' : 'QR Kod Oluştur'}
+                {guestTokenLoading ? '...' : 'Misafiri Kaydet ve Ata'}
               </button>
             </div>
           </div>

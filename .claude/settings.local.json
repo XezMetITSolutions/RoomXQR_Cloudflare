@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"C:\\\\Users\\\\IT Admin\\\\Downloads\\\\RoomXQr\" remote -v)",
+      "Bash(git -C \"C:\\\\Users\\\\IT Admin\\\\Downloads\\\\RoomXQr\" remote set-url origin https://github.com/XezMetITSolutions/RoomXQr.git)",
+      "Bash(npx tsc:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfix: resolve TypeScript errors in guest checkin endpoint\n\n- Use qrCode instead of non-existent roomId field on Room model\n- Use room.id for Guest relation instead of raw string\n- Add missing hotelId to Guest.create\n- Replace non-existent Room fields \\(status, guestName, checkIn, checkOut\\) with isOccupied\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)"
+    ]
+  }
+}
