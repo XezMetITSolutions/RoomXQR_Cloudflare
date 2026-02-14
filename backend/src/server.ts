@@ -1515,15 +1515,24 @@ app.get('/api/orders', tenantMiddleware, async (req: Request, res: Response) => 
           include: {
             menuItem: true
           }
-        }
+        },
+        guest: true,
+        room: true
       },
       orderBy: { createdAt: 'desc' },
-      take: limit ? parseInt(limit as string) : undefined
+      take: limit ? parseInt(limit as string) : 100
     })
 
     res.json(orders); return;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Orders error:', error)
+    // Sütun eksikse (örn. paymentMethod migration henüz çalışmamışsa) boş dizi dön, panel açılsın
+    const msg = error?.message || ''
+    if (msg.includes('paymentMethod') || msg.includes('column') || msg.includes('does not exist')) {
+      console.warn('Orders table may be missing paymentMethod column. Run: npx prisma migrate deploy')
+      res.json([])
+      return
+    }
     res.status(500).json({ message: 'Database error' })
     return;
   }
@@ -2193,9 +2202,15 @@ app.patch('/api/guests/update', tenantMiddleware, async (req: Request, res: Resp
       return
     }
     const formattedRoomId = String(roomId).startsWith('room-') ? roomId : `room-${roomId}`
+    const simpleRoomId = String(roomId).replace(/^room-/, '')
+
     const guest = await prisma.guest.findFirst({
       where: {
-        roomId: formattedRoomId,
+        OR: [
+          { roomId: formattedRoomId },
+          { roomId: simpleRoomId },
+          { roomId: roomId }
+        ],
         tenantId,
         isActive: true,
         checkOut: null
@@ -2369,70 +2384,10 @@ app.post('/api/notifications', tenantMiddleware, async (req: Request, res: Respo
 })
 
 // Menu endpoints
-app.get('/api/menu', tenantMiddleware, async (req: Request, res: Response) => {
-  try {
-    const tenantId = getTenantId(req)
 
-    // Get all menu items for tenant
-    const menuItems = await prisma.menuItem.findMany({
-      where: {
-        tenantId,
-        isActive: true
-      },
-      orderBy: {
-        category: 'asc'
-      }
-    })
-
-    res.json({ menu: menuItems });
-    return;
-  } catch (error) {
-    console.error('Menu fetch error:', error)
-    res.status(500).json({ message: 'Database error' })
-    return;
-  }
-})
 
 // Orders endpoints
-app.get('/api/orders', tenantMiddleware, async (req: Request, res: Response) => {
-  try {
-    const tenantId = getTenantId(req)
 
-    // Get all orders for tenant
-    const orders = await prisma.order.findMany({
-      where: {
-        tenantId
-      },
-      include: {
-        items: {
-          include: {
-            menuItem: true
-          }
-        },
-        guest: true,
-        room: true
-      },
-      orderBy: {
-        createdAt: 'desc'
-      },
-      take: 100 // Son 100 siparişi getir
-    })
-
-    res.json(orders);
-    return;
-  } catch (error: any) {
-    console.error('Orders fetch error:', error)
-    // Sütun eksikse (örn. paymentMethod migration henüz çalışmamışsa) boş dizi dön, panel açılsın
-    const msg = error?.message || ''
-    if (msg.includes('paymentMethod') || msg.includes('column') || msg.includes('does not exist')) {
-      console.warn('Orders table may be missing paymentMethod column. Run: npx prisma migrate deploy')
-      res.json([])
-      return
-    }
-    res.status(500).json({ message: 'Database error' })
-    return
-  }
-})
 
 app.put('/api/orders/:id', tenantMiddleware, async (req: Request, res: Response) => {
   try {
