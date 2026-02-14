@@ -2,7 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { useLanguageStore } from '@/store/languageStore';
-import { Save, Wifi, Clock, UtensilsCrossed, Building2, Phone, Plus, X } from 'lucide-react';
+import { Save, Wifi, Clock, UtensilsCrossed, Building2, Phone, Plus, X, Image as ImageIcon } from 'lucide-react';
+
+const DEFAULT_ACTIVITY_IMAGES = [
+  { title: 'Spa', imageUrl: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&q=80' },
+  { title: 'Hamam', imageUrl: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&q=80' },
+  { title: 'Havuz', imageUrl: 'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=800&q=80' },
+  { title: 'Fitness', imageUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80' },
+  { title: 'Restoran', imageUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80' }
+];
 
 interface HotelInfo {
   wifi: {
@@ -31,6 +39,7 @@ interface HotelInfo {
     security: string;
     concierge: string;
   };
+  activityImages?: { title: string; imageUrl: string }[];
 }
 
 export default function HotelInfoPage() {
@@ -77,7 +86,12 @@ export default function HotelInfoPage() {
       if (response.ok) {
         const data = await response.json();
         console.log('Loaded hotel info:', JSON.stringify(data, null, 2));
-        setHotelInfo(data);
+        setHotelInfo({
+          ...data,
+          activityImages: Array.isArray(data.activityImages) && data.activityImages.length > 0
+            ? data.activityImages
+            : DEFAULT_ACTIVITY_IMAGES
+        });
       } else {
         console.error('Failed to load hotel info');
       }
@@ -110,6 +124,10 @@ export default function HotelInfoPage() {
       
       console.log('Saving hotel info:', JSON.stringify(hotelInfo, null, 2));
       
+      const payload = { ...hotelInfo };
+      if (!payload.activityImages || payload.activityImages.length === 0) {
+        payload.activityImages = DEFAULT_ACTIVITY_IMAGES;
+      }
       const response = await fetch(`${API_BASE_URL}/api/hotel/info`, {
         method: 'PUT',
         headers: {
@@ -117,7 +135,7 @@ export default function HotelInfoPage() {
           'x-tenant': tenantSlug,
           ...(token && { 'Authorization': `Bearer ${token}` })
         },
-        body: JSON.stringify(hotelInfo)
+        body: JSON.stringify(payload)
       });
 
       if (response.ok) {
@@ -410,6 +428,79 @@ export default function HotelInfoPage() {
             {getTranslation('common.add')}
           </button>
         </div>
+      </div>
+
+      {/* Otel Aktivite Görselleri - Misafir sayfasında hoş geldiniz altında gösterilir */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+            <ImageIcon className="w-5 h-5 text-amber-600" />
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900">Otel Aktivite Görselleri</h2>
+        </div>
+        <p className="text-sm text-gray-600 mb-4">Misafir arayüzünde hoş geldiniz mesajı ile hizmet butonları arasında gösterilir. Görsel URL’leri Unsplash veya kendi linkleriniz olabilir.</p>
+        <div className="space-y-4">
+          {(hotelInfo.activityImages || DEFAULT_ACTIVITY_IMAGES).map((item, index) => (
+            <div key={index} className="flex flex-col sm:flex-row gap-3 p-3 border border-gray-200 rounded-lg">
+              <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Başlık</label>
+                  <input
+                    type="text"
+                    value={item.title}
+                    onChange={(e) => {
+                      const next = [...(hotelInfo.activityImages || DEFAULT_ACTIVITY_IMAGES)];
+                      next[index] = { ...next[index], title: e.target.value };
+                      setHotelInfo({ ...hotelInfo, activityImages: next });
+                    }}
+                    placeholder="Örn: Spa, Hamam"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Görsel URL (Unsplash vb.)</label>
+                  <input
+                    type="url"
+                    value={item.imageUrl}
+                    onChange={(e) => {
+                      const next = [...(hotelInfo.activityImages || DEFAULT_ACTIVITY_IMAGES)];
+                      next[index] = { ...next[index], imageUrl: e.target.value };
+                      setHotelInfo({ ...hotelInfo, activityImages: next });
+                    }}
+                    placeholder="https://..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+              <div className="flex items-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = (hotelInfo.activityImages || DEFAULT_ACTIVITY_IMAGES).filter((_, i) => i !== index);
+                    setHotelInfo({ ...hotelInfo, activityImages: next.length ? next : DEFAULT_ACTIVITY_IMAGES });
+                  }}
+                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            const current = hotelInfo.activityImages || DEFAULT_ACTIVITY_IMAGES;
+            setHotelInfo({
+              ...hotelInfo,
+              activityImages: [...current, { title: 'Yeni Aktivite', imageUrl: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&q=80' }]
+            });
+          }}
+          className="mt-3 flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-800 rounded-lg hover:bg-amber-200 transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+          Görsel Ekle
+        </button>
       </div>
 
       {/* İletişim Bilgileri */}

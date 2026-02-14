@@ -1673,14 +1673,17 @@ app.post('/api/requests', tenantMiddleware, async (req: Request, res: Response) 
   try {
     const tenantId = getTenantId(req)
     const { roomId, type, priority, status, description, notes } = req.body
+    const normalizedType = (type || 'GENERAL').toString().toUpperCase()
+    const normalizedPriority = (priority || 'MEDIUM').toString().toUpperCase()
+    const normalizedStatus = (status || 'PENDING').toString().toUpperCase()
 
     const request = await prisma.guestRequest.create({
       data: {
         roomId,
-        type,
-        priority,
-        status,
-        description,
+        type: normalizedType,
+        priority: normalizedPriority,
+        status: normalizedStatus,
+        description: description || '',
         notes,
         tenantId,
         hotelId: 'default-hotel-id'
@@ -3354,6 +3357,14 @@ app.get('/api/hotel/info', tenantMiddleware, async (req: Request, res: Response)
     // Get hotel info from settings or return empty defaults
     const settings = hotel.settings as any || {}
 
+    const defaultActivityImages = [
+      { title: 'Spa', imageUrl: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&q=80' },
+      { title: 'Hamam', imageUrl: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800&q=80' },
+      { title: 'Havuz', imageUrl: 'https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=800&q=80' },
+      { title: 'Fitness', imageUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80' },
+      { title: 'Restoran', imageUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80' }
+    ]
+
     console.log('GET /api/hotel/info - Hotel settings:', JSON.stringify(settings, null, 2));
 
     const hotelInfo = {
@@ -3383,7 +3394,10 @@ app.get('/api/hotel/info', tenantMiddleware, async (req: Request, res: Response)
         reception: '',
         security: '',
         concierge: ''
-      }
+      },
+      activityImages: Array.isArray(settings.activityImages) && settings.activityImages.length > 0
+        ? settings.activityImages
+        : defaultActivityImages
     }
 
     console.log('GET /api/hotel/info - Returning hotelInfo:', JSON.stringify(hotelInfo, null, 2));
@@ -3398,7 +3412,7 @@ app.get('/api/hotel/info', tenantMiddleware, async (req: Request, res: Response)
 app.put('/api/hotel/info', tenantMiddleware, authMiddleware, async (req: Request, res: Response) => {
   try {
     const tenantId = getTenantId(req)
-    const { wifi, hours, dining, amenities, contacts } = req.body
+    const { wifi, hours, dining, amenities, contacts, activityImages } = req.body
 
     console.log('PUT /api/hotel/info - Request body:', JSON.stringify(req.body, null, 2));
 
@@ -3432,6 +3446,9 @@ app.put('/api/hotel/info', tenantMiddleware, authMiddleware, async (req: Request
     }
     if (contacts !== undefined) {
       updatedSettings.contacts = contacts
+    }
+    if (activityImages !== undefined) {
+      updatedSettings.activityImages = activityImages
     }
 
     console.log('PUT /api/hotel/info - Updated settings:', JSON.stringify(updatedSettings, null, 2));

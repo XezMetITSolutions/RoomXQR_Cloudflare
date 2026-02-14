@@ -5,7 +5,7 @@ import {
   FaConciergeBell,
   FaWifi,
   FaBroom,
-  FaTools,
+  FaHeadset,
   FaStar,
   FaBell,
   FaBed,
@@ -30,13 +30,25 @@ import { Globe, ChevronDown } from 'lucide-react';
 interface GuestInterfaceClientProps {
   roomId: string;
   initialLang?: string;
+  guestName?: string;
 }
 
-export default function GuestInterfaceClient({ roomId, initialLang }: GuestInterfaceClientProps) {
+/** Misafir adından "Sayın Ad S." formatı üretir (örn: Leyla Yılmaz -> Sayın Leyla Y.) */
+function formatGuestGreeting(fullName: string): string {
+  const parts = (fullName || '').trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '';
+  if (parts.length === 1) return `Sayın ${parts[0]}`;
+  const firstName = parts[0];
+  const lastInitial = parts[parts.length - 1].charAt(0).toUpperCase();
+  return `Sayın ${firstName} ${lastInitial}.`;
+}
+
+export default function GuestInterfaceClient({ roomId, initialLang, guestName }: GuestInterfaceClientProps) {
   const router = useRouter();
   const [showSurvey, setShowSurvey] = useState(false);
   // Guest info artık kullanılmıyor - soyisim sorusu kaldırıldı
   const [hotelName, setHotelName] = useState<string>('');
+  const [activityImages, setActivityImages] = useState<{ title: string; imageUrl: string }[]>([]);
   const { addNotification } = useNotifications();
 
   // Dil store'u
@@ -91,6 +103,9 @@ export default function GuestInterfaceClient({ roomId, initialLang }: GuestInter
           const data = await response.json();
           if (data.name) {
             setHotelName(data.name);
+          }
+          if (Array.isArray(data.activityImages) && data.activityImages.length > 0) {
+            setActivityImages(data.activityImages);
           }
         }
       } catch (error) {
@@ -219,12 +234,19 @@ export default function GuestInterfaceClient({ roomId, initialLang }: GuestInter
     return (
       <div className="min-h-screen flex flex-col items-center py-8 relative" style={{ background: theme.backgroundColor }}>
         <div className="w-full max-w-md px-4 mb-4 flex items-center justify-between">
-          <h1 className="text-xl sm:text-2xl font-bold flex-1" style={{ color: theme.textColor }}>
-            {hotelName
-              ? formatWelcomeMessage(hotelName, currentLanguage)
-              : safeGetTranslation('room.welcome', 'Hoş Geldiniz')
-            }
-          </h1>
+          <div className="flex-1">
+            <h1 className="text-xl sm:text-2xl font-bold" style={{ color: theme.textColor }}>
+              {hotelName
+                ? formatWelcomeMessage(hotelName, currentLanguage)
+                : safeGetTranslation('room.welcome', 'Hoş Geldiniz')
+              }
+            </h1>
+            {guestName && (
+              <p className="text-sm sm:text-base mt-1 opacity-90" style={{ color: theme.textColor }}>
+                {formatGuestGreeting(guestName)}
+              </p>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             <div className="relative">
               <button className="flex items-center space-x-2 px-3 py-2 rounded-lg shadow-sm" style={{ background: theme.cardBackground, border: `1px solid ${theme.borderColor}` }}>
@@ -256,8 +278,8 @@ export default function GuestInterfaceClient({ roomId, initialLang }: GuestInter
             <span className="font-medium text-sm sm:text-base" style={{ color: theme.textColor }}>Temizlik</span>
           </div>
           <div className="flex flex-col items-center justify-center rounded-xl p-4 sm:p-6 shadow" style={{ background: `${theme.primaryColor}20` }}>
-            <FaTools className="text-2xl sm:text-3xl mb-2" style={{ color: theme.primaryColor }} />
-            <span className="font-medium text-sm sm:text-base" style={{ color: theme.textColor }}>Bakım</span>
+            <FaHeadset className="text-2xl sm:text-3xl mb-2" style={{ color: theme.primaryColor }} />
+            <span className="font-medium text-sm sm:text-base" style={{ color: theme.textColor }}>Konsiyerj</span>
           </div>
         </div>
 
@@ -276,12 +298,19 @@ export default function GuestInterfaceClient({ roomId, initialLang }: GuestInter
 
       {/* Header */}
       <div className="w-full max-w-md px-4 mb-4 flex items-center justify-between">
-        <h1 className="text-xl sm:text-2xl font-bold flex-1" style={{ color: theme.textColor }}>
-          {hotelName
-            ? formatWelcomeMessage(hotelName, currentLanguage)
-            : safeGetTranslation('room.welcome', 'Hoş Geldiniz')
-          }
-        </h1>
+        <div className="flex-1">
+          <h1 className="text-xl sm:text-2xl font-bold" style={{ color: theme.textColor }}>
+            {hotelName
+              ? formatWelcomeMessage(hotelName, currentLanguage)
+              : safeGetTranslation('room.welcome', 'Hoş Geldiniz')
+            }
+          </h1>
+          {guestName && (
+            <p className="text-sm sm:text-base mt-1 opacity-90" style={{ color: theme.textColor }}>
+              {formatGuestGreeting(guestName)}
+            </p>
+          )}
+        </div>
 
         <div className="flex items-center gap-2">
           {/* Dil Seçici */}
@@ -336,6 +365,28 @@ export default function GuestInterfaceClient({ roomId, initialLang }: GuestInter
         <AnnouncementBanner roomId={roomId} />
       </div>
 
+      {/* Otel aktiviteleri görselleri */}
+      {activityImages.length > 0 && (
+        <div className="w-full max-w-md mb-4 px-4">
+          <p className="text-sm font-medium mb-2" style={{ color: theme.textColor }}>Otel Aktiviteleri</p>
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin" style={{ scrollbarWidth: 'thin' }}>
+            {activityImages.map((item, idx) => (
+              <div key={idx} className="flex-shrink-0 w-36 rounded-xl overflow-hidden shadow-md border" style={{ borderColor: theme.borderColor }}>
+                <div className="relative w-36 h-28 bg-gray-100">
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                <p className="text-xs font-medium py-1.5 px-2 text-center" style={{ color: theme.textColor }}>{item.title}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full max-w-md mb-4 px-4">
         {/* Oda Servisi */}
         <button
@@ -382,27 +433,27 @@ export default function GuestInterfaceClient({ roomId, initialLang }: GuestInter
           <FaBroom className="text-2xl sm:text-3xl mb-2" style={{ color: theme.secondaryColor }} />
           <span className="font-medium text-sm sm:text-base" style={{ color: theme.textColor }}>{safeGetTranslation('room.housekeeping', 'Oda Temizliği')}</span>
         </button>
-        {/* Teknik Arıza */}
+        {/* Konsiyerj */}
         <button
           className="flex flex-col items-center justify-center rounded-xl p-4 sm:p-6 shadow hover:scale-105 transition"
           style={{ background: `${theme.primaryColor}20` }}
           onClick={async () => {
             try {
               await ApiService.createGuestRequest({
-                roomId: `room-${roomId}`,
-                type: 'maintenance',
-                priority: 'urgent',
+                roomId: roomId,
+                type: 'concierge',
+                priority: 'medium',
                 status: 'pending',
-                description: safeGetTranslation('notifications.maintenance_description', 'Teknik arıza bildirimi'),
+                description: safeGetTranslation('notifications.concierge_description', 'Konsiyerj hizmeti talebi'),
               });
-              addNotification('warning', safeGetTranslation('notifications.maintenance_title', 'Teknik Arıza'), safeGetTranslation('notifications.maintenance_message', 'Teknik arıza talebiniz resepsiyona iletildi. Acil durumlar için personelimiz yolda.'));
+              addNotification('info', safeGetTranslation('notifications.concierge_title', 'Konsiyerj Talebi'), safeGetTranslation('notifications.concierge_message', 'Konsiyerj talebiniz resepsiyona iletildi. En kısa sürede yanıtlanacaktır.'));
             } catch (error) {
-              addNotification('warning', safeGetTranslation('notifications.maintenance_title', 'Teknik Arıza'), safeGetTranslation('notifications.maintenance_message', 'Teknik arıza talebiniz resepsiyona iletildi. Acil durumlar için personelimiz yolda.'));
+              addNotification('info', safeGetTranslation('notifications.concierge_title', 'Konsiyerj Talebi'), safeGetTranslation('notifications.concierge_message', 'Konsiyerj talebiniz resepsiyona iletildi. En kısa sürede yanıtlanacaktır.'));
             }
           }}
         >
-          <FaTools className="text-2xl sm:text-3xl mb-2" style={{ color: theme.primaryColor }} />
-          <span className="font-medium text-sm sm:text-base" style={{ color: theme.textColor }}>{safeGetTranslation('room.maintenance', 'Teknik Arıza')}</span>
+          <FaHeadset className="text-2xl sm:text-3xl mb-2" style={{ color: theme.primaryColor }} />
+          <span className="font-medium text-sm sm:text-base" style={{ color: theme.textColor }}>{safeGetTranslation('room.concierge', 'Konsiyerj')}</span>
         </button>
       </div>
 
@@ -485,6 +536,9 @@ function DigerIstekler({ onRequestSent, roomId }: { onRequestSent: (message: str
       } else if (istek.toLowerCase().includes('temizlik') || istek.toLowerCase().includes('temizle')) {
         priority = 'medium';
         type = 'housekeeping';
+      } else if (istek.toLowerCase().includes('konsiyerj') || istek.toLowerCase().includes('concierge') || istek.toLowerCase().includes('rezervasyon') || istek.toLowerCase().includes('transfer')) {
+        priority = 'medium';
+        type = 'concierge';
       }
 
       console.log('İstek priority ve type:', { priority, type, istek });

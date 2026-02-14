@@ -198,10 +198,12 @@ export default function DemoReceptionPanel() {
           
           // İstek türüne göre bildirim türü belirle
           let notificationType: 'info' | 'warning' | 'success' = 'info';
-          if (request.type === 'maintenance') {
+          if ((request.type || '').toLowerCase() === 'maintenance') {
             notificationType = 'warning'; // Teknik arıza - sarı
-          } else if (request.type === 'housekeeping') {
+          } else if ((request.type || '').toLowerCase() === 'housekeeping') {
             notificationType = 'success'; // Temizlik - yeşil
+          } else if ((request.type || '').toLowerCase() === 'concierge') {
+            notificationType = 'info'; // Konsiyerj - mavi
           }
           
         addNotification({
@@ -430,7 +432,7 @@ export default function DemoReceptionPanel() {
   };
 
   const getRequestTypeIcon = (type: string) => {
-    switch (type) {
+    switch ((type || '').toLowerCase()) {
       case 'food_order': return '🍽️';
       case 'housekeeping': return '🧹';
       case 'maintenance': return '🔧';
@@ -810,10 +812,10 @@ export default function DemoReceptionPanel() {
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600 mb-3">
                     <div className="flex items-center space-x-1">
                       <span className="text-lg">{getRequestTypeIcon(request.type)}</span>
-                      <span>{request.type === 'housekeeping' ? 'Temizlik' : 
-                             request.type === 'maintenance' ? 'Bakım' :
-                             request.type === 'concierge' ? 'Konsiyerj' : 
-                             request.type === 'food_order' ? 'Yemek Siparişi' : request.type}</span>
+                      <span>{request.type?.toLowerCase() === 'housekeeping' ? 'Temizlik' : 
+                             request.type?.toLowerCase() === 'maintenance' ? 'Bakım' :
+                             request.type?.toLowerCase() === 'concierge' ? 'Konsiyerj' : 
+                             request.type?.toLowerCase() === 'food_order' ? 'Yemek Siparişi' : request.type}</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />

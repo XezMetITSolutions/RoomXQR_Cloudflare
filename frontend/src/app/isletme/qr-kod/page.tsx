@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguageStore } from '@/store/languageStore';
-import { QrCode, Download, Printer, Copy, Check } from 'lucide-react';
+import { QrCode, Download, Printer, Copy, Check, X } from 'lucide-react';
 import QRCode from 'qrcode.react';
 import QRCodeGenerator from 'qrcode';
 
@@ -24,6 +24,9 @@ export default function QRKodPage() {
   const [roomsPerFloor, setRoomsPerFloor] = useState(5);
   const [generatedRooms, setGeneratedRooms] = useState<any[]>([]);
   const [useGeneratedRooms, setUseGeneratedRooms] = useState(false);
+  const [showGuestModal, setShowGuestModal] = useState(false);
+  const [roomToSelect, setRoomToSelect] = useState<string | null>(null);
+  const [guestNameInput, setGuestNameInput] = useState('');
 
   // Otomatik oda oluşturma fonksiyonu
   const generateRooms = (floors: number, roomsPerFloor: number) => {
@@ -902,8 +905,9 @@ export default function QRKodPage() {
                     <button
                       key={room.number}
                       onClick={() => {
-                        setSelectedRoom(room.number);
-                        setQRCodeURL(`${baseURL}/guest/${room.number}`);
+                        setRoomToSelect(room.number);
+                        setGuestNameInput('');
+                        setShowGuestModal(true);
                       }}
                       className={`p-2 rounded-lg border-2 transition-all text-xs ${selectedRoom === room.number
                           ? 'border-hotel-gold bg-hotel-gold text-white'
@@ -917,6 +921,33 @@ export default function QRKodPage() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Misafir adı modal - Hızlı oda seçiminde açılır */}
+      {showGuestModal && roomToSelect && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Oda {roomToSelect} – Misafir Adı</h3>
+              <button onClick={() => { setShowGuestModal(false); setRoomToSelect(null); }} className="p-1 rounded-lg hover:bg-gray-100 text-gray-500">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <p className="text-sm text-gray-600 mb-3">Misafir adı soyadı girin. QR kod açıldığında &quot;Hoş geldiniz Sayın ...&quot; olarak görünecektir. Boş bırakabilirsiniz.</p>
+            <input
+              type="text"
+              value={guestNameInput}
+              onChange={(e) => setGuestNameInput(e.target.value)}
+              placeholder="Örn: Leyla Yılmaz"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hotel-gold focus:border-transparent mb-4"
+              onKeyDown={(e) => e.key === 'Enter' && (setSelectedRoom(roomToSelect), setQRCodeURL(`${baseURL}/guest/${roomToSelect}${guestNameInput.trim() ? `?guest=${encodeURIComponent(guestNameInput.trim())}` : ''}`), setShowGuestModal(false), setRoomToSelect(null))}
+            />
+            <div className="flex gap-2 justify-end">
+              <button onClick={() => { setShowGuestModal(false); setRoomToSelect(null); }} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">İptal</button>
+              <button onClick={() => { setSelectedRoom(roomToSelect); setQRCodeURL(`${baseURL}/guest/${roomToSelect}${guestNameInput.trim() ? `?guest=${encodeURIComponent(guestNameInput.trim())}` : ''}`); setShowGuestModal(false); setRoomToSelect(null); }} className="px-4 py-2 bg-hotel-gold text-white rounded-lg hover:bg-hotel-navy">Tamam</button>
+            </div>
+          </div>
         </div>
       )}
     </div>

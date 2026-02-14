@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function GuestInterfaceRedirect({ params }: { params: { roomId: string } }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     // Browser language detection
@@ -30,8 +31,10 @@ export default function GuestInterfaceRedirect({ params }: { params: { roomId: s
     const supportedLangs = ['tr', 'en', 'de'];
     const targetLang = supportedLangs.includes(browserLang) ? browserLang : 'en';
 
-    // Redirect to localized guest page
-    router.replace(`/${targetLang}/guest/${params.roomId}`);
+    const query = searchParams.toString();
+    const redirectUrl = `/${targetLang}/guest/${params.roomId}${query ? `?${query}` : ''}`;
+    router.replace(redirectUrl);
+  // searchParams read inside effect; only re-run when room or router changes
   }, [params.roomId, router]);
 
   return (
