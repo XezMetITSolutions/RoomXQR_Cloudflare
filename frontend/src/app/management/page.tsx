@@ -405,8 +405,7 @@ export default function AdminDashboard() {
                 <div key={order.id} className="px-6 py-4 flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium text-gray-900">#{order.id}</span>
-                      <span className="text-sm text-gray-500">{getTranslation('dashboard.room')} {order.room}</span>
+                      <span className="text-sm font-medium text-gray-900">{getTranslation('dashboard.room')} {order.room}</span>
                     </div>
                     <p className="text-sm text-gray-600 mt-1">{order.items}</p>
                   </div>
@@ -450,8 +449,7 @@ export default function AdminDashboard() {
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium text-gray-900">#{request.id}</span>
-                        <span className="text-sm text-gray-500">{getTranslation('dashboard.room')} {request.room}</span>
+                        <span className="text-sm font-medium text-gray-900">{getTranslation('dashboard.room')} {request.room}</span>
                       </div>
                       <p className="text-sm text-gray-600 mt-1">{request.type}</p>
                       <p className="text-xs text-gray-500 mt-1">{request.time}</p>
