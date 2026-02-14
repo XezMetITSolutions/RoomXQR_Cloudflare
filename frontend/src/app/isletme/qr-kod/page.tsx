@@ -40,7 +40,7 @@ export default function QRKodPage() {
         generated.push({
           number: roomNumber,
           floor: floor,
-          id: `generated-${roomNumber}`
+          id: `room-${roomNumber}`
         });
       }
     }

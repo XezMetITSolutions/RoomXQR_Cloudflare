@@ -55,13 +55,17 @@ export async function POST(request: Request) {
     const data = await res.json().catch(() => ({}));
 
     if (!res.ok) {
-      // If room not found with room- prefix, try without
-      if (res.status === 404 && formattedRoomId !== roomId) {
+      // Retry with the original roomId if it's different from formattedRoomId
+      if (res.status === 404 && formattedRoomId !== String(roomId)) {
         const retryRes = await fetch(`${BACKEND_URL}/api/guests/checkin`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-tenant': tenantSlug },
+          headers: {
+            'Content-Type': 'application/json',
+            'x-tenant': tenantSlug,
+            'Authorization': request.headers.get('Authorization') || ''
+          },
           body: JSON.stringify({
-            roomId: roomId,
+            roomId: String(roomId),
             firstName,
             lastName,
             checkIn,
@@ -71,10 +75,7 @@ export async function POST(request: Request) {
         });
         const retryData = await retryRes.json().catch(() => ({}));
         if (retryRes.ok) {
-          return NextResponse.json({
-            success: true,
-            guest: retryData.guest
-          });
+          return NextResponse.json({ success: true, guest: retryData.guest });
         }
       }
 
