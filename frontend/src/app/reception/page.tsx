@@ -5,15 +5,15 @@ import { useHotelStore } from '@/store/hotelStore';
 import { sampleRequests } from '@/lib/sampleData';
 import { translate } from '@/lib/translations';
 import { Language, Request } from '@/types';
-import { ApiService, GuestRequest } from '@/services/api';
+import { ApiService, GuestRequest, RoomStatus } from '@/services/api';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  Hotel, 
-  Clock, 
-  AlertTriangle, 
-  CheckCircle, 
-  XCircle, 
+import {
+  Hotel,
+  Clock,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
   MessageSquare,
   Phone,
   User,
@@ -31,12 +31,13 @@ export default function ReceptionPanel() {
   const { user } = useAuth();
   const [currentLanguage, setCurrentLanguage] = useState<Language>('tr');
   const [requests, setRequests] = useState<GuestRequest[]>([]);
+  const [rooms, setRooms] = useState<RoomStatus[]>([]);
   const [filter, setFilter] = useState<'all' | 'urgent' | 'pending' | 'in_progress'>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRequest, setSelectedRequest] = useState<GuestRequest | null>(null);
   const [selectedRoomInfo, setSelectedRoomInfo] = useState<GuestRequest | null>(null);
   const [customMessage, setCustomMessage] = useState('');
-  const [checkoutConfirm, setCheckoutConfirm] = useState<{roomId: string, pendingPayments: any[], totalAmount: number} | null>(null);
+  const [checkoutConfirm, setCheckoutConfirm] = useState<{ roomId: string, pendingPayments: any[], totalAmount: number } | null>(null);
   const [showPaymentDetails, setShowPaymentDetails] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showRoomChange, setShowRoomChange] = useState(false);
@@ -113,7 +114,7 @@ export default function ReceptionPanel() {
         payments: []
       }
     };
-    
+
     return mockRoomData[roomNumber as keyof typeof mockRoomData] || {
       floor: 'Kat 1',
       type: 'Standard',
@@ -128,26 +129,26 @@ export default function ReceptionPanel() {
   // Ses bildirimi fonksiyonu - daha hızlı ve basit
   const playNotificationSound = useCallback(() => {
     if (!soundEnabled) return;
-    
+
     try {
       // Daha basit ve hızlı ses bildirimi
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      
+
       // Kısa ve net ses
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
-      
+
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
-      
+
       // Yüksek frekans - dikkat çekici
       oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
       oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.05);
-      
+
       // Hızlı fade
       gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
-      
+
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.15);
     } catch (error) {
@@ -159,38 +160,39 @@ export default function ReceptionPanel() {
   const loadData = useCallback(async () => {
     try {
       setIsLoading(true);
-      const [requestsData, statsData] = await Promise.all([
+      const [requestsData, statsData, roomsData] = await Promise.all([
         ApiService.getGuestRequests(),
         ApiService.getStatistics(),
+        ApiService.getRooms(),
       ]);
-      
+
       console.log('Resepsiyon paneli - Yüklenen istekler:', requestsData);
       console.log('Resepsiyon paneli - LocalStorage içeriği:', localStorage.getItem('roomapp_requests'));
-      
+
       // Filtre sayılarını debug et (yemek siparişleri hariç)
       const nonFoodRequests = requestsData.filter(r => r.type !== 'food_order');
       const urgentCount = nonFoodRequests.filter(r => r.priority === 'urgent' || r.priority === 'high').length;
       const pendingCount = nonFoodRequests.filter(r => r.status === 'pending').length;
       const inProgressCount = nonFoodRequests.filter(r => r.status === 'in_progress' || r.status === 'completed').length;
-      console.log('Filtre sayıları (yemek siparişleri hariç):', { 
+      console.log('Filtre sayıları (yemek siparişleri hariç):', {
         total: requestsData.length,
         nonFoodTotal: nonFoodRequests.length,
-        urgent: urgentCount, 
-        pending: pendingCount, 
-        inProgress: inProgressCount 
+        urgent: urgentCount,
+        pending: pendingCount,
+        inProgress: inProgressCount
       });
-      
+
       // Yeni istek kontrolü - ses bildirimi için (yemek siparişleri hariç)
       const nonFoodRequestCount = requestsData.filter(r => r.type !== 'food_order').length;
       if (nonFoodRequestCount > lastRequestCount && lastRequestCount > 0) {
         // Ses bildirimi hemen çal
         playNotificationSound();
-        
+
         // Yeni gelen istekleri bul ve detaylı bildirim gönder (yemek siparişleri hariç)
         const newRequests = requestsData.filter(r => r.type !== 'food_order').slice(0, nonFoodRequestCount - lastRequestCount);
         newRequests.forEach(request => {
           const roomNumber = request.roomId.replace('room-', '');
-          
+
           // İstek türüne göre bildirim türü belirle
           let notificationType: 'info' | 'warning' | 'success' = 'info';
           if ((request.type || '').toLowerCase() === 'maintenance') {
@@ -200,8 +202,8 @@ export default function ReceptionPanel() {
           } else if ((request.type || '').toLowerCase() === 'concierge') {
             notificationType = 'info'; // Konsiyerj - mavi
           }
-          
-        addNotification({
+
+          addNotification({
             type: notificationType,
             title: `Oda ${roomNumber}`,
             message: request.description,
@@ -209,16 +211,19 @@ export default function ReceptionPanel() {
         });
       }
       setLastRequestCount(nonFoodRequestCount);
-      
+
+      setLastRequestCount(nonFoodRequestCount);
+
       setRequests(requestsData);
       setStatistics(statsData);
-      
+      setRooms(roomsData);
+
       // Yeni talepleri kontrol et
-      const newCount = requestsData.filter(r => 
+      const newCount = requestsData.filter(r =>
         new Date(r.createdAt).getTime() > Date.now() - 300000 // Son 5 dakika
       ).length;
       setNewRequests(newCount);
-      
+
     } catch (error) {
       console.error('Error loading data:', error);
       // Fallback: Mock data kullan
@@ -257,39 +262,39 @@ export default function ReceptionPanel() {
   const getQuickResponses = (requestType: string) => {
     // Tüm istek türleri için genel yanıtlar
     return [
-      { 
-        id: 'in_progress', 
-        text: 'Yetkili ekibimizi yönlendirdik. En kısa sürede yanınızda olacaklar.', 
-        icon: Clock 
+      {
+        id: 'in_progress',
+        text: 'Yetkili ekibimizi yönlendirdik. En kısa sürede yanınızda olacaklar.',
+        icon: Clock
       },
-      { 
-        id: 'follow_up', 
-        text: 'Sorun devam ederse lütfen tekrar çağrı oluşturun. Talebiniz öne çıkarılacaktır.', 
-        icon: MessageSquare 
+      {
+        id: 'follow_up',
+        text: 'Sorun devam ederse lütfen tekrar çağrı oluşturun. Talebiniz öne çıkarılacaktır.',
+        icon: MessageSquare
       },
-      { 
-        id: 'delayed', 
-        text: 'Yoğunluk nedeniyle biraz daha beklememiz gerekiyor. Özür dileriz.', 
-        icon: Clock 
+      {
+        id: 'delayed',
+        text: 'Yoğunluk nedeniyle biraz daha beklememiz gerekiyor. Özür dileriz.',
+        icon: Clock
       }
     ];
   };
 
   const filteredRequests = requests
     .filter(request => {
-    // Yemek siparişlerini resepsiyon panelinden hariç tut
-    if (request.type === 'food_order') {
-      return false;
-    }
-    
-      const matchesFilter = filter === 'all' || 
-      (filter === 'urgent' && (request.priority === 'urgent' || request.priority === 'high')) ||
+      // Yemek siparişlerini resepsiyon panelinden hariç tut
+      if (request.type === 'food_order') {
+        return false;
+      }
+
+      const matchesFilter = filter === 'all' ||
+        (filter === 'urgent' && (request.priority === 'urgent' || request.priority === 'high')) ||
         (filter === 'pending' && request.status === 'pending') ||
-      (filter === 'in_progress' && (request.status === 'in_progress' || request.status === 'completed'));
-      
+        (filter === 'in_progress' && (request.status === 'in_progress' || request.status === 'completed'));
+
       const matchesSearch = request.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
         request.roomId.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       return matchesFilter && matchesSearch;
     })
     .sort((a, b) => {
@@ -297,20 +302,20 @@ export default function ReceptionPanel() {
       const statusOrder = { pending: 4, in_progress: 3, completed: 1, cancelled: 0 };
       const aStatus = statusOrder[a.status as keyof typeof statusOrder] || 0;
       const bStatus = statusOrder[b.status as keyof typeof statusOrder] || 0;
-      
+
       if (aStatus !== bStatus) {
         return bStatus - aStatus;
       }
-      
+
       // Sonra öncelik sırasına göre (urgent > high > medium > low)
       const priorityOrder = { urgent: 4, high: 3, medium: 2, low: 1 };
       const aPriority = priorityOrder[a.priority as keyof typeof priorityOrder] || 0;
       const bPriority = priorityOrder[b.priority as keyof typeof priorityOrder] || 0;
-      
+
       if (aPriority !== bPriority) {
         return bPriority - aPriority;
       }
-      
+
       // Son olarak tarihe göre (en yeni üstte)
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
@@ -323,10 +328,10 @@ export default function ReceptionPanel() {
     try {
       // Yanıt verildiğinde otomatik olarak completed durumuna geç
       const newStatus = 'completed';
-      
+
       // Önce talep durumunu güncelle
       await ApiService.updateRequestStatus(requestId, newStatus as any, response.text);
-      
+
       // Müşteriye bildirim gönder
       const request = requests.find(req => req.id === requestId);
       if (request) {
@@ -341,21 +346,21 @@ export default function ReceptionPanel() {
       } else {
         console.error('Request not found:', requestId, 'Available requests:', requests.map(r => r.id));
       }
-      
+
       // Local state'i güncelle
-      setRequests(prev => prev.map(req => 
-        req.id === requestId 
-          ? { 
-              ...req, 
-              status: newStatus,
-              notes: response.text,
-              updatedAt: new Date().toISOString()
-            }
+      setRequests(prev => prev.map(req =>
+        req.id === requestId
+          ? {
+            ...req,
+            status: newStatus,
+            notes: response.text,
+            updatedAt: new Date().toISOString()
+          }
           : req
       ));
 
       console.log('Quick response sent to guest:', response.text);
-      
+
     } catch (error) {
       console.error('Error updating request:', error);
       // Sadece console'da hata göster, resepsiyon panelinde bildirim gösterme
@@ -373,21 +378,21 @@ export default function ReceptionPanel() {
     try {
       // Özel mesaj gönderildiğinde de completed durumuna geç
       await ApiService.updateRequestStatus(requestId, 'completed', message);
-      
+
       // Müşteriye özel mesajı bildirim olarak gönder
       const request = requests.find(req => req.id === requestId);
       if (request) {
         await ApiService.sendNotificationToGuest(request.roomId, message, 'response');
       }
-      
-      setRequests(prev => prev.map(req => 
-        req.id === requestId 
-          ? { 
-              ...req, 
-              status: 'completed',
-              notes: message,
-              updatedAt: new Date().toISOString()
-            }
+
+      setRequests(prev => prev.map(req =>
+        req.id === requestId
+          ? {
+            ...req,
+            status: 'completed',
+            notes: message,
+            updatedAt: new Date().toISOString()
+          }
           : req
       ));
 
@@ -395,7 +400,7 @@ export default function ReceptionPanel() {
 
       setCustomMessage('');
       setSelectedRequest(null);
-      
+
     } catch (error) {
       console.error('Error sending custom message:', error);
       // Sadece console'da hata göster, resepsiyon panelinde bildirim gösterme
@@ -447,15 +452,15 @@ export default function ReceptionPanel() {
       // Tüm bekleyen ödemeleri al
       const roomInfo = getRoomInfo(roomId);
       const pendingPayments = roomInfo.payments.filter(p => p.status === 'pending');
-        const totalAmount = pendingPayments.reduce((sum, payment) => sum + payment.amount, 0);
-        
+      const totalAmount = pendingPayments.reduce((sum, payment) => sum + payment.amount, 0);
+
       // Onay popup'ı göster
-        setCheckoutConfirm({
-          roomId,
-          pendingPayments,
+      setCheckoutConfirm({
+        roomId,
+        pendingPayments,
         totalAmount
-        });
-      
+      });
+
     } catch (error) {
       console.error('Error processing checkout:', error);
       addNotification({
@@ -481,26 +486,26 @@ export default function ReceptionPanel() {
     try {
       // Tüm oda bilgilerini yeni odaya taşı
       const roomInfo = getRoomInfo(fromRoomId);
-      
+
       // Mock API çağrısı - gerçek uygulamada backend'e gönderilecek
       await ApiService.changeRoom(fromRoomId, toRoomId, roomInfo);
-      
+
       // Local state'i güncelle
-      setRequests(prev => prev.map(req => 
-        req.roomId === fromRoomId 
+      setRequests(prev => prev.map(req =>
+        req.roomId === fromRoomId
           ? { ...req, roomId: toRoomId }
           : req
       ));
-      
+
       addNotification({
         type: 'success',
         title: 'Oda Değişikliği',
         message: `Oda ${fromRoomId.replace('room-', '')} → Oda ${toRoomId.replace('room-', '')} değişikliği tamamlandı.`,
       });
-      
+
       setShowRoomChange(false);
       setSelectedNewRoom('');
-      
+
     } catch (error) {
       console.error('Error changing room:', error);
       addNotification({
@@ -521,14 +526,14 @@ export default function ReceptionPanel() {
   }) => {
     try {
       const checkInResult = await ApiService.checkInGuest(roomId, guestData);
-      
+
       if (checkInResult.success) {
         addNotification({
           type: 'success',
           title: 'Check-in Tamamlandı',
           message: `${guestData.firstName} ${guestData.lastName} oda ${roomId.replace('room-', '')} için check-in yapıldı.`,
         });
-        
+
         // QR kod güncelleme bildirimi
         if (checkInResult.qrCode) {
           addNotification({
@@ -537,7 +542,7 @@ export default function ReceptionPanel() {
             message: `Oda ${roomId.replace('room-', '')} için müşteri adını içeren QR kod oluşturuldu.`,
           });
         }
-        
+
         setShowCheckInModal(false);
         setCheckInRoomId('');
       } else {
@@ -562,33 +567,33 @@ export default function ReceptionPanel() {
     try {
       const roomInfo = getRoomInfo(roomId);
       const pendingPayments = roomInfo.payments.filter(p => p.status === 'pending');
-      
+
       if (pendingPayments.length > 0) {
         // Toplu ödeme işlemi
         for (const payment of pendingPayments) {
           await ApiService.updatePaymentStatus(payment.id, 'paid');
         }
-        
+
         addNotification({
           type: 'success',
           title: 'Ödemeler Alındı',
           message: `${pendingPayments.length} adet ödeme toplam ${pendingPayments.reduce((sum, p) => sum + p.amount, 0)} TL olarak alındı.`,
         });
       }
-      
+
       // Oda isteklerini temizle
       await ApiService.clearRoomRequests(roomId);
-      
+
       // Yeni: Müşteri check-out işlemi (QR kod otomatik sıfırlama ile)
       const checkoutResult = await ApiService.checkOutGuest(roomId);
-      
+
       if (checkoutResult.success) {
         addNotification({
           type: 'success',
           title: 'Çıkış Tamamlandı',
           message: `Oda ${roomId.replace('room-', '')} için çıkış işlemi tamamlandı. QR kod yeni müşteri için hazırlandı.`,
         });
-        
+
         // QR kod güncelleme bildirimi
         if (checkoutResult.qrCode) {
           addNotification({
@@ -600,14 +605,14 @@ export default function ReceptionPanel() {
       } else {
         // Fallback: Eski yöntem
         await ApiService.resetRoomQR(roomId);
-        
+
         addNotification({
           type: 'success',
           title: 'Çıkış Tamamlandı',
           message: `Oda ${roomId.replace('room-', '')} için çıkış işlemi tamamlandı, istekler temizlendi ve QR kod sıfırlandı.`,
         });
       }
-      
+
     } catch (error) {
       console.error('Error processing checkout:', error);
       addNotification({
@@ -643,11 +648,10 @@ export default function ReceptionPanel() {
               <div className="relative">
                 <button
                   onClick={() => setShowNotifications(!showNotifications)}
-                  className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-colors ${
-                    unreadCount > 0
-                      ? 'bg-red-500 text-white hover:bg-red-600' 
+                  className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-colors ${unreadCount > 0
+                      ? 'bg-red-500 text-white hover:bg-red-600'
                       : 'bg-blue-500 text-white hover:bg-blue-600'
-                  }`}
+                    }`}
                   title="Bildirimler"
                 >
                   <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -675,72 +679,103 @@ export default function ReceptionPanel() {
       {showNotifications && (
         <>
           {/* Backdrop */}
-          <div 
-            className="fixed inset-0 z-40" 
+          <div
+            className="fixed inset-0 z-40"
             onClick={() => setShowNotifications(false)}
           />
-        <div className="absolute top-20 right-4 z-50 bg-white rounded-xl shadow-2xl border border-gray-200 w-80 max-h-96 overflow-y-auto">
-          <div className="p-4 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">Bildirimler</h3>
-              <button
-                onClick={() => setShowNotifications(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-          <div className="p-4">
-            {notifications.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <Bell className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                <p>Henüz bildirim yok</p>
+          <div className="absolute top-20 right-4 z-50 bg-white rounded-xl shadow-2xl border border-gray-200 w-80 max-h-96 overflow-y-auto">
+            <div className="p-4 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">Bildirimler</h3>
+                <button
+                  onClick={() => setShowNotifications(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-            ) : (
-              <div className="space-y-3">
-                {notifications.slice(0, 10).map((notification) => (
-                  <div
-                    key={notification.id}
-                    onClick={() => markAsRead(notification.id)}
-                    className={`p-3 rounded-lg border-l-4 cursor-pointer hover:opacity-80 transition-opacity ${
-                      notification.read
-                        ? 'opacity-60'
-                        : notification.type === 'success' 
-                        ? 'bg-green-50 border-green-400' 
-                        : notification.type === 'error'
-                        ? 'bg-red-50 border-red-400'
-                        : notification.type === 'warning'
-                        ? 'bg-yellow-50 border-yellow-400'
-                        : 'bg-blue-50 border-blue-400'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                        <h4 className="font-medium text-gray-900 text-sm">
-                          {notification.title}
-                        </h4>
-                          {!notification.read && (
-                            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                          )}
+            </div>
+            <div className="p-4">
+              {notifications.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <Bell className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                  <p>Henüz bildirim yok</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {notifications.slice(0, 10).map((notification) => (
+                    <div
+                      key={notification.id}
+                      onClick={() => markAsRead(notification.id)}
+                      className={`p-3 rounded-lg border-l-4 cursor-pointer hover:opacity-80 transition-opacity ${notification.read
+                          ? 'opacity-60'
+                          : notification.type === 'success'
+                            ? 'bg-green-50 border-green-400'
+                            : notification.type === 'error'
+                              ? 'bg-red-50 border-red-400'
+                              : notification.type === 'warning'
+                                ? 'bg-yellow-50 border-yellow-400'
+                                : 'bg-blue-50 border-blue-400'
+                        }`}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-medium text-gray-900 text-sm">
+                              {notification.title}
+                            </h4>
+                            {!notification.read && (
+                              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                            )}
+                          </div>
+                          <p className="text-gray-600 text-xs mt-1">
+                            {notification.message}
+                          </p>
+                          <p className="text-gray-400 text-xs mt-2">
+                            {notification.timestamp.toLocaleString('tr-TR')}
+                          </p>
                         </div>
-                        <p className="text-gray-600 text-xs mt-1">
-                          {notification.message}
-                        </p>
-                        <p className="text-gray-400 text-xs mt-2">
-                          {notification.timestamp.toLocaleString('tr-TR')}
-                        </p>
                       </div>
                     </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Tüm Odalar Grid */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
+          <h2 className="text-lg font-bold text-gray-900 mb-4">Tüm Odalar</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+            {rooms.length > 0 ? rooms.map((room) => {
+              const hasActiveRequest = requests.some(r => r.roomId === room.roomId && r.status === 'pending');
+              const roomNum = room.number || room.roomId.replace('room-', '');
+              return (
+                <div
+                  key={room.roomId}
+                  onClick={() => setSearchTerm(roomNum)}
+                  className={`
+                    p-3 rounded-lg border-2 text-center transition-all cursor-pointer relative overflow-hidden hover:shadow-md
+                    ${hasActiveRequest ? 'animate-pulse border-red-500 bg-red-50 shadow-red-200' : ''}
+                    ${!hasActiveRequest && room.status === 'occupied' ? 'bg-green-100 border-green-200 text-green-800' : ''}
+                    ${!hasActiveRequest && room.status !== 'occupied' ? 'bg-white border-gray-200 text-gray-400' : ''}
+                  `}
+                >
+                  <div className={`font-bold text-lg ${hasActiveRequest ? 'text-red-700' : ''}`}>{roomNum}</div>
+                  <div className="text-xs truncate font-medium">
+                    {hasActiveRequest ? '❗️ İstek Var' : (room.guestName || (room.status === 'occupied' ? 'Dolu' : 'Boş'))}
                   </div>
-                ))}
-              </div>
+                </div>
+              );
+            }) : (
+              <div className="col-span-full text-center text-gray-400 py-4">Oda bilgisi yükleniyor...</div>
             )}
           </div>
         </div>
-        </>
-      )}
+      </div>
 
       {/* Filters and Search */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
@@ -768,11 +803,10 @@ export default function ReceptionPanel() {
                 <button
                   key={filterOption.id}
                   onClick={() => setFilter(filterOption.id as any)}
-                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl font-medium transition-all duration-200 text-xs sm:text-sm ${
-                    filter === filterOption.id
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl font-medium transition-all duration-200 text-xs sm:text-sm ${filter === filterOption.id
                       ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md'
-                  }`}
+                    }`}
                 >
                   {filterOption.label} ({filterOption.count})
                 </button>
@@ -780,7 +814,7 @@ export default function ReceptionPanel() {
             </div>
           </div>
         </div>
-                  
+
         {/* Requests List */}
         <div className="space-y-3 sm:space-y-4">
           {filteredRequests.map((request) => (
@@ -796,35 +830,35 @@ export default function ReceptionPanel() {
                         <div className="flex items-center space-x-1">
                           {getPriorityIcon(request.priority)}
                           <span>{request.priority === 'urgent' ? 'YÜKSEK' :
-                                 request.priority === 'high' ? 'YÜKSEK' :
-                                 request.priority === 'medium' ? 'ORTA' :
-                                 request.priority === 'low' ? 'DÜŞÜK' : String(request.priority || '').toUpperCase()}</span>
+                            request.priority === 'high' ? 'YÜKSEK' :
+                              request.priority === 'medium' ? 'ORTA' :
+                                request.priority === 'low' ? 'DÜŞÜK' : String(request.priority || '').toUpperCase()}</span>
                         </div>
                       </span>
                       <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(request.status)}`}>
                         {request.status === 'pending' ? 'BEKLEMEDE' :
-                         request.status === 'in_progress' ? 'İŞLEMDE' :
-                         request.status === 'completed' ? 'TAMAMLANDI' : 'İPTAL'}
+                          request.status === 'in_progress' ? 'İŞLEMDE' :
+                            request.status === 'completed' ? 'TAMAMLANDI' : 'İPTAL'}
                       </span>
                     </div>
                   </div>
-                  
+
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600 mb-3">
                     <div className="flex items-center space-x-1">
                       <span className="text-lg">{getRequestTypeIcon(request.type)}</span>
-                      <span>{request.type?.toLowerCase() === 'housekeeping' ? 'Temizlik' : 
-                             request.type?.toLowerCase() === 'maintenance' ? 'Bakım' :
-                             request.type?.toLowerCase() === 'concierge' ? 'Konsiyerj' : 
-                             request.type?.toLowerCase() === 'food_order' ? 'Yemek Siparişi' : request.type}</span>
+                      <span>{request.type?.toLowerCase() === 'housekeeping' ? 'Temizlik' :
+                        request.type?.toLowerCase() === 'maintenance' ? 'Bakım' :
+                          request.type?.toLowerCase() === 'concierge' ? 'Konsiyerj' :
+                            request.type?.toLowerCase() === 'food_order' ? 'Yemek Siparişi' : request.type}</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
                       <span>{new Date(request.createdAt).toLocaleString('tr-TR')}</span>
                     </div>
                   </div>
-                  
+
                   <p className="text-sm sm:text-base text-gray-700 mb-4">{request.description}</p>
-                  
+
                   {request.notes && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
                       <div className="flex items-start space-x-2">
@@ -845,8 +879,8 @@ export default function ReceptionPanel() {
                   >
                     Detaylı Yanıt
                   </button>
-                  
-                  <button 
+
+                  <button
                     onClick={() => setSelectedRoomInfo(request)}
                     className="bg-gray-100 text-gray-700 px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl hover:bg-gray-200 transition-all duration-200 font-semibold text-sm sm:text-base"
                   >
@@ -871,67 +905,67 @@ export default function ReceptionPanel() {
 
       {/* Checkout Confirmation Modal */}
       {checkoutConfirm && (
-        <div 
+        <div
           className="fixed inset-0 bg-gray-900 bg-opacity-80 backdrop-blur-sm flex items-center justify-center z-[9999] p-4"
           onClick={() => setCheckoutConfirm(null)}
         >
-          <div 
+          <div
             className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl border border-gray-200"
             onClick={(e) => e.stopPropagation()}
           >
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                    <AlertTriangle className="w-5 h-5 text-orange-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-gray-900">Çıkış Onayı</h3>
-                    <p className="text-sm text-gray-600">Oda {checkoutConfirm.roomId.replace('room-', '')} için çıkış işlemi</p>
-                  </div>
-                </div>
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5 text-orange-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Çıkış Onayı</h3>
+                <p className="text-sm text-gray-600">Oda {checkoutConfirm.roomId.replace('room-', '')} için çıkış işlemi</p>
+              </div>
+            </div>
 
-                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
-                  <div className="flex items-start space-x-2">
-                    <AlertTriangle className="w-5 h-5 text-orange-600 mt-0.5" />
-                    <div className="text-sm text-orange-800">
-                      <p className="font-medium mb-1">İşlemden emin misiniz?</p>
-                      <p className="text-xs">Bu işlem geri alınamaz. Devam etmek istediğinizden emin misiniz?</p>
-                    </div>
-                  </div>
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
+              <div className="flex items-start space-x-2">
+                <AlertTriangle className="w-5 h-5 text-orange-600 mt-0.5" />
+                <div className="text-sm text-orange-800">
+                  <p className="font-medium mb-1">İşlemden emin misiniz?</p>
+                  <p className="text-xs">Bu işlem geri alınamaz. Devam etmek istediğinizden emin misiniz?</p>
                 </div>
+              </div>
+            </div>
 
             {/* Bekleyen ödemeler varsa göster */}
             {checkoutConfirm.pendingPayments.length > 0 && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <MessageSquare className="w-4 h-4 text-yellow-600" />
-                    <span className="font-semibold text-yellow-900 text-sm">Bekleyen Ödemeler</span>
-                  </div>
-                  <div className="space-y-2">
-                    {checkoutConfirm.pendingPayments.map((payment) => (
-                      <div key={payment.id} className="flex justify-between items-center text-sm">
-                        <span className="text-gray-700">{payment.item}</span>
-                        <span className="font-semibold text-gray-900">{payment.amount} TL</span>
-                      </div>
-                    ))}
-                    <div className="border-t border-yellow-200 pt-2 mt-2">
-                      <div className="flex justify-between items-center font-semibold">
-                        <span className="text-gray-700">Toplam Tutar:</span>
-                        <span className="text-red-600 text-lg">{checkoutConfirm.totalAmount} TL</span>
-                      </div>
+                <div className="flex items-center space-x-2 mb-2">
+                  <MessageSquare className="w-4 h-4 text-yellow-600" />
+                  <span className="font-semibold text-yellow-900 text-sm">Bekleyen Ödemeler</span>
+                </div>
+                <div className="space-y-2">
+                  {checkoutConfirm.pendingPayments.map((payment) => (
+                    <div key={payment.id} className="flex justify-between items-center text-sm">
+                      <span className="text-gray-700">{payment.item}</span>
+                      <span className="font-semibold text-gray-900">{payment.amount} TL</span>
+                    </div>
+                  ))}
+                  <div className="border-t border-yellow-200 pt-2 mt-2">
+                    <div className="flex justify-between items-center font-semibold">
+                      <span className="text-gray-700">Toplam Tutar:</span>
+                      <span className="text-red-600 text-lg">{checkoutConfirm.totalAmount} TL</span>
                     </div>
                   </div>
                 </div>
+              </div>
             )}
 
             <div className="flex space-x-3">
-                  <button
+              <button
                 onClick={() => setCheckoutConfirm(null)}
                 className="flex-1 bg-gray-100 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-200 transition-colors font-semibold"
-                  >
+              >
                 İptal
-                  </button>
-                  <button
-                    onClick={() => {
+              </button>
+              <button
+                onClick={() => {
                   // Oda değiştirme için selectedRoomInfo'yu set et
                   const roomInfo = {
                     id: checkoutConfirm.roomId,
@@ -944,34 +978,34 @@ export default function ReceptionPanel() {
                     updatedAt: new Date().toISOString()
                   };
                   setSelectedRoomInfo(roomInfo as any);
-                      setCheckoutConfirm(null);
-                      setShowRoomChange(true);
-                    }}
+                  setCheckoutConfirm(null);
+                  setShowRoomChange(true);
+                }}
                 className="flex-1 bg-blue-500 text-white px-4 py-3 rounded-lg hover:bg-blue-600 transition-colors font-semibold"
-                  >
-                    Oda Değiştir
-                  </button>
-                  <button
-                    onClick={async () => {
-                      setCheckoutConfirm(null);
-                      await processCheckout(checkoutConfirm.roomId);
-                    }}
+              >
+                Oda Değiştir
+              </button>
+              <button
+                onClick={async () => {
+                  setCheckoutConfirm(null);
+                  await processCheckout(checkoutConfirm.roomId);
+                }}
                 className="flex-1 bg-red-500 text-white px-4 py-3 rounded-lg hover:bg-red-600 transition-colors font-semibold"
-                  >
-                    Çıkış Yap
-                  </button>
-                </div>
+              >
+                Çıkış Yap
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {/* Room Change Modal */}
       {showRoomChange && selectedRoomInfo && (
-        <div 
+        <div
           className="fixed inset-0 bg-gray-900 bg-opacity-80 backdrop-blur-sm flex items-center justify-center z-[9999] p-4"
           onClick={() => setShowRoomChange(false)}
         >
-          <div 
+          <div
             className="bg-white rounded-xl p-6 max-w-md w-full shadow-2xl border border-gray-200"
             onClick={(e) => e.stopPropagation()}
           >
@@ -1003,19 +1037,18 @@ export default function ReceptionPanel() {
                 {availableRooms
                   .filter(room => room.id !== selectedRoomInfo.roomId)
                   .map((room) => (
-                  <button
-                    key={room.id}
-                    onClick={() => setSelectedNewRoom(room.id)}
-                    className={`p-3 rounded-lg border-2 text-left transition-colors ${
-                      selectedNewRoom === room.id
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <div className="font-semibold text-gray-900">Oda {room.number}</div>
-                    <div className="text-xs text-gray-600">{room.floor} - {room.type}</div>
-                  </button>
-                ))}
+                    <button
+                      key={room.id}
+                      onClick={() => setSelectedNewRoom(room.id)}
+                      className={`p-3 rounded-lg border-2 text-left transition-colors ${selectedNewRoom === room.id
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                    >
+                      <div className="font-semibold text-gray-900">Oda {room.number}</div>
+                      <div className="text-xs text-gray-600">{room.floor} - {room.type}</div>
+                    </button>
+                  ))}
               </div>
             </div>
 
@@ -1040,18 +1073,18 @@ export default function ReceptionPanel() {
 
       {/* Room Info Modal */}
       {selectedRoomInfo && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-[9998] p-2 sm:p-4"
           onClick={() => setSelectedRoomInfo(null)}
         >
-          <div 
+          <div
             className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 max-w-sm sm:max-w-md w-full shadow-2xl max-h-[95vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3">
               Oda {selectedRoomInfo.roomId.replace('room-', '')} Bilgileri
             </h3>
-            
+
             <div className="space-y-3">
               {(() => {
                 const roomInfo = getRoomInfo(selectedRoomInfo.roomId);
@@ -1124,37 +1157,37 @@ export default function ReceptionPanel() {
                           {roomInfo.payments
                             .filter(p => p.status === 'pending')
                             .map((payment) => (
-                            <div key={payment.id} className="flex items-center justify-between p-2 bg-white rounded border text-xs">
-                              <div className="flex-1 min-w-0">
-                                <div className="font-medium text-gray-900 truncate">{payment.item}</div>
-                                <div className="text-gray-500 text-xs">{payment.date}</div>
+                              <div key={payment.id} className="flex items-center justify-between p-2 bg-white rounded border text-xs">
+                                <div className="flex-1 min-w-0">
+                                  <div className="font-medium text-gray-900 truncate">{payment.item}</div>
+                                  <div className="text-gray-500 text-xs">{payment.date}</div>
+                                </div>
+                                <div className="flex items-center space-x-1 ml-2">
+                                  <span className="font-semibold text-gray-900">{payment.amount} TL</span>
+                                  <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded">
+                                    Bekleyen
+                                  </span>
+                                </div>
                               </div>
-                              <div className="flex items-center space-x-1 ml-2">
-                                <span className="font-semibold text-gray-900">{payment.amount} TL</span>
-                                <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded">
-                                  Bekleyen
-                                </span>
-                              </div>
-                            </div>
-                          ))}
-                          
+                            ))}
+
                           {/* Ödenen Ödemeler - Sadece detay açıksa göster */}
                           {showPaymentDetails && roomInfo.payments
                             .filter(p => p.status === 'paid')
                             .map((payment) => (
-                            <div key={payment.id} className="flex items-center justify-between p-2 bg-white rounded border text-xs opacity-75">
-                              <div className="flex-1 min-w-0">
-                                <div className="font-medium text-gray-600 truncate">{payment.item}</div>
-                                <div className="text-gray-400 text-xs">{payment.date}</div>
+                              <div key={payment.id} className="flex items-center justify-between p-2 bg-white rounded border text-xs opacity-75">
+                                <div className="flex-1 min-w-0">
+                                  <div className="font-medium text-gray-600 truncate">{payment.item}</div>
+                                  <div className="text-gray-400 text-xs">{payment.date}</div>
+                                </div>
+                                <div className="flex items-center space-x-1 ml-2">
+                                  <span className="font-semibold text-gray-600">{payment.amount} TL</span>
+                                  <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
+                                    Ödendi
+                                  </span>
+                                </div>
                               </div>
-                              <div className="flex items-center space-x-1 ml-2">
-                                <span className="font-semibold text-gray-600">{payment.amount} TL</span>
-                                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
-                                  Ödendi
-                                </span>
-                              </div>
-                            </div>
-                          ))}
+                            ))}
                         </div>
                         <div className="mt-2 pt-2 border-t border-yellow-200">
                           <div className="flex justify-between text-xs font-semibold">
@@ -1181,7 +1214,7 @@ export default function ReceptionPanel() {
                         <div>
                           <div className="font-semibold text-red-900 text-sm">Çıkış İşlemi</div>
                           <div className="text-xs text-red-700">
-                            {roomInfo.payments.filter(p => p.status === 'pending').length > 0 
+                            {roomInfo.payments.filter(p => p.status === 'pending').length > 0
                               ? `${roomInfo.payments.filter(p => p.status === 'pending').length} adet bekleyen ödeme var`
                               : 'Bekleyen ödeme yok'
                             }
@@ -1210,7 +1243,7 @@ export default function ReceptionPanel() {
                 );
               })()}
             </div>
-            
+
             <div className="flex space-x-3 mt-3">
               <button
                 onClick={() => setSelectedRoomInfo(null)}
@@ -1225,23 +1258,23 @@ export default function ReceptionPanel() {
 
       {/* Quick Response Modal */}
       {selectedRequest && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-[9997] p-4"
           onClick={() => setSelectedRequest(null)}
         >
-          <div 
+          <div
             className="bg-white rounded-xl sm:rounded-3xl p-4 sm:p-6 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
               Oda {selectedRequest.roomId.replace('room-', '')} - Otomatik Yanıt
             </h3>
-            
+
             <div className="mb-4 sm:mb-6">
               <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-2">İstek:</p>
               <p className="text-sm sm:text-base text-gray-900 bg-gray-50 p-3 rounded-lg sm:rounded-xl">{selectedRequest.description}</p>
             </div>
-            
+
             <div className="space-y-2 sm:space-y-3">
               <p className="text-xs sm:text-sm font-semibold text-gray-700">Otomatik Yanıtlar:</p>
               {getQuickResponses(selectedRequest.type).map((response) => {
@@ -1287,7 +1320,7 @@ export default function ReceptionPanel() {
                 </button>
               </div>
             </div>
-            
+
             <div className="flex space-x-3 mt-4 sm:mt-6">
               <button
                 onClick={() => setSelectedRequest(null)}
@@ -1302,19 +1335,19 @@ export default function ReceptionPanel() {
 
       {/* Check-in Modal */}
       {showCheckInModal && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-[9997] p-4"
           onClick={() => setShowCheckInModal(false)}
         >
-          <div 
+          <div
             className="bg-white rounded-xl sm:rounded-3xl p-4 sm:p-6 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
               Müşteri Check-in - Oda {checkInRoomId.replace('room-', '')}
             </h3>
-            
-            <CheckInForm 
+
+            <CheckInForm
               roomId={checkInRoomId}
               onSubmit={processCheckIn}
               onCancel={() => {
@@ -1330,14 +1363,14 @@ export default function ReceptionPanel() {
 }
 
 // Check-in Form Component
-function CheckInForm({ 
-  roomId, 
-  onSubmit, 
-  onCancel 
-}: { 
-  roomId: string; 
-  onSubmit: (roomId: string, guestData: any) => void; 
-  onCancel: () => void; 
+function CheckInForm({
+  roomId,
+  onSubmit,
+  onCancel
+}: {
+  roomId: string;
+  onSubmit: (roomId: string, guestData: any) => void;
+  onCancel: () => void;
 }) {
   const [formData, setFormData] = useState({
     firstName: '',
@@ -1365,7 +1398,7 @@ function CheckInForm({
             type="text"
             required
             value={formData.firstName}
-            onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="Müşteri adı"
           />
@@ -1378,7 +1411,7 @@ function CheckInForm({
             type="text"
             required
             value={formData.lastName}
-            onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="Müşteri soyadı"
           />
@@ -1392,7 +1425,7 @@ function CheckInForm({
         <input
           type="email"
           value={formData.email}
-          onChange={(e) => setFormData({...formData, email: e.target.value})}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder="musteri@email.com"
         />
@@ -1405,7 +1438,7 @@ function CheckInForm({
         <input
           type="tel"
           value={formData.phone}
-          onChange={(e) => setFormData({...formData, phone: e.target.value})}
+          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder="+90 555 123 4567"
         />
@@ -1417,7 +1450,7 @@ function CheckInForm({
         </label>
         <select
           value={formData.language}
-          onChange={(e) => setFormData({...formData, language: e.target.value})}
+          onChange={(e) => setFormData({ ...formData, language: e.target.value })}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         >
           <option value="tr">Türkçe</option>

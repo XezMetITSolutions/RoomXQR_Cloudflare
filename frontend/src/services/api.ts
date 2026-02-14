@@ -37,6 +37,9 @@ export interface RoomStatus {
   guestName?: string;
   checkIn?: string;
   checkOut?: string;
+  number?: string;
+  floor?: number;
+  type?: string;
 }
 
 // API çağrıları
@@ -47,7 +50,7 @@ export class ApiService {
       console.log('Using mock data for requests');
       return this.getMockRequests();
     }
-    
+
     try {
       const url = roomId ? `${API_BASE_URL}/requests?roomId=${roomId}` : `${API_BASE_URL}/requests`;
       console.log('Fetching requests from:', url);
@@ -57,14 +60,14 @@ export class ApiService {
           'Content-Type': 'application/json',
         },
       });
-      
+
       console.log('Response status:', response.status);
-      
+
       if (!response.ok) {
         console.error('Response not ok:', response.status, response.statusText);
         throw new Error(`Failed to fetch requests: ${response.status} ${response.statusText}`);
       }
-      
+
       const data = await response.json();
       console.log('Fetched requests:', data);
       return data;
@@ -84,33 +87,33 @@ export class ApiService {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      
+
       // Global mock listesine ekle
       const currentRequests = this.getMockRequests();
       currentRequests.unshift(newRequest);
       this.saveMockRequests(currentRequests);
-      
+
       return newRequest;
     }
-    
+
     try {
       console.log('Creating request:', request);
       const response = await fetch(`${API_BASE_URL}/requests`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*'
         },
         body: JSON.stringify(request),
       });
-      
+
       console.log('Create request response status:', response.status);
-      
+
       if (!response.ok) {
         console.error('Create request failed:', response.status, response.statusText);
         throw new Error(`Failed to create request: ${response.status} ${response.statusText}`);
       }
-      
+
       const data = await response.json();
       console.log('Created request:', data);
       return data;
@@ -123,12 +126,12 @@ export class ApiService {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      
+
       // Global mock listesine ekle
       const currentRequests = this.getMockRequests();
       currentRequests.unshift(newRequest);
       this.saveMockRequests(currentRequests);
-      
+
       return newRequest;
     }
   }
@@ -202,6 +205,30 @@ export class ApiService {
     }
   }
 
+  // Tüm odaları çek
+  static async getRooms(): Promise<RoomStatus[]> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/rooms`);
+      if (!response.ok) throw new Error('Failed to fetch rooms');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching rooms:', error);
+      // Fallback: Mock data
+      return [
+        { roomId: 'room-101', status: 'occupied', guestName: 'Ahmet Yılmaz', checkIn: new Date().toISOString() },
+        { roomId: 'room-102', status: 'occupied', guestName: 'Maria Garcia', checkIn: new Date().toISOString() },
+        { roomId: 'room-103', status: 'vacant' },
+        { roomId: 'room-104', status: 'occupied', guestName: 'Ali Veli', checkIn: new Date().toISOString() },
+        { roomId: 'room-105', status: 'vacant' },
+        { roomId: 'room-201', status: 'occupied', guestName: 'John Smith', checkIn: new Date().toISOString() },
+        { roomId: 'room-202', status: 'vacant' },
+        { roomId: 'room-203', status: 'vacant' },
+        { roomId: 'room-301', status: 'occupied', guestName: 'Ayşe Demir', checkIn: new Date().toISOString() },
+        { roomId: 'room-302', status: 'vacant' },
+      ];
+    }
+  }
+
   // İstatistikler
   static async getStatistics(): Promise<{
     totalRequests: number;
@@ -230,7 +257,7 @@ export class ApiService {
     try {
       const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'wss://api.roomxr.com';
       const ws = new WebSocket(`${wsUrl}/ws?roomId=${roomId}`);
-      
+
       ws.onopen = () => console.log('WebSocket connected');
       ws.onmessage = (event) => {
         try {
@@ -242,7 +269,7 @@ export class ApiService {
       };
       ws.onerror = (error) => console.error('WebSocket error:', error);
       ws.onclose = () => console.log('WebSocket disconnected');
-      
+
       return ws;
     } catch (error) {
       console.error('Error connecting WebSocket:', error);
@@ -260,7 +287,7 @@ export class ApiService {
         },
         body: JSON.stringify({ status }),
       });
-      
+
       if (!response.ok) throw new Error('Failed to update payment status');
     } catch (error) {
       console.error('Error updating payment status:', error);
@@ -277,7 +304,7 @@ export class ApiService {
           'Content-Type': 'application/json',
         },
       });
-      
+
       if (!response.ok) throw new Error('Failed to reset room QR');
     } catch (error) {
       console.error('Error resetting room QR:', error);
@@ -295,7 +322,7 @@ export class ApiService {
         },
         body: JSON.stringify({ guestName }),
       });
-      
+
       if (!response.ok) throw new Error('Failed to generate guest QR');
       const data = await response.json();
       return data.qrCode;
@@ -341,7 +368,7 @@ export class ApiService {
           ...guestData,
         }),
       });
-      
+
       if (!response.ok) throw new Error('Failed to check in guest');
       const data = await response.json();
       return { success: true, qrCode: data.qrCode };
@@ -364,7 +391,7 @@ export class ApiService {
         },
         body: JSON.stringify({ roomId }),
       });
-      
+
       if (!response.ok) throw new Error('Failed to check out guest');
       const data = await response.json();
       return { success: true, qrCode: data.qrCode };
@@ -390,7 +417,7 @@ export class ApiService {
           roomData
         }),
       });
-      
+
       if (!response.ok) throw new Error('Failed to change room');
     } catch (error) {
       console.error('Error changing room:', error);
@@ -413,7 +440,7 @@ export class ApiService {
           timestamp: new Date().toISOString()
         }),
       });
-      
+
       if (!response.ok) throw new Error('Failed to send notification to guest');
     } catch (error) {
       console.error('Error sending notification to guest:', error);
@@ -425,7 +452,7 @@ export class ApiService {
   // Misafir bildirimlerini local storage'a kaydet
   private static saveGuestNotification(roomId: string, message: string, type: string): void {
     if (typeof window === 'undefined') return;
-    
+
     try {
       const key = `guest_notifications_${roomId}`;
       const existing = JSON.parse(localStorage.getItem(key) || '[]');
@@ -436,7 +463,7 @@ export class ApiService {
         timestamp: new Date().toISOString(),
         read: false
       };
-      
+
       existing.unshift(notification);
       localStorage.setItem(key, JSON.stringify(existing.slice(0, 10))); // Max 10 bildirim
       console.log('Guest notification saved:', { roomId, message, type, key });
@@ -448,7 +475,7 @@ export class ApiService {
   // Misafir bildirimlerini local storage'dan al
   static getGuestNotifications(roomId: string): any[] {
     if (typeof window === 'undefined') return [];
-    
+
     try {
       const key = `guest_notifications_${roomId}`;
       const notifications = JSON.parse(localStorage.getItem(key) || '[]');
@@ -466,12 +493,12 @@ export class ApiService {
   // Misafir bildirimini okundu olarak işaretle
   static markGuestNotificationAsRead(roomId: string, notificationId: string): void {
     if (typeof window === 'undefined') return;
-    
+
     try {
       const key = `guest_notifications_${roomId}`;
       const notifications = JSON.parse(localStorage.getItem(key) || '[]');
-      const updatedNotifications = notifications.map((notification: any) => 
-        notification.id === notificationId 
+      const updatedNotifications = notifications.map((notification: any) =>
+        notification.id === notificationId
           ? { ...notification, read: true }
           : notification
       );
@@ -508,21 +535,21 @@ export class ApiService {
   // İsim formatlama fonksiyonu - uzun soyadlarını kısalt
   static formatGuestName(name: string, surname: string, maxLength: number = 15): string {
     const fullName = `${name} ${surname}`;
-    
+
     // Eğer toplam uzunluk maksimumdan kısaysa, olduğu gibi döndür
     if (fullName.length <= maxLength) {
       return fullName;
     }
-    
+
     // Soyadını kısalt
     const shortenedSurname = surname.charAt(0).toUpperCase() + '.';
     const shortenedName = `${name} ${shortenedSurname}`;
-    
+
     // Kısaltılmış isim de hala uzunsa, sadece adı döndür
     if (shortenedName.length > maxLength) {
       return name;
     }
-    
+
     return shortenedName;
   }
 
@@ -539,7 +566,7 @@ export class ApiService {
     guestCount: number;
   } | null {
     const roomNumber = roomId.replace('room-', '');
-    
+
     // Farklı odalar için farklı misafir verileri - test için uzun soyadları ekledik
     const mockGuests: { [key: string]: any } = {
       '101': {
@@ -618,7 +645,7 @@ export class ApiService {
   // Mock data'yı localStorage'dan al
   private static getMockRequests(): GuestRequest[] {
     if (typeof window === 'undefined') return this.mockRequests;
-    
+
     try {
       const stored = localStorage.getItem('roomxqr_requests');
       if (stored) {
@@ -627,14 +654,14 @@ export class ApiService {
     } catch (error) {
       console.error('Error loading requests:', error);
     }
-    
+
     return this.mockRequests;
   }
 
   // Mock data'yı localStorage'a kaydet
   private static saveMockRequests(requests: GuestRequest[]): void {
     if (typeof window === 'undefined') return;
-    
+
     try {
       localStorage.setItem('roomxqr_requests', JSON.stringify(requests));
     } catch (error) {
@@ -653,9 +680,9 @@ export class ApiService {
         },
         body: JSON.stringify({ roomId }),
       });
-      
+
       if (!response.ok) throw new Error('Failed to clear room requests');
-      
+
     } catch (error) {
       console.error('Error clearing room requests:', error);
       // Mock: Local storage'dan oda isteklerini temizle
@@ -666,7 +693,7 @@ export class ApiService {
   // Local storage'dan oda isteklerini temizle
   private static clearRoomRequestsFromLocalStorage(roomId: string): void {
     if (typeof window === 'undefined') return;
-    
+
     try {
       const stored = localStorage.getItem('roomxqr_requests');
       if (stored) {

@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 import { useHotelStore } from '@/store/hotelStore';
 import { translate } from '@/lib/translations';
 import { Language, Order, MenuItem } from '@/types';
-import { ApiService } from '@/services/api';
-import { 
-  ChefHat, 
-  Clock, 
-  CheckCircle, 
+import { ApiService, RoomStatus } from '@/services/api';
+import {
+  ChefHat,
+  Clock,
+  CheckCircle,
   AlertCircle,
   Play,
   Pause,
@@ -25,6 +25,7 @@ import {
 export default function KitchenPanel() {
   const [currentLanguage, setCurrentLanguage] = useState<Language>('tr');
   const [orders, setOrders] = useState<Order[]>([]);
+  const [rooms, setRooms] = useState<RoomStatus[]>([]);
   const [menu, setMenu] = useState<MenuItem[]>([]);
   const [filter, setFilter] = useState<'all' | 'pending' | 'preparing' | 'ready' | 'delivered' | 'cancelled'>('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -39,16 +40,16 @@ export default function KitchenPanel() {
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
-      
+
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
-      
+
       oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
       oscillator.type = 'sine';
-      
+
       gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-      
+
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.3);
     } catch (error) {
@@ -97,7 +98,7 @@ export default function KitchenPanel() {
       try {
         setIsLoading(true);
         const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
-        
+
         // URL'den tenant slug'ını al
         let tenantSlug = 'demo';
         if (typeof window !== 'undefined') {
@@ -110,7 +111,7 @@ export default function KitchenPanel() {
 
         // Token'ı localStorage'dan al
         const token = localStorage.getItem('auth_token');
-        
+
         const headers: Record<string, string> = {
           'Content-Type': 'application/json',
           'x-tenant': tenantSlug,
@@ -128,7 +129,7 @@ export default function KitchenPanel() {
 
         if (response.ok) {
           const backendOrders = await response.json();
-          
+
           // Backend Order formatını frontend Order formatına çevir
           const formattedOrders: Order[] = backendOrders.map((order: any) => {
             const items = order.items.map((item: any) => ({
@@ -165,15 +166,19 @@ export default function KitchenPanel() {
           setOrders(prev => {
             const existingIds = new Set(prev.map(order => order.id));
             const newOrders = formattedOrders.filter(order => !existingIds.has(order.id));
-            
+
             // Yeni sipariş varsa ses çal
             if (newOrders.length > 0) {
               playNotificationSound();
             }
-            
+
             // Tüm siparişleri güncelle (backend'den gelen güncel veriler)
             return formattedOrders;
           });
+
+          // Odaları çek
+          const roomsData = await ApiService.getRooms();
+          setRooms(roomsData);
         }
       } catch (error) {
         console.error('Sipariş yükleme hatası:', error);
@@ -183,7 +188,7 @@ export default function KitchenPanel() {
     };
 
     loadOrders();
-    
+
     // Her 10 saniyede bir güncelle
     const interval = setInterval(loadOrders, 10000);
     return () => clearInterval(interval);
@@ -194,18 +199,18 @@ export default function KitchenPanel() {
     .filter(order => {
       const matchesFilter = filter === 'all' || order.status === filter;
       const matchesSearch = order.roomId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.items.some(item => 
+        order.items.some(item =>
           menu.find(m => m.id === item.menuItemId)?.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
       return matchesFilter && matchesSearch;
     })
     .sort((a, b) => {
       // Teslim edilen ve iptal edilen siparişler en alta, diğerleri duruma göre sırala
-      if ((a.status === 'delivered' || a.status === 'cancelled') && 
-          (b.status !== 'delivered' && b.status !== 'cancelled')) return 1;
-      if ((b.status === 'delivered' || b.status === 'cancelled') && 
-          (a.status !== 'delivered' && a.status !== 'cancelled')) return -1;
-      
+      if ((a.status === 'delivered' || a.status === 'cancelled') &&
+        (b.status !== 'delivered' && b.status !== 'cancelled')) return 1;
+      if ((b.status === 'delivered' || b.status === 'cancelled') &&
+        (a.status !== 'delivered' && a.status !== 'cancelled')) return -1;
+
       // Aynı durumda olanlar için tarihe göre sırala (yeni olanlar üstte)
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
@@ -214,7 +219,7 @@ export default function KitchenPanel() {
     try {
       // Backend'e sipariş durumunu güncelle
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
-      
+
       // URL'den tenant slug'ını al
       let tenantSlug = 'demo';
       if (typeof window !== 'undefined') {
@@ -227,7 +232,7 @@ export default function KitchenPanel() {
 
       // Token'ı localStorage'dan al
       const token = localStorage.getItem('auth_token');
-      
+
       const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}`, {
         method: 'PUT',
         headers: {
@@ -235,23 +240,23 @@ export default function KitchenPanel() {
           'Authorization': `Bearer ${token}`,
           'x-tenant': tenantSlug
         },
-        body: JSON.stringify({ 
-          status: newStatus === 'ready' ? 'READY' : 
-                 newStatus === 'delivered' ? 'DELIVERED' : 
-                 newStatus === 'preparing' ? 'PREPARING' : 
-                 newStatus === 'cancelled' ? 'CANCELLED' : 'PENDING'
+        body: JSON.stringify({
+          status: newStatus === 'ready' ? 'READY' :
+            newStatus === 'delivered' ? 'DELIVERED' :
+              newStatus === 'preparing' ? 'PREPARING' :
+                newStatus === 'cancelled' ? 'CANCELLED' : 'PENDING'
         })
       });
 
       if (response.ok) {
         // Local state'i güncelle
-        setOrders(prev => prev.map(order => 
-          order.id === orderId 
-            ? { 
-                ...order, 
-                status: newStatus,
-                ...(newStatus === 'delivered' && { deliveryTime: new Date() })
-              }
+        setOrders(prev => prev.map(order =>
+          order.id === orderId
+            ? {
+              ...order,
+              status: newStatus,
+              ...(newStatus === 'delivered' && { deliveryTime: new Date() })
+            }
             : order
         ));
 
@@ -369,10 +374,40 @@ export default function KitchenPanel() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
+        {/* Tüm Odalar Grid */}
+        <div className="hotel-card p-6 mb-6">
+          <h2 className="text-lg font-bold text-gray-900 mb-4">Tüm Odalar</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+            {rooms.length > 0 ? rooms.map((room) => {
+              const hasActiveOrder = orders.some(o => o.roomId === (room.number || room.roomId.replace('room-', '')) && o.status === 'pending');
+              const roomNum = room.number || room.roomId.replace('room-', '');
+              return (
+                <div
+                  key={room.roomId}
+                  onClick={() => setSearchTerm(roomNum)}
+                  className={`
+                    p-3 rounded-lg border-2 text-center transition-all cursor-pointer relative overflow-hidden hover:shadow-md
+                    ${hasActiveOrder ? 'animate-pulse border-red-500 bg-red-50 shadow-red-200' : ''}
+                    ${!hasActiveOrder && room.status === 'occupied' ? 'bg-green-100 border-green-200 text-green-800' : ''}
+                    ${!hasActiveOrder && room.status !== 'occupied' ? 'bg-white border-gray-200 text-gray-400' : ''}
+                  `}
+                >
+                  <div className={`font-bold text-lg ${hasActiveOrder ? 'text-red-700' : ''}`}>{roomNum}</div>
+                  <div className="text-xs truncate font-medium">
+                    {hasActiveOrder ? '❗️ Sipariş Var' : (room.guestName || (room.status === 'occupied' ? 'Dolu' : 'Boş'))}
+                  </div>
+                </div>
+              );
+            }) : (
+              <div className="col-span-full text-center text-gray-400 py-4">Oda bilgisi yükleniyor...</div>
+            )}
+          </div>
+        </div>
+
         {/* Filters and Search */}
         <div className="hotel-card p-6 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
-                                  <div className="flex-1">
+            <div className="flex-1">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
@@ -382,8 +417,8 @@ export default function KitchenPanel() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hotel-gold focus:border-transparent"
                 />
-                                    </div>
-                                      </div>
+              </div>
+            </div>
             <div className="flex space-x-2">
               {[
                 { id: 'all', label: 'Tümü', count: orders.length },
@@ -393,22 +428,21 @@ export default function KitchenPanel() {
                 { id: 'delivered', label: 'Teslim Edilen', count: orders.filter(o => o.status === 'delivered').length },
                 { id: 'cancelled', label: 'İptal Edilen', count: orders.filter(o => o.status === 'cancelled').length }
               ].map((filterOption) => (
-                                  <button
+                <button
                   key={filterOption.id}
                   onClick={() => setFilter(filterOption.id as any)}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                    filter === filterOption.id
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === filterOption.id
                       ? 'bg-hotel-gold text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                    }`}
                 >
                   {filterOption.label} ({filterOption.count})
-                                  </button>
+                </button>
               ))}
             </div>
           </div>
-                  </div>
-                  
+        </div>
+
         {/* Orders List */}
         <div className="space-y-4">
           {filteredOrders.map((order) => (
@@ -423,10 +457,10 @@ export default function KitchenPanel() {
                       {getStatusIcon(order.status)}
                       <span>
                         {order.status === 'pending' ? 'BEKLEMEDE' :
-                         order.status === 'confirmed' ? 'ONAYLANDI' :
-                         order.status === 'preparing' ? 'HAZIRLANIYOR' :
-                         order.status === 'ready' ? 'HAZIR' :
-                         order.status === 'delivered' ? 'TESLİM EDİLDİ' : 'İPTAL'}
+                          order.status === 'confirmed' ? 'ONAYLANDI' :
+                            order.status === 'preparing' ? 'HAZIRLANIYOR' :
+                              order.status === 'ready' ? 'HAZIR' :
+                                order.status === 'delivered' ? 'TESLİM EDİLDİ' : 'İPTAL'}
                       </span>
                     </span>
                     <span className="text-sm text-gray-600">
@@ -438,9 +472,9 @@ export default function KitchenPanel() {
                       </span>
                     )}
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div>
+                    <div>
                       <h4 className="font-medium text-gray-900 mb-2">Sipariş Detayları:</h4>
                       <div className="space-y-1">
                         {order.items.map((item, index) => (
@@ -454,9 +488,9 @@ export default function KitchenPanel() {
                           </div>
                         ))}
                       </div>
-                  </div>
-                  
-                  <div>
+                    </div>
+
+                    <div>
                       <h4 className="font-medium text-gray-900 mb-2">Sipariş Bilgileri:</h4>
                       <div className="space-y-1 text-sm text-gray-600">
                         <div className="flex justify-between">
@@ -471,18 +505,17 @@ export default function KitchenPanel() {
                         </div>
                         <div className="flex justify-between">
                           <span>Ödeme Durumu:</span>
-                          <span className={`px-2 py-1 rounded-full text-xs ${
-                            order.paymentStatus === 'paid' 
-                              ? 'bg-green-100 text-green-800' 
+                          <span className={`px-2 py-1 rounded-full text-xs ${order.paymentStatus === 'paid'
+                              ? 'bg-green-100 text-green-800'
                               : 'bg-yellow-100 text-yellow-800'
-                          }`}>
+                            }`}>
                             {order.paymentStatus === 'paid' ? 'ÖDENDİ' : 'BEKLEMEDE'}
                           </span>
                         </div>
                       </div>
+                    </div>
                   </div>
-                  </div>
-                  
+
                   {order.specialInstructions && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
                       <p className="text-sm font-medium text-blue-900">Özel Talimatlar:</p>
@@ -493,40 +526,40 @@ export default function KitchenPanel() {
 
                 <div className="flex flex-col space-y-2 ml-4">
                   {order.status === 'pending' && (
-                        <button
+                    <button
                       onClick={() => handleOrderStatusChange(order.id, 'preparing')}
                       className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors text-sm flex items-center space-x-2"
-                        >
+                    >
                       <Play className="w-4 h-4" />
                       <span>Hazırlığa Başla</span>
-                        </button>
-                      )}
-                  
+                    </button>
+                  )}
+
                   {order.status === 'preparing' && (
                     <div className="flex items-center space-x-2">
-                        <button
-                      onClick={() => handleOrderStatusChange(order.id, 'ready')}
-                      className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors text-sm flex items-center space-x-2"
-                        >
-                      <CheckCircle className="w-4 h-4" />
-                      <span>Hazır</span>
-                        </button>
-                        <button
-                      onClick={() => setCancelOrderId(order.id)}
-                      className="bg-gray-200 text-gray-600 hover:bg-red-100 hover:text-red-600 p-2 rounded-lg transition-colors"
-                      title="İptal Et"
-                        >
-                      <X className="w-4 h-4" />
-                        </button>
+                      <button
+                        onClick={() => handleOrderStatusChange(order.id, 'ready')}
+                        className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors text-sm flex items-center space-x-2"
+                      >
+                        <CheckCircle className="w-4 h-4" />
+                        <span>Hazır</span>
+                      </button>
+                      <button
+                        onClick={() => setCancelOrderId(order.id)}
+                        className="bg-gray-200 text-gray-600 hover:bg-red-100 hover:text-red-600 p-2 rounded-lg transition-colors"
+                        title="İptal Et"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
                     </div>
-                      )}
-                  
+                  )}
+
                   {order.status === 'ready' && (
                     <div className="bg-green-100 text-green-800 px-4 py-2 rounded-lg text-sm font-medium text-center">
                       ✅ Hazır - Personel Bekleniyor
                     </div>
                   )}
-                  
+
                   {order.status === 'delivered' && (
                     <div className="bg-green-100 text-green-800 px-4 py-2 rounded-lg text-sm font-medium text-center">
                       ✅ Teslim Edildi
@@ -537,20 +570,20 @@ export default function KitchenPanel() {
                       </div>
                     </div>
                   )}
-                  
+
                   {order.status === 'cancelled' && (
                     <div className="bg-red-100 text-red-800 px-4 py-2 rounded-lg text-sm font-medium text-center">
                       ❌ İptal Edildi
                     </div>
                   )}
-                  
-                        <button
+
+                  <button
                     onClick={() => setSelectedOrder(order)}
                     className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm flex items-center space-x-2"
-                        >
+                  >
                     <Eye className="w-4 h-4" />
                     <span>Detaylar</span>
-                        </button>
+                  </button>
                 </div>
               </div>
             </div>
@@ -570,18 +603,18 @@ export default function KitchenPanel() {
 
       {/* Order Details Modal */}
       {selectedOrder && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
           onClick={() => setSelectedOrder(null)}
         >
-          <div 
+          <div
             className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Sipariş Detayları - Oda {selectedOrder.roomId}
             </h3>
-            
+
             <div className="space-y-4">
               <div>
                 <h4 className="font-medium text-gray-900 mb-2">Sipariş Ürünleri:</h4>
@@ -601,26 +634,26 @@ export default function KitchenPanel() {
                       </span>
                     </div>
                   ))}
-                  </div>
+                </div>
               </div>
-              
+
               <div className="border-t pt-4">
                 <div className="flex justify-between items-center text-lg font-semibold">
                   <span>Toplam Tutar:</span>
                   <span>{selectedOrder.totalAmount.toFixed(2)}₺</span>
                 </div>
               </div>
-              
+
               {selectedOrder.specialInstructions && (
                 <div>
                   <h4 className="font-medium text-gray-900 mb-2">Özel Talimatlar:</h4>
                   <p className="text-gray-700 bg-blue-50 p-3 rounded-lg">
                     {selectedOrder.specialInstructions}
                   </p>
-              </div>
-            )}
-          </div>
-            
+                </div>
+              )}
+            </div>
+
             <div className="flex space-x-3 mt-6">
               <button
                 onClick={() => setSelectedOrder(null)}
@@ -635,16 +668,16 @@ export default function KitchenPanel() {
 
       {/* Menu Management Modal */}
       {showMenuModal && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
           onClick={() => setShowMenuModal(false)}
         >
-          <div 
+          <div
             className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Menü Yönetimi</h3>
-            
+
             <div className="space-y-4">
               {menu.map((item) => (
                 <div key={item.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
@@ -660,15 +693,14 @@ export default function KitchenPanel() {
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => {
-                        setMenu(prev => prev.map(m => 
+                        setMenu(prev => prev.map(m =>
                           m.id === item.id ? { ...m, available: !m.available } : m
                         ));
                       }}
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        item.available 
-                          ? 'bg-green-100 text-green-800' 
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${item.available
+                          ? 'bg-green-100 text-green-800'
                           : 'bg-red-100 text-red-800'
-                      }`}
+                        }`}
                     >
                       {item.available ? 'Mevcut' : 'Mevcut Değil'}
                     </button>
@@ -679,7 +711,7 @@ export default function KitchenPanel() {
                 </div>
               ))}
             </div>
-            
+
             <div className="flex space-x-3 mt-6">
               <button
                 onClick={() => setShowMenuModal(false)}
@@ -688,28 +720,28 @@ export default function KitchenPanel() {
                 Kapat
               </button>
             </div>
+          </div>
         </div>
-      </div>
       )}
 
       {/* İptal Onay Modalı */}
       {cancelOrderId && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
           onClick={() => setCancelOrderId(null)}
         >
-          <div 
+          <div
             className="bg-white rounded-lg p-6 max-w-md w-full mx-4"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Sipariş İptal Et
             </h3>
-            
+
             <p className="text-gray-700 mb-6">
               Bu siparişi iptal etmek istediğinizden emin misiniz? İptal edilen siparişler geri alınamaz.
             </p>
-            
+
             <div className="flex space-x-3">
               <button
                 onClick={() => setCancelOrderId(null)}

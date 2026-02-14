@@ -1925,6 +1925,53 @@ app.patch('/api/requests/:id', async (req: Request, res: Response) => {
   }
 })
 
+// Rooms endpoint to get all rooms with status
+app.get('/api/rooms', tenantMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = getTenantId(req)
+
+    // Get all active rooms for the tenant
+    const rooms = await prisma.room.findMany({
+      where: {
+        tenantId,
+        isActive: true
+      },
+      orderBy: { number: 'asc' },
+      include: {
+        guests: {
+          where: {
+            isActive: true,
+            checkOut: null
+          },
+          take: 1
+        }
+      }
+    })
+
+    const formattedRooms = rooms.map(room => {
+      // Find current active guest if any
+      const activeGuest = room.guests[0]
+
+      return {
+        roomId: room.id,
+        number: room.number,
+        floor: room.floor,
+        type: room.type,
+        status: room.isOccupied ? 'occupied' : 'vacant',
+        guestName: activeGuest ? `${activeGuest.firstName} ${activeGuest.lastName}` : undefined,
+        checkIn: activeGuest?.checkIn,
+        checkOut: activeGuest?.checkOut
+      }
+    })
+
+    res.json(formattedRooms); return;
+  } catch (error) {
+    console.error('Rooms fetch error:', error)
+    res.status(500).json({ message: 'Database error' })
+    return;
+  }
+})
+
 // Guest Check-in/Check-out endpoints
 app.post('/api/guests/checkin', tenantMiddleware, async (req: Request, res: Response) => {
   try {
