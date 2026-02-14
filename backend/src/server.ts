@@ -1419,32 +1419,66 @@ app.post('/api/guests/checkin', tenantMiddleware, async (req: Request, res: Resp
     res.status(500).json({ message: 'Internal server error', error: String(error) })
   }
 })
-return null;
+// Menu API
+app.get('/api/menu', tenantMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = getTenantId(req);
+
+    // Try to fetch with all fields including translations
+    let menuItems;
+    try {
+      menuItems = await prisma.menuItem.findMany({
+        where: { tenantId, isActive: true },
+        orderBy: { name: 'asc' }
+      });
+    } catch (e: any) {
+      // Fallback if translations column is missing (schema mismatch)
+      if (e.message?.includes('translations')) {
+        console.warn('⚠️ Translations column missing, fetching selected fields');
+        menuItems = await prisma.menuItem.findMany({
+          where: { tenantId, isActive: true },
+          select: {
+            id: true, name: true, description: true, price: true, category: true,
+            image: true, allergens: true, calories: true, isAvailable: true,
+            isActive: true, createdAt: true, updatedAt: true, tenantId: true, hotelId: true
+          },
+          orderBy: { name: 'asc' }
+        });
+      } else {
+        throw e;
       }
-    }).filter(item => item !== null); // null item'ları filtrele
+    }
 
-step = 'sendResponse';
-// Hem menuItems hem de menu formatında döndür (uyumluluk için)
-res.json({
-  menuItems: formattedMenu,
-  menu: formattedMenu
-}); return;
+    const formattedMenu = menuItems.map((item: any) => {
+      let translations = {};
+      try {
+        if (item.translations) {
+          translations = typeof item.translations === 'string' ? JSON.parse(item.translations) : item.translations;
+        }
+      } catch (e) {
+        console.warn('Translation parse error', e);
+      }
+
+      return {
+        id: item.id,
+        name: item.name,
+        description: item.description || '',
+        price: Number(item.price || 0),
+        category: item.category,
+        image: item.image || '',
+        allergens: item.allergens || [],
+        calories: item.calories,
+        isAvailable: item.isAvailable,
+        translations
+      };
+    });
+
+    res.json({ menu: formattedMenu, menuItems: formattedMenu });
   } catch (error) {
-  console.error('Menu error at step:', step);
-  console.error('Menu error:', error);
-  console.error('Menu error stack:', error instanceof Error ? error.stack : 'No stack trace');
-
-  // Production'da da error mesajını döndür (debug için)
-  res.status(500).json({
-    message: 'Database error',
-    error: error instanceof Error ? error.message : String(error),
-    step: step,
-    // Stack trace sadece development'ta
-    stack: process.env.NODE_ENV === 'development' && error instanceof Error ? error.stack : undefined
-  })
-  return;
-}
-})
+    console.error('Menu error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 app.get('/api/rooms', tenantMiddleware, async (req: Request, res: Response) => {
   try {
