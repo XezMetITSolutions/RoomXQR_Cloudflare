@@ -10,7 +10,7 @@ import dotenv from 'dotenv'
 import { PrismaClient } from '@prisma/client'
 import { Request, Response } from 'express'
 import { tenantMiddleware, getTenantId } from './middleware/tenant'
-import { authMiddleware, requirePermission } from './middleware/auth'
+import { authMiddleware, requirePermission, generateToken } from './middleware/auth'
 import { adminAuthMiddleware, createSuperAdmin } from './middleware/adminAuth'
 import { login, getCurrentUser } from './controllers/auth'
 import { getUsers, createUser, updateUser, updateUserPermissions, deleteUser } from './controllers/users'
@@ -1101,6 +1101,62 @@ app.post('/api/users', tenantMiddleware, authMiddleware, requirePermission('user
 app.put('/api/users/:id', tenantMiddleware, authMiddleware, requirePermission('users'), updateUser)
 app.put('/api/users/:id/permissions', tenantMiddleware, authMiddleware, requirePermission('users'), updateUserPermissions)
 app.delete('/api/users/:id', tenantMiddleware, authMiddleware, requirePermission('users'), deleteUser)
+
+// Admin/SuperAdmin'in başka bir kullanıcı olarak giriş yapmasını sağlayan endpoint
+app.post('/api/users/:id/impersonate', tenantMiddleware, authMiddleware, async (req: Request, res: Response) => {
+  try {
+    // Sadece ADMIN veya SUPER_ADMIN başkası olarak giriş yapabilir
+    if (req.user?.role !== 'ADMIN' && req.user?.role !== 'SUPER_ADMIN') {
+      res.status(403).json({ message: 'Bu işlem için admin yetkisi gerekli' })
+      return
+    }
+
+    const { id } = req.params
+    const targetUser = await prisma.user.findUnique({
+      where: { id },
+      include: {
+        permissions: true,
+        tenant: true,
+        hotel: true
+      }
+    })
+
+    if (!targetUser) {
+      res.status(404).json({ message: 'Kullanıcı bulunamadı' })
+      return
+    }
+
+    // Hedef kullanıcı için yeni token oluştur
+    const token = generateToken(targetUser.id)
+
+    const userResponse = {
+      id: targetUser.id,
+      email: targetUser.email,
+      firstName: targetUser.firstName,
+      lastName: targetUser.lastName,
+      role: targetUser.role,
+      permissions: targetUser.permissions ? targetUser.permissions.map((p: any) => p.pageKey || p.pageName) : [],
+      tenant: {
+        id: targetUser.tenant.id,
+        name: targetUser.tenant.name,
+        slug: targetUser.tenant.slug
+      },
+      hotel: targetUser.hotel ? {
+        id: targetUser.hotel.id,
+        name: targetUser.hotel.name
+      } : null
+    }
+
+    res.json({
+      message: 'Giriş başarılı (yönetici girişi)',
+      token,
+      user: userResponse
+    })
+  } catch (error) {
+    console.error('Impersonate error:', error)
+    res.status(500).json({ message: 'Sunucu hatası' })
+  }
+})
 
 // Guest link token: oda + tenant bağlı; link 102 yapılırsa 101'in ismi görünmez
 const GUEST_LINK_SECRET = process.env.JWT_SECRET || process.env.GUEST_LINK_SECRET || 'guest-link-secret'

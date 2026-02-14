@@ -17,7 +17,8 @@ import {
   Clock,
   Mail,
   Phone,
-  X
+  X,
+  LogIn
 } from 'lucide-react';
 
 interface User {
@@ -262,6 +263,48 @@ export default function UsersManagement() {
       }
     } catch (error) {
       console.error('Kullanıcı silinirken hata:', error);
+    }
+  };
+
+  const impersonateUser = async (userToImpersonate: User) => {
+    if (!confirm(`${userToImpersonate.firstName} ${userToImpersonate.lastName} olarak giriş yapmak istediğinizden emin misiniz?`)) {
+      return;
+    }
+
+    try {
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr.onrender.com';
+
+      let tenantSlug = 'demo';
+      if (typeof window !== 'undefined') {
+        const hostname = window.location.hostname;
+        const subdomain = hostname.split('.')[0];
+        if (subdomain && subdomain !== 'www' && subdomain !== 'roomxqr' && subdomain !== 'roomxqr-backend') {
+          tenantSlug = subdomain;
+        }
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/users/${userToImpersonate.id}/impersonate`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'x-tenant': tenantSlug
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Token ve kullanıcı bilgilerini kaydet
+        localStorage.setItem('auth_token', data.token);
+        localStorage.setItem('user_data', JSON.stringify(data.user));
+        // Sayfayı yenileyerek yeni context ile yükle
+        window.location.href = '/isletme';
+      } else {
+        const data = await response.json();
+        alert(data.message || 'Giriş yapılamadı');
+      }
+    } catch (error) {
+      console.error('Kullanıcı girişi hatası:', error);
+      alert('Sistem hatası oluştu');
     }
   };
 
@@ -591,8 +634,8 @@ export default function UsersManagement() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.isActive
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
                         }`}>
                         {user.isActive ? getTranslation('common.active') : getTranslation('common.inactive')}
                       </span>
@@ -607,10 +650,17 @@ export default function UsersManagement() {
                           <Shield className="w-4 h-4" />
                         </button>
                         <button
+                          onClick={() => impersonateUser(user)}
+                          className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg"
+                          title="Paneline Giriş Yap"
+                        >
+                          <LogIn className="w-4 h-4" />
+                        </button>
+                        <button
                           onClick={() => toggleActive(user.id)}
                           className={`p-2 rounded-lg ${user.isActive
-                              ? 'text-green-600 hover:bg-green-50'
-                              : 'text-red-600 hover:bg-red-50'
+                            ? 'text-green-600 hover:bg-green-50'
+                            : 'text-red-600 hover:bg-red-50'
                             }`}
                           title={user.isActive ? getTranslation('users.make_inactive') : getTranslation('users.make_active')}
                         >
@@ -849,8 +899,8 @@ export default function UsersManagement() {
                 <div
                   key={page.key}
                   className={`border-2 rounded-lg p-4 cursor-pointer transition-all hover:shadow-md ${selectedPermissions.includes(page.key)
-                      ? 'border-hotel-gold bg-yellow-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-hotel-gold bg-yellow-50'
+                    : 'border-gray-200 hover:border-gray-300'
                     }`}
                   onClick={() => togglePermission(page.key)}
                 >
