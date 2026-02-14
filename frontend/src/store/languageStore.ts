@@ -225,6 +225,7 @@ export const translations: Record<string, Translations> = {
     'sidebar.analytics': 'Analitik',
     'sidebar.settings': 'Ayarlar',
     'sidebar.panels': 'Paneller',
+    'sidebar.room_management': 'Oda Yönetimi',
 
     // Page Titles
     'page.paneller.title': 'Otel Panelleri',
@@ -835,6 +836,7 @@ export const translations: Record<string, Translations> = {
     'sidebar.analytics': 'Analytics',
     'sidebar.settings': 'Settings',
     'sidebar.panels': 'Panels',
+    'sidebar.room_management': 'Room Management',
 
     // Page Titles
     'page.announcements.title': 'Announcement Management',
@@ -1455,6 +1457,7 @@ export const translations: Record<string, Translations> = {
     'sidebar.notifications': 'Benachrichtigungen',
     'sidebar.analytics': 'Analytik',
     'sidebar.settings': 'Einstellungen',
+    'sidebar.room_management': 'Zimmerverwaltung',
 
     // Page Titles
     'page.announcements.title': 'Ankündigungsverwaltung',
@@ -2058,6 +2061,7 @@ export const translations: Record<string, Translations> = {
     'sidebar.notifications': 'Notifications',
     'sidebar.analytics': 'Analytique',
     'sidebar.settings': 'Paramètres',
+    'sidebar.room_management': 'Gestion des Chambres',
 
     // Page Titles
     'page.announcements.title': 'Gestion des Annonces',
