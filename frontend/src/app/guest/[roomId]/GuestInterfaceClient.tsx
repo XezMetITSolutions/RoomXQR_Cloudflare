@@ -478,7 +478,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
         <button
           className="flex flex-col items-center justify-center rounded-xl p-4 sm:p-6 shadow hover:scale-105 transition"
           style={{ background: `${theme.accentColor}20` }}
-          onClick={() => router.push('/bilgi')}
+          onClick={() => router.push('/info')}
         >
           <FaWifi className="text-2xl sm:text-3xl mb-2" style={{ color: theme.accentColor }} />
           <span className="font-medium text-sm sm:text-base" style={{ color: theme.textColor }}>{safeGetTranslation('room.wifi', 'Bilgi & Wifi')}</span>

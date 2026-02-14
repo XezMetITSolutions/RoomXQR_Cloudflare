@@ -330,7 +330,7 @@ export default function ImportDemoProductsPage() {
 
         // 2 saniye sonra menu sayfasına yönlendir
         setTimeout(() => {
-          router.push('/isletme/menu');
+          router.push('/management/menu');
         }, 2000);
       } else {
         setResult({
@@ -497,7 +497,7 @@ export default function ImportDemoProductsPage() {
             </button>
 
             <button
-              onClick={() => router.push('/isletme/menu')}
+              onClick={() => router.push('/management/menu')}
               className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300"
             >
               Menu Sayfasına Dön

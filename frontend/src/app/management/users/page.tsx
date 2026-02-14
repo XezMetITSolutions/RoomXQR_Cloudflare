@@ -297,7 +297,7 @@ export default function UsersManagement() {
         localStorage.setItem('auth_token', data.token);
         localStorage.setItem('user_data', JSON.stringify(data.user));
         // Sayfayı yenileyerek yeni context ile yükle
-        window.location.href = '/isletme';
+        window.location.href = '/management';
       } else {
         const data = await response.json();
         alert(data.message || 'Giriş yapılamadı');

@@ -293,7 +293,7 @@ export default function MenuAddDebugPage() {
                 ))}
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                Dilleri değiştirmek için /isletme/settings sayfasından "Dil Ayarları" bölümünü kullanın.
+                Dilleri değiştirmek için /management/settings sayfasından "Dil Ayarları" bölümünü kullanın.
               </p>
             </div>
 
@@ -370,7 +370,7 @@ export default function MenuAddDebugPage() {
                     <span className="font-medium">Ürün Adı:</span> {saveResult.savedItem?.name || productName}
                   </p>
                   <p className="text-xs text-gray-600 mt-3">
-                    💡 Şimdi <a href="/isletme/menu" target="_blank" className="text-blue-600 underline">menü sayfasına</a> gidip ürünün göründüğünü kontrol edin. 
+                    💡 Şimdi <a href="/management/menu" target="_blank" className="text-blue-600 underline">menü sayfasına</a> gidip ürünün göründüğünü kontrol edin. 
                     Eğer görünmüyorsa, sayfayı yenileyin (F5).
                   </p>
                   <details className="mt-2">
@@ -406,7 +406,7 @@ export default function MenuAddDebugPage() {
             <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
               <li>Ürün adı ve açıklaması girip "Çevirileri Yap" butonuna tıklayın</li>
               <li>Çeviriler başarılı olduktan sonra "Backend'e Kaydet" butonuna tıklayın</li>
-              <li>Kaydedilen ürün /isletme/menu sayfasında görünecektir</li>
+              <li>Kaydedilen ürün /management/menu sayfasında görünecektir</li>
               <li>Sayfa yenilendiğinde ürünün kaybolup kaybolmadığını kontrol edin</li>
             </ul>
           </div>

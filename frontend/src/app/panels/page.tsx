@@ -105,7 +105,7 @@ export default function PanelsIndexPage() {
       icon: Settings,
       color: 'bg-red-600',
       hoverColor: 'hover:bg-red-700',
-      route: '/isletme',
+      route: '/management',
       requiresAuth: true
     },
     {

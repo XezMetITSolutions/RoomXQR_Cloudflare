@@ -321,7 +321,7 @@ function DebugLanguageContent() {
             <h2 className="text-xl font-bold text-gray-900 mb-4">🔄 Veri Akışı</h2>
             <div className="space-y-4">
               <div>
-                <h3 className="text-sm font-semibold text-gray-700 mb-2">1. Settings Sayfası (/isletme/settings)</h3>
+                <h3 className="text-sm font-semibold text-gray-700 mb-2">1. Settings Sayfası (/management/settings)</h3>
                 <ul className="text-xs text-gray-600 space-y-1 ml-4 list-disc">
                   <li>Kullanıcı dilleri seçer</li>
                   <li>Checkbox değiştiğinde otomatik localStorage'a kaydedilir</li>

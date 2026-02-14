@@ -315,7 +315,7 @@ export default function DemoAdminLayout({ children }: AdminLayoutProps) {
               {/* Notifications */}
               <button
                 type="button"
-                onClick={() => router.push('/isletme/notifications')}
+                onClick={() => router.push('/management/notifications')}
                 className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500 transition-colors duration-200"
               >
                 <Bell className="h-6 w-6" />

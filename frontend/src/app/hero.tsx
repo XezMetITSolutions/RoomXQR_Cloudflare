@@ -45,7 +45,7 @@ export default function Hero() {
             Canlı QR Demo
           </button>
           <button
-            onClick={() => router.push("/isletme")}
+            onClick={() => router.push("/management")}
             className="px-12 py-5 rounded-2xl text-xl font-extrabold bg-blue-700 text-white shadow-lg hover:bg-blue-800 border-2 border-blue-800 hover:scale-105 flex items-center gap-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-700/30"
           >
             <Shield className="w-6 h-6" /> İşletme Paneli

@@ -95,6 +95,18 @@ module.exports = withPWA({
   reactStrictMode: false,
   swcMinify: true,
   trailingSlash: false,
+  async redirects() {
+    return [
+      { source: '/isletme/oda-yonetimi', destination: '/management/room-management', permanent: true },
+      { source: '/isletme/qr-kod', destination: '/management/qr-code', permanent: true },
+      { source: '/isletme/eksik-sutunlar', destination: '/management/database-columns', permanent: true },
+      { source: '/isletme/paneller', destination: '/management/panels', permanent: true },
+      { source: '/isletme', destination: '/management', permanent: true },
+      { source: '/isletme/:path*', destination: '/management/:path*', permanent: true },
+      { source: '/bilgi', destination: '/info', permanent: true },
+      { source: '/paneller', destination: '/panels', permanent: true },
+    ];
+  },
   typescript: {
     ignoreBuildErrors: true,
   },

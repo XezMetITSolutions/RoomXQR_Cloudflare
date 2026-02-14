@@ -89,7 +89,7 @@ export default function LoginPage() {
             });
 
             // Kullanıcının role'üne veya permissions'ına göre yönlendir
-            let redirectPath = '/isletme'; // Varsayılan
+            let redirectPath = '/management'; // Varsayılan
 
             // Role'e göre yönlendirme (büyük/küçük harf duyarsız)
             const roleUpper = (userRole || '').toUpperCase();
@@ -104,11 +104,11 @@ export default function LoginPage() {
               redirectPath = '/reception';
               console.log('📍 Redirecting STAFF/WAITER to RECEPTION panel');
             } else if (roleUpper === 'ADMIN' || roleUpper === 'MANAGER' || userPermissions.includes('dashboard')) {
-              redirectPath = '/isletme';
+              redirectPath = '/management';
               console.log('📍 Redirecting ADMIN/MANAGER to İŞLETME panel');
             } else {
-              console.log('⚠️ Unknown role, defaulting to /isletme:', roleUpper);
-              redirectPath = '/isletme';
+              console.log('⚠️ Unknown role, defaulting to /management:', roleUpper);
+              redirectPath = '/management';
             }
 
             console.log('🔄 Final redirect path:', redirectPath);
@@ -121,7 +121,7 @@ export default function LoginPage() {
             console.error('Raw user data:', savedUserData);
             setIsLoading(false);
             // Hata durumunda varsayılan yönlendirme
-            window.location.href = '/isletme';
+            window.location.href = '/management';
           }
         } else {
           console.error('❌ Login successful but token/user not saved', {

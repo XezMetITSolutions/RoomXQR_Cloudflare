@@ -329,7 +329,7 @@ export default function DebugHotelInfoPage() {
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Veri Akışı</h2>
         <div className="space-y-4">
           <div className="bg-blue-50 border-l-4 border-blue-500 p-4">
-            <h3 className="font-semibold text-blue-900 mb-2">1. Kaydetme (PUT) - /isletme/hotel-info</h3>
+            <h3 className="font-semibold text-blue-900 mb-2">1. Kaydetme (PUT) - /management/hotel-info</h3>
             <div className="text-sm text-blue-800 space-y-1">
               <p>• Frontend: <code className="bg-blue-100 px-1 rounded">hotel-info/page.tsx</code> → handleSave()</p>
               <p>• API Call: <code className="bg-blue-100 px-1 rounded">PUT /api/hotel/info</code></p>
@@ -340,9 +340,9 @@ export default function DebugHotelInfoPage() {
           </div>
 
           <div className="bg-green-50 border-l-4 border-green-500 p-4">
-            <h3 className="font-semibold text-green-900 mb-2">2. Okuma (GET) - /bilgi</h3>
+            <h3 className="font-semibold text-green-900 mb-2">2. Okuma (GET) - /info</h3>
             <div className="text-sm text-green-800 space-y-1">
-              <p>• Frontend: <code className="bg-green-100 px-1 rounded">bilgi/page.tsx</code> → loadHotelInfo()</p>
+              <p>• Frontend: <code className="bg-green-100 px-1 rounded">info/page.tsx</code> → loadHotelInfo()</p>
               <p>• API Call: <code className="bg-green-100 px-1 rounded">GET /api/hotel/info</code></p>
               <p>• Backend: <code className="bg-green-100 px-1 rounded">server.ts</code> → GET endpoint</p>
               <p>• Database: <code className="bg-green-100 px-1 rounded">prisma.hotel.findFirst()</code> → Hotel.settings</p>

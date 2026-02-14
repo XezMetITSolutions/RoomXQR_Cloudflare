@@ -61,18 +61,18 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   // Navigation items with translations
   const navigation = useMemo(() => [
-    { name: getTranslation('sidebar.dashboard'), href: '/isletme', icon: LayoutDashboard, key: 'dashboard', color: 'text-blue-600' },
-    { name: getTranslation('sidebar.panels'), href: '/isletme/paneller', icon: Grid, key: 'paneller', color: 'text-orange-500' },
-    { name: getTranslation('sidebar.room_management'), href: '/isletme/oda-yonetimi', icon: BedDouble, key: 'oda-yonetimi', color: 'text-amber-600' },
-    { name: getTranslation('sidebar.qr_generator'), href: '/isletme/qr-kod', icon: QrCode, key: 'qr-kod', color: 'text-emerald-600' },
-    { name: getTranslation('sidebar.menu_management'), href: '/isletme/menu', icon: Menu, key: 'menu', color: 'text-purple-600' },
-    { name: getTranslation('sidebar.announcements'), href: '/isletme/announcements', icon: Megaphone, key: 'announcements', color: 'text-orange-600' },
-    { name: getTranslation('sidebar.hotel_info'), href: '/isletme/hotel-info', icon: Info, key: 'hotel-info', color: 'text-cyan-600' },
-    { name: getTranslation('sidebar.users'), href: '/isletme/users', icon: Users, key: 'users', color: 'text-green-600' },
-    { name: getTranslation('sidebar.notifications'), href: '/isletme/notifications', icon: Bell, key: 'notifications', color: 'text-pink-600' },
-    { name: getTranslation('sidebar.analytics'), href: '/isletme/analytics', icon: BarChart3, key: 'analytics', color: 'text-indigo-600' },
-    { name: getTranslation('sidebar.settings'), href: '/isletme/settings', icon: Settings, key: 'settings', color: 'text-gray-600' },
-    { name: getTranslation('sidebar.database_columns'), href: '/isletme/eksik-sutunlar', icon: Database, key: 'eksik-sutunlar', color: 'text-slate-600' },
+    { name: getTranslation('sidebar.dashboard'), href: '/management', icon: LayoutDashboard, key: 'dashboard', color: 'text-blue-600' },
+    { name: getTranslation('sidebar.panels'), href: '/management/panels', icon: Grid, key: 'paneller', color: 'text-orange-500' },
+    { name: getTranslation('sidebar.room_management'), href: '/management/room-management', icon: BedDouble, key: 'oda-yonetimi', color: 'text-amber-600' },
+    { name: getTranslation('sidebar.qr_generator'), href: '/management/qr-code', icon: QrCode, key: 'qr-kod', color: 'text-emerald-600' },
+    { name: getTranslation('sidebar.menu_management'), href: '/management/menu', icon: Menu, key: 'menu', color: 'text-purple-600' },
+    { name: getTranslation('sidebar.announcements'), href: '/management/announcements', icon: Megaphone, key: 'announcements', color: 'text-orange-600' },
+    { name: getTranslation('sidebar.hotel_info'), href: '/management/hotel-info', icon: Info, key: 'hotel-info', color: 'text-cyan-600' },
+    { name: getTranslation('sidebar.users'), href: '/management/users', icon: Users, key: 'users', color: 'text-green-600' },
+    { name: getTranslation('sidebar.notifications'), href: '/management/notifications', icon: Bell, key: 'notifications', color: 'text-pink-600' },
+    { name: getTranslation('sidebar.analytics'), href: '/management/analytics', icon: BarChart3, key: 'analytics', color: 'text-indigo-600' },
+    { name: getTranslation('sidebar.settings'), href: '/management/settings', icon: Settings, key: 'settings', color: 'text-gray-600' },
+    { name: getTranslation('sidebar.database_columns'), href: '/management/database-columns', icon: Database, key: 'eksik-sutunlar', color: 'text-slate-600' },
   ], [getTranslation, currentLanguage]);
 
   // Auth kontrolü
@@ -382,7 +382,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               {/* Notifications */}
               <button
                 type="button"
-                onClick={() => router.push('/isletme/notifications')}
+                onClick={() => router.push('/management/notifications')}
                 className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500 transition-colors duration-200"
               >
                 <Bell className="h-6 w-6" />

@@ -45,7 +45,7 @@ export default function HeroGradient() {
             🚀 Canlı QR Demo
           </button>
           <button
-            onClick={() => router.push("/isletme")}
+            onClick={() => router.push("/management")}
             className="px-12 py-5 rounded-2xl text-2xl font-black bg-white text-indigo-800 shadow-lg border-4 border-indigo-300 hover:bg-indigo-100 hover:scale-105 flex items-center gap-3 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-400/30"
           >
             <Shield className="w-7 h-7" /> İşletme Paneli

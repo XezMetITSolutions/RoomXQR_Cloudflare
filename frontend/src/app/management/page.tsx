@@ -425,7 +425,7 @@ export default function AdminDashboard() {
             )}
           </div>
           <div className="px-6 py-3 bg-gray-50 border-t border-gray-200">
-            <a href="/isletme/orders" className="text-sm font-medium text-hotel-gold hover:text-hotel-navy">
+            <a href="/management/orders" className="text-sm font-medium text-hotel-gold hover:text-hotel-navy">
               {getTranslation('dashboard.view_all_orders')} →
             </a>
           </div>
@@ -469,7 +469,7 @@ export default function AdminDashboard() {
             )}
           </div>
           <div className="px-6 py-3 bg-gray-50 border-t border-gray-200">
-            <a href="/isletme/requests" className="text-sm font-medium text-hotel-gold hover:text-hotel-navy">
+            <a href="/management/requests" className="text-sm font-medium text-hotel-gold hover:text-hotel-navy">
               {getTranslation('dashboard.view_all_requests')} →
             </a>
           </div>
@@ -481,42 +481,42 @@ export default function AdminDashboard() {
         <h3 className="text-lg font-medium text-gray-900 mb-4">{getTranslation('dashboard.quick_actions')}</h3>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <button
-            onClick={() => router.push('/isletme/qr-kod')}
+            onClick={() => router.push('/management/qr-code')}
             className="flex items-center p-4 border-2 border-hotel-gold rounded-lg hover:bg-hotel-gold hover:text-white transition-colors"
           >
             <QrCode className="w-5 h-5 mr-3" />
             <span className="text-sm font-medium">{getTranslation('dashboard.create_qr')}</span>
           </button>
           <button
-            onClick={() => router.push('/isletme/menu')}
+            onClick={() => router.push('/management/menu')}
             className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
           >
             <Menu className="w-5 h-5 text-hotel-gold mr-3" />
             <span className="text-sm font-medium text-gray-700">{getTranslation('dashboard.edit_menu')}</span>
           </button>
           <button
-            onClick={() => router.push('/isletme/announcements')}
+            onClick={() => router.push('/management/announcements')}
             className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
           >
             <Bell className="w-5 h-5 text-hotel-gold mr-3" />
             <span className="text-sm font-medium text-gray-700">{getTranslation('dashboard.add_announcement')}</span>
           </button>
           <button
-            onClick={() => router.push('/isletme/users')}
+            onClick={() => router.push('/management/users')}
             className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
           >
             <Users className="w-5 h-5 text-hotel-gold mr-3" />
             <span className="text-sm font-medium text-gray-700">{getTranslation('dashboard.add_staff')}</span>
           </button>
           <button
-            onClick={() => router.push('/isletme/analytics')}
+            onClick={() => router.push('/management/analytics')}
             className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
           >
             <TrendingUp className="w-5 h-5 text-hotel-gold mr-3" />
             <span className="text-sm font-medium text-gray-700">{getTranslation('dashboard.view_reports')}</span>
           </button>
           <button
-            onClick={() => router.push('/isletme/settings?tab=social')}
+            onClick={() => router.push('/management/settings?tab=social')}
             className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
           >
             <Globe className="w-5 h-5 text-hotel-gold mr-3" />

@@ -258,7 +258,7 @@ export function MenuTranslator({ menuItem, onTranslated, className = '' }: MenuT
         {supportedLanguages.length === 0 ? (
           <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
             <p className="text-yellow-800 text-sm">
-              ⚠️ Settings'te desteklenen dil seçilmedi. Lütfen <strong>/isletme/settings</strong> sayfasından "Dil Ayarları" bölümünde desteklenen dilleri seçin.
+              ⚠️ Settings'te desteklenen dil seçilmedi. Lütfen <strong>/management/settings</strong> sayfasından "Dil Ayarları" bölümünde desteklenen dilleri seçin.
             </p>
           </div>
         ) : (

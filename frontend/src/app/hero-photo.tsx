@@ -49,7 +49,7 @@ export default function HeroPhoto() {
             Canlı QR Demo
           </button>
           <button
-            onClick={() => router.push("/isletme")}
+            onClick={() => router.push("/management")}
             className="px-12 py-5 rounded-2xl text-xl font-extrabold bg-white text-blue-900 shadow-lg border-2 border-white/80 hover:bg-blue-50 hover:scale-105 flex items-center gap-2 transition-all focus:outline-none focus:ring-2 focus:ring-blue-700/30"
           >
             <Shield className="w-6 h-6" /> İşletme Paneli

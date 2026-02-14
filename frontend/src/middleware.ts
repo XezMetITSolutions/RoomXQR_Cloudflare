@@ -12,7 +12,7 @@ export function middleware(request: NextRequest) {
         pathname.startsWith('/_next/') ||
         pathname.startsWith('/static/') ||
         pathname.includes('.') ||
-        pathname.startsWith('/isletme') ||
+        pathname.startsWith('/management') ||
         pathname.startsWith('/guest') ||
         pathname.startsWith('/login') ||
         pathname.startsWith('/demo') ||
@@ -21,7 +21,7 @@ export function middleware(request: NextRequest) {
         pathname.startsWith('/reception') ||
         pathname.startsWith('/qr-menu') ||
         pathname.startsWith('/admin-login') ||
-        pathname.startsWith('/paneller')
+        pathname.startsWith('/panels')
     ) {
         return NextResponse.next();
     }

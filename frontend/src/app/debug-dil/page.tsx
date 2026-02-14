@@ -296,7 +296,7 @@ export default function DebugDilPage() {
             <h2 className="text-xl font-bold mb-4">🔄 Veri Akışı</h2>
             <div className="space-y-4 text-sm">
               <div className="p-3 bg-blue-50 rounded">
-                <p className="font-medium mb-2">1. Settings Sayfası (/isletme/settings)</p>
+                <p className="font-medium mb-2">1. Settings Sayfası (/management/settings)</p>
                 <ul className="text-xs text-gray-700 space-y-1 ml-4 list-disc">
                   <li>Kullanıcı dilleri seçer</li>
                   <li>Checkbox değiştiğinde localStorage'a kaydedilir</li>
