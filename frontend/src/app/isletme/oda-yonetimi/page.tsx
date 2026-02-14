@@ -466,13 +466,28 @@ function RoomDetailModal({
   onClose: () => void;
   onEdit: () => void;
 }) {
-  const norm = (id: string) => (id || '').replace(/^room-/i, '').trim();
+  const norm = (id: string | number) => (String(id) || '').replace(/^room-/i, '').trim();
   const roomNum = norm(room.number ?? room.roomId);
+
+  console.log('RoomDetailModal Debug:', {
+    roomNumber: room.number,
+    roomRoomId: room.roomId,
+    derivedRoomNum: roomNum,
+    totalOrders: orders.length
+  });
 
   // Filter orders for this room using robust matching
   const roomOrders = orders.filter(o => {
-    const orderRoom = (String(o.roomId) || '').replace(/^room-/i, '').trim();
-    return orderRoom === roomNum;
+    const orderRoomVal = o.roomId;
+    const orderRoom = norm(orderRoomVal);
+    const match = orderRoom === roomNum;
+
+    // Log failures to see what's wrong (only first few to avoid spam)
+    if (!match && orders.length > 0 && orders.length < 50 && (orderRoom.includes(roomNum) || roomNum.includes(orderRoom))) {
+      console.log('Mismatch:', { orderRoomVal, normalized: orderRoom, target: roomNum });
+    }
+
+    return match;
   });
 
   // Unpaid orders (Debt)
