@@ -185,7 +185,13 @@ export default function QRKodPage() {
 
         if (response.ok) {
           const data = await response.json();
-          const roomsData = data.rooms || [];
+          let roomsData = [];
+
+          if (Array.isArray(data)) {
+            roomsData = data;
+          } else if (data.rooms && Array.isArray(data.rooms)) {
+            roomsData = data.rooms;
+          }
 
           // Oda numaralarına göre sırala ve formatla
           const formattedRooms = roomsData.map((room: any) => ({
@@ -200,6 +206,13 @@ export default function QRKodPage() {
           });
 
           setRooms(formattedRooms);
+
+          // Eğer generated rooms boşsa ve formatted rooms varsa, bunları generated olarak da kullanabiliriz
+          // Bu sayede "Generated Rooms" sekmesi dolu görünür
+          if (generatedRooms.length === 0 && formattedRooms.length > 0) {
+            setGeneratedRooms(formattedRooms);
+            setUseGeneratedRooms(true);
+          }
 
           // İlk odayı seç
           if (formattedRooms.length > 0) {
