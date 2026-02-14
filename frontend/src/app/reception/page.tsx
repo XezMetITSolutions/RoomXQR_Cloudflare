@@ -69,70 +69,53 @@ export default function ReceptionPanel() {
   // Bildirim sistemi - sadece yeni istekler için
   const { addNotification, notifications, unreadCount, markAsRead } = useNotifications();
 
-  // Oda bilgilerini getir
-  const getRoomInfo = (roomId: string) => {
-    const roomNumber = roomId.replace('room-', '');
-    const mockRoomData = {
-      '101': {
-        floor: 'Kat 1',
-        type: 'Standard',
-        guestName: 'Ahmet Yılmaz',
-        checkOut: '28.09.2024',
-        phone: '+90 532 123 4567',
-        email: 'ahmet.yilmaz@email.com',
-        payments: [
-          { id: '1', item: 'Kahve', amount: 25, date: '26.09.2024 14:30', status: 'pending' },
-          { id: '2', item: 'Sandwich', amount: 45, date: '26.09.2024 15:45', status: 'pending' },
-          { id: '3', item: 'Su', amount: 15, date: '26.09.2024 16:20', status: 'paid' }
-        ]
-      },
-      '102': {
-        floor: 'Kat 1',
-        type: 'Deluxe',
-        guestName: 'Maria Garcia',
-        checkOut: '14.09.2024',
-        phone: '+34 123 456 789',
-        email: 'maria.garcia@email.com',
-        payments: [
-          { id: '1', item: 'Kahvaltı', amount: 45, date: '25.09.2024 08:30', status: 'paid' },
-          { id: '2', item: 'Öğle Yemeği', amount: 85, date: '25.09.2024 13:15', status: 'paid' },
-          { id: '3', item: 'İçecek', amount: 25, date: '25.09.2024 16:45', status: 'paid' },
-          { id: '4', item: 'Çay', amount: 20, date: '26.09.2024 10:15', status: 'pending' },
-          { id: '5', item: 'Pasta', amount: 35, date: '26.09.2024 11:30', status: 'pending' },
-          { id: '6', item: 'Sandwich', amount: 40, date: '26.09.2024 14:30', status: 'pending' }
-        ]
-      },
-      '201': {
-        floor: 'Kat 2',
-        type: 'Suite',
-        guestName: 'John Smith',
-        checkOut: '30.09.2024',
-        phone: '+1 555 123 4567',
-        email: 'john.smith@email.com',
-        payments: [
-          { id: '6', item: 'Kahve', amount: 25, date: '26.09.2024 09:00', status: 'paid' },
-          { id: '7', item: 'Tost', amount: 40, date: '26.09.2024 12:15', status: 'pending' },
-          { id: '8', item: 'Meyve Suyu', amount: 30, date: '26.09.2024 14:00', status: 'pending' }
-        ]
-      },
-      '301': {
-        floor: 'Kat 3',
-        type: 'Standard',
-        guestName: 'Ayşe Demir',
-        checkOut: '25.09.2024',
-        phone: '+90 533 987 6543',
-        email: 'ayse.demir@email.com',
-        payments: []
-      }
-    };
-
-    return mockRoomData[roomNumber as keyof typeof mockRoomData] || {
-      floor: 'Kat 1',
+  // Oda bilgilerini getir — önce API'den gelen rooms/orders kullanılır
+  const getRoomInfo = (roomId: string): {
+    floor: string;
+    type: string;
+    guestName: string;
+    checkOut: string;
+    phone: string;
+    email: string;
+    payments: { id: string; item: string; amount: number; date: string; status: string }[];
+  } => {
+    const roomNum = String(roomId || '').replace(/^room-/, '').trim();
+    const fromApi = rooms.find(
+      r => String(r.number ?? r.roomId ?? '').replace(/^room-/, '').trim() === roomNum
+    );
+    if (fromApi) {
+      const checkOutStr = fromApi.checkOut
+        ? new Date(fromApi.checkOut).toLocaleDateString('tr-TR')
+        : '—';
+      const roomIdForOrders = fromApi.roomId;
+      const roomOrders = Array.isArray(orders)
+        ? orders.filter((o: any) => (o.roomId && (o.roomId === roomIdForOrders || String(o.roomId || '').replace(/^room-/, '') === roomNum)))
+        : [];
+      const toNum = (v: any) => (typeof v === 'number' ? v : parseFloat(String(v)) || 0);
+      const payments = roomOrders.map((o: any, i: number) => ({
+        id: o.id || `ord-${i}`,
+        item: o.notes || 'Sipariş',
+        amount: toNum(o.totalAmount) || (Array.isArray(o.items) ? o.items.reduce((s: number, it: any) => s + toNum(it?.price) * (it?.quantity ?? 1), 0) : 0),
+        date: o.createdAt ? new Date(o.createdAt).toLocaleString('tr-TR') : '—',
+        status: (o.status === 'DELIVERED' || o.status === 'COMPLETED' ? 'paid' : 'pending') as string
+      }));
+      return {
+        floor: fromApi.floor != null ? `Kat ${fromApi.floor}` : '—',
+        type: fromApi.type || 'Standard',
+        guestName: fromApi.guestName || '—',
+        checkOut: checkOutStr,
+        phone: '—',
+        email: '—',
+        payments
+      };
+    }
+    return {
+      floor: '—',
       type: 'Standard',
-      guestName: 'Misafir',
-      checkOut: 'Bilinmiyor',
-      phone: 'Bilinmiyor',
-      email: 'Bilinmiyor',
+      guestName: '—',
+      checkOut: '—',
+      phone: '—',
+      email: '—',
       payments: []
     };
   };
@@ -506,15 +489,13 @@ export default function ReceptionPanel() {
     }
   };
 
-  // Mevcut odalar listesi
-  const availableRooms = [
-    { id: 'room-101', number: '101', floor: 'Kat 1', type: 'Standard' },
-    { id: 'room-102', number: '102', floor: 'Kat 1', type: 'Deluxe' },
-    { id: 'room-201', number: '201', floor: 'Kat 2', type: 'Suite' },
-    { id: 'room-301', number: '301', floor: 'Kat 3', type: 'Standard' },
-    { id: 'room-302', number: '302', floor: 'Kat 3', type: 'Deluxe' },
-    { id: 'room-401', number: '401', floor: 'Kat 4', type: 'Suite' },
-  ];
+  // Mevcut odalar listesi — API'den gelen rooms kullanılır
+  const availableRooms = rooms.map(r => ({
+    id: r.roomId || `room-${r.number}`,
+    number: String(r.number ?? r.roomId ?? '').replace(/^room-/, ''),
+    floor: r.floor != null ? `Kat ${r.floor}` : '—',
+    type: r.type || 'Standard'
+  }));
 
   // Oda değişikliği fonksiyonu
   const handleRoomChange = async (fromRoomId: string, toRoomId: string) => {
@@ -949,7 +930,7 @@ export default function ReceptionPanel() {
             ) : (
               <div className="col-span-full text-center text-gray-400 py-8">
                 <p>Henüz oda bulunmuyor.</p>
-                <p className="text-sm mt-2">QR Kod sayfasından oda oluşturabilirsiniz.</p>
+                <p className="text-sm mt-2">Oda listesi API&apos;den alınır. QR Kod sayfasından oda oluşturabilirsiniz.</p>
               </div>
             )}
           </div>
