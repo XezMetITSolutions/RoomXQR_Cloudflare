@@ -5,8 +5,8 @@ export default function GuestInterfaceTR({ params, searchParams }: { params: { r
     const guestName = searchParams?.guest ?? undefined;
     const guestToken = searchParams?.g ?? undefined;
     return (
-        <NotificationProvider roomId={`room-${String(params.roomId).replace(/^room-+/i, '')}`}>
-            <GuestInterfaceClient roomId={`room-${String(params.roomId).replace(/^room-+/i, '')}`} initialLang="tr" guestName={guestName} guestToken={guestToken} />
+        <NotificationProvider roomId={`room-${String(params.roomId).replace(/^(room-)+/i, '')}`}>
+            <GuestInterfaceClient roomId={`room-${String(params.roomId).replace(/^(room-)+/i, '')}`} initialLang="tr" guestName={guestName} guestToken={guestToken} />
         </NotificationProvider>
     );
 }
