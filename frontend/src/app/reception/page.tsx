@@ -863,8 +863,8 @@ export default function ReceptionPanel() {
                   </ul>
                   <div className="mb-3">
                     <span className={`text-xs font-semibold px-2 py-1 rounded ${order.paymentMethod === 'room_charge' ? 'bg-blue-100 text-blue-800' :
-                        order.paymentMethod === 'online' ? 'bg-purple-100 text-purple-800' :
-                          'bg-yellow-100 text-yellow-800' // Nakit/POS
+                      order.paymentMethod === 'online' ? 'bg-purple-100 text-purple-800' :
+                        'bg-yellow-100 text-yellow-800' // Nakit/POS
                       }`}>
                       {getPaymentLabel(order.paymentMethod)}
                     </span>
@@ -1571,8 +1571,8 @@ export default function ReceptionPanel() {
                 <div className="flex justify-between items-center border-b border-gray-200 pb-2">
                   <span className="text-gray-600">Ödeme Yöntemi:</span>
                   <span className={`font-bold ${selectedDeliveryOrder.paymentMethod === 'room_charge' ? 'text-blue-600' :
-                      selectedDeliveryOrder.paymentMethod === 'online' ? 'text-purple-600' :
-                        'text-yellow-600'
+                    selectedDeliveryOrder.paymentMethod === 'online' ? 'text-purple-600' :
+                      'text-yellow-600'
                     }`}>
                     {getPaymentLabel(selectedDeliveryOrder.paymentMethod)}
                   </span>
@@ -1580,7 +1580,7 @@ export default function ReceptionPanel() {
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600">Toplam Tutar:</span>
                   <span className="font-bold text-lg text-gray-900">
-                    {selectedDeliveryOrder.totalAmount?.toFixed(2)}₺
+                    {Number(selectedDeliveryOrder.totalAmount || 0).toFixed(2)}₺
                   </span>
                 </div>
               </div>
