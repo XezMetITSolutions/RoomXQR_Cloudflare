@@ -1330,7 +1330,7 @@ app.post('/api/guests/checkin', tenantMiddleware, async (req: Request, res: Resp
     const room = await prisma.room.findFirst({
       where: {
         tenantId,
-        roomId: formattedRoomId
+        qrCode: formattedRoomId
       }
     })
 
@@ -1351,7 +1351,7 @@ app.post('/api/guests/checkin', tenantMiddleware, async (req: Request, res: Resp
     const existingActiveGuest = await prisma.guest.findFirst({
       where: {
         tenantId,
-        roomId: formattedRoomId,
+        roomId: room.id,
         isActive: true
       }
     });
@@ -1374,19 +1374,17 @@ app.post('/api/guests/checkin', tenantMiddleware, async (req: Request, res: Resp
         checkIn: checkInDate,
         checkOut: checkOutDate,
         isActive: true,
-        roomId: formattedRoomId,
+        roomId: room.id,
+        hotelId: room.hotelId,
         tenantId
       }
     })
 
-    // 3. Odayı güncelle (Dolu işaretle ve misafir bilgisini ekle)
+    // 3. Odayı güncelle (Dolu işaretle)
     await prisma.room.update({
       where: { id: room.id },
       data: {
-        status: 'occupied',
-        guestName: `${firstName} ${lastName}`, // Denormalized field for quick access
-        checkIn: checkInDate,
-        checkOut: checkOutDate
+        isOccupied: true
       }
     })
 
