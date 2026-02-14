@@ -2104,8 +2104,7 @@ app.get('/api/rooms', tenantMiddleware, async (req: Request, res: Response) => {
       include: {
         guests: {
           where: {
-            isActive: true,
-            checkOut: null
+            isActive: true
           },
           take: 1
         }
@@ -2148,8 +2147,7 @@ app.post('/api/guests/checkout', tenantMiddleware, async (req: Request, res: Res
       where: {
         roomId,
         tenantId,
-        isActive: true,
-        checkOut: null
+        isActive: true
       }
     })
 
@@ -2212,8 +2210,7 @@ app.patch('/api/guests/update', tenantMiddleware, async (req: Request, res: Resp
           { roomId: roomId }
         ],
         tenantId,
-        isActive: true,
-        checkOut: null
+        isActive: true
       }
     })
     if (!guest) {
@@ -2300,8 +2297,7 @@ app.get('/api/crm/guest/:roomId', tenantMiddleware, async (req: Request, res: Re
       where: {
         roomId,
         tenantId,
-        isActive: true,
-        checkOut: null
+        isActive: true
       },
       include: {
         room: {
