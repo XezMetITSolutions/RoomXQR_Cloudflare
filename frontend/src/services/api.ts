@@ -128,7 +128,6 @@ export class ApiService {
     try {
       console.log('Creating request:', request);
       const headers = this.getHeaders();
-      headers['Access-Control-Allow-Origin'] = '*';
 
       const response = await fetch(`${API_BASE_URL}/requests`, {
         method: 'POST',
