@@ -1307,140 +1307,143 @@ app.get('/api/rooms/:number/active-guest', tenantMiddleware, async (req: Request
   }
 })
 
-// API Routes
-app.get('/api/menu', tenantMiddleware, async (req: Request, res: Response) => {
-  let step = 'init';
+// Guest Check-in API
+app.post('/api/guests/checkin', tenantMiddleware, async (req: Request, res: Response) => {
   try {
-    step = 'getTenantId';
     const tenantId = getTenantId(req)
-    console.log('GET /api/menu - Tenant ID:', tenantId);
+    const { roomId, firstName, lastName, language, email, phone, checkIn, checkOut } = req.body
 
-    step = 'prismaQuery';
-    // Önce translations kolonunun var olup olmadığını kontrol et
-    let menuItems;
-    try {
-      // Tüm field'ları seçmeyi dene (translations dahil)
-      menuItems = await prisma.menuItem.findMany({
-        where: {
-          tenantId,
-          isActive: true
-          // isAvailable filtresi kaldırıldı - tüm ürünler gösterilsin (mevcut olmayanlar da dahil)
-        },
-        orderBy: { name: 'asc' }
-      })
-    } catch (error: any) {
-      // Eğer translations kolonu yoksa, select ile sadece mevcut kolonları seç
-      if (error.message && error.message.includes('translations')) {
-        console.log('⚠️ Translations kolonu bulunamadı, mevcut kolonlar seçiliyor...');
-        menuItems = await prisma.menuItem.findMany({
-          where: {
-            tenantId,
-            isActive: true
-          },
-          select: {
-            id: true,
-            name: true,
-            description: true,
-            price: true,
-            category: true,
-            image: true,
-            allergens: true,
-            calories: true,
-            isAvailable: true,
-            isActive: true,
-            createdAt: true,
-            updatedAt: true,
-            tenantId: true,
-            hotelId: true
-            // translations: false (kolon yok)
-          },
-          orderBy: { name: 'asc' }
-        })
-      } else {
-        throw error; // Başka bir hata ise fırlat
-      }
+    if (!roomId) {
+      res.status(400).json({ message: 'Room ID is required' })
+      return
     }
 
-    console.log('GET /api/menu - Found items:', menuItems.length);
+    if (!firstName || !lastName) {
+      res.status(400).json({ message: 'First name and Last name are required' })
+      return
+    }
 
-    step = 'formatMenu';
-    // Translations'ı parse et (JSON olarak saklanıyor olabilir)
-    const formattedMenu = menuItems.map((item: any, index: number) => {
-      try {
-        let translations = {};
-        try {
-          // translations field'ı varsa parse et
-          if ('translations' in item && item.translations) {
-            if (typeof item.translations === 'string') {
-              translations = JSON.parse(item.translations);
-            } else if (typeof item.translations === 'object') {
-              translations = item.translations;
-            }
-          }
-        } catch (parseError) {
-          console.warn(`Translation parse error for item ${item.id}:`, parseError);
-          translations = {};
-        }
+    // Format room ID (ensure it starts with room-)
+    const formattedRoomId = String(roomId).startsWith('room-') ? roomId : `room-${roomId}`
 
-        // Price field'ı güvenli şekilde parse et
-        let price = 0;
-        try {
-          if (item.price) {
-            if (typeof item.price === 'string') {
-              price = parseFloat(item.price);
-            } else if (typeof item.price === 'number') {
-              price = item.price;
-            } else if (item.price.toString) {
-              price = parseFloat(item.price.toString());
-            }
-          }
-        } catch (priceError) {
-          console.warn(`Price parse error for item ${item.id}:`, priceError);
-          price = 0;
-        }
+    // 1. Odayı bul
+    const room = await prisma.room.findFirst({
+      where: {
+        tenantId,
+        roomId: formattedRoomId
+      }
+    })
 
-        return {
-          id: item.id,
-          name: item.name,
-          description: item.description || '',
-          price: price,
-          category: item.category,
-          image: item.image || '',
-          allergens: item.allergens || [],
-          calories: item.calories,
-          isAvailable: item.isAvailable,
-          preparationTime: 15, // Varsayılan
-          rating: 4.0, // Varsayılan
-          translations
-        };
-      } catch (itemError) {
-        console.error(`Error formatting item ${item.id} at index ${index}:`, itemError);
-        // Hatalı item'ı atla ve devam et
-        return null;
+    if (!room) {
+      res.status(404).json({ message: 'Room not found' })
+      return
+    }
+
+    // Tarihleri hazırla
+    const checkInDate = checkIn ? new Date(checkIn) : new Date();
+    const checkOutDate = checkOut ? new Date(checkOut) : new Date(new Date().setDate(new Date().getDate() + 1)); // Default +1 gün
+
+    // 2. Müşteriyi oluştur veya güncelle
+    // Email varsa emaile göre, yoksa yeni oluştur
+    let guest;
+
+    // Aktif session var mı kontrol et
+    const existingActiveGuest = await prisma.guest.findFirst({
+      where: {
+        tenantId,
+        roomId: formattedRoomId,
+        isActive: true
+      }
+    });
+
+    if (existingActiveGuest) {
+      // Varsa pasife çek
+      await prisma.guest.update({
+        where: { id: existingActiveGuest.id },
+        data: { isActive: false, checkOut: new Date() }
+      });
+    }
+
+    guest = await prisma.guest.create({
+      data: {
+        firstName: firstName || 'Misafir',
+        lastName: lastName || '',
+        email: email || '',
+        phone: phone || '',
+        language: language || 'tr',
+        checkIn: checkInDate,
+        checkOut: checkOutDate,
+        isActive: true,
+        roomId: formattedRoomId,
+        tenantId
+      }
+    })
+
+    // 3. Odayı güncelle (Dolu işaretle ve misafir bilgisini ekle)
+    await prisma.room.update({
+      where: { id: room.id },
+      data: {
+        status: 'occupied',
+        guestName: `${firstName} ${lastName}`, // Denormalized field for quick access
+        checkIn: checkInDate,
+        checkOut: checkOutDate
+      }
+    })
+
+    // 4. Token oluştur
+    const token = jwt.sign(
+      {
+        guestId: guest.id,
+        roomId: formattedRoomId,
+        tenantId,
+        role: 'guest'
+      },
+      process.env.JWT_SECRET || 'secret',
+      { expiresIn: '7d' }
+    )
+
+    // 5. QR Kod oluştur (opsiyonel, frontend zaten oluşturabiliyor)
+    const qrCode = `https://grandhotel.roomxqr.com/guest/${formattedRoomId}?token=${token}`
+
+    console.log(`✅ Guest check-in successful: ${firstName} ${lastName} -> ${formattedRoomId}`);
+
+    res.json({
+      success: true,
+      guest,
+      token,
+      qrCode
+    })
+
+  } catch (error) {
+    console.error('Check-in error:', error)
+    res.status(500).json({ message: 'Internal server error', error: String(error) })
+  }
+})
+return null;
       }
     }).filter(item => item !== null); // null item'ları filtrele
 
-    step = 'sendResponse';
-    // Hem menuItems hem de menu formatında döndür (uyumluluk için)
-    res.json({
-      menuItems: formattedMenu,
-      menu: formattedMenu
-    }); return;
+step = 'sendResponse';
+// Hem menuItems hem de menu formatında döndür (uyumluluk için)
+res.json({
+  menuItems: formattedMenu,
+  menu: formattedMenu
+}); return;
   } catch (error) {
-    console.error('Menu error at step:', step);
-    console.error('Menu error:', error);
-    console.error('Menu error stack:', error instanceof Error ? error.stack : 'No stack trace');
+  console.error('Menu error at step:', step);
+  console.error('Menu error:', error);
+  console.error('Menu error stack:', error instanceof Error ? error.stack : 'No stack trace');
 
-    // Production'da da error mesajını döndür (debug için)
-    res.status(500).json({
-      message: 'Database error',
-      error: error instanceof Error ? error.message : String(error),
-      step: step,
-      // Stack trace sadece development'ta
-      stack: process.env.NODE_ENV === 'development' && error instanceof Error ? error.stack : undefined
-    })
-    return;
-  }
+  // Production'da da error mesajını döndür (debug için)
+  res.status(500).json({
+    message: 'Database error',
+    error: error instanceof Error ? error.message : String(error),
+    step: step,
+    // Stack trace sadece development'ta
+    stack: process.env.NODE_ENV === 'development' && error instanceof Error ? error.stack : undefined
+  })
+  return;
+}
 })
 
 app.get('/api/rooms', tenantMiddleware, async (req: Request, res: Response) => {
