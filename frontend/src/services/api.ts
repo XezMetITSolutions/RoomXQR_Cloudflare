@@ -400,6 +400,78 @@ export class ApiService {
     }
   }
 
+  // Tekil oda sil
+  static async deleteRoom(roomId: string, token?: string): Promise<any> {
+    try {
+      const headers: any = {
+        'Content-Type': 'application/json',
+      };
+
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      // Tenant slug
+      let tenantSlug = 'demo';
+      if (typeof window !== 'undefined') {
+        const hostname = window.location.hostname;
+        const subdomain = hostname.split('.')[0];
+        if (subdomain && subdomain !== 'www' && subdomain !== 'roomxqr' && subdomain !== 'roomxqr-backend') {
+          tenantSlug = subdomain;
+        }
+        headers['x-tenant'] = tenantSlug;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/rooms/delete`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ id: roomId }),
+      });
+
+      if (!response.ok) throw new Error('Failed to delete room');
+      return await response.json();
+    } catch (error) {
+      console.error('Error deleting room:', error);
+      throw error;
+    }
+  }
+
+  // Toplu oda sil
+  static async deleteRoomsBulk(roomIds: string[], token?: string): Promise<any> {
+    try {
+      const headers: any = {
+        'Content-Type': 'application/json',
+      };
+
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      // Tenant slug
+      let tenantSlug = 'demo';
+      if (typeof window !== 'undefined') {
+        const hostname = window.location.hostname;
+        const subdomain = hostname.split('.')[0];
+        if (subdomain && subdomain !== 'www' && subdomain !== 'roomxqr' && subdomain !== 'roomxqr-backend') {
+          tenantSlug = subdomain;
+        }
+        headers['x-tenant'] = tenantSlug;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/rooms/bulk-delete`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ ids: roomIds }),
+      });
+
+      if (!response.ok) throw new Error('Failed to delete rooms');
+      return await response.json();
+    } catch (error) {
+      console.error('Error deleting rooms bulk:', error);
+      throw error;
+    }
+  }
+
   // WebSocket bağlantısı (gerçek zamanlı güncellemeler için)
   static connectWebSocket(roomId: string, onMessage: (data: any) => void): WebSocket | null {
     try {

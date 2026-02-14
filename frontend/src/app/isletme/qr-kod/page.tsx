@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguageStore } from '@/store/languageStore';
-import { QrCode, Download, Printer, Copy, Check, X } from 'lucide-react';
+import { QrCode, Download, Printer, Copy, Check, X, Trash2, Square, CheckSquare } from 'lucide-react';
 import QRCode from 'qrcode.react';
 import QRCodeGenerator from 'qrcode';
 
@@ -30,6 +30,15 @@ export default function QRKodPage() {
   const [guestTokenLoading, setGuestTokenLoading] = useState(false);
   const [guestCheckIn, setGuestCheckIn] = useState('');
   const [guestCheckOut, setGuestCheckOut] = useState('');
+  const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
+
+  const toggleRoomSelection = (roomId: string) => {
+    setSelectedRoomIds(prev =>
+      prev.includes(roomId)
+        ? prev.filter(id => id !== roomId)
+        : [...prev, roomId]
+    );
+  };
 
   // Otomatik oda oluşturma fonksiyonu
   const generateRooms = (floors: number, roomsPerFloor: number) => {
@@ -101,6 +110,49 @@ export default function QRKodPage() {
     if (newRooms.length > 0) {
       setSelectedRoom(newRooms[0].number);
       setQRCodeURL(`${baseURL}/guest/${newRooms[0].number}`);
+    }
+  };
+
+  const handleDeleteRooms = async (ids: string[]) => {
+    if (!confirm(`${ids.length} odayı silmek istediğinize emin misiniz?`)) return;
+
+    try {
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
+      let tenantSlug = 'demo';
+      if (typeof window !== 'undefined') {
+        const hostname = window.location.hostname;
+        const subdomain = hostname.split('.')[0];
+        if (subdomain && subdomain !== 'www' && subdomain !== 'roomxqr' && subdomain !== 'roomxqr-backend') {
+          tenantSlug = subdomain;
+        }
+      }
+
+      const endpoint = ids.length === 1 ? '/api/rooms/delete' : '/api/rooms/bulk-delete';
+      const body = ids.length === 1 ? { id: ids[0] } : { ids };
+
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'x-tenant': tenantSlug
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (response.ok) {
+        // State güncelleme
+        setRooms(prev => prev.filter(r => !ids.includes(r.id)));
+        setGeneratedRooms(prev => prev.filter(r => !ids.includes(r.id)));
+        setSelectedRoomIds(prev => prev.filter(id => !ids.includes(id)));
+        alert('Silme işlemi başarılı');
+      } else {
+        const error = await response.json();
+        alert(`Hata: ${error.message || 'Silme işlemi yapılamadı'}`);
+      }
+    } catch (error) {
+      console.error('Silme hatası:', error);
+      alert('Silme işlemi sırasında bir hata oluştu');
     }
   };
 
@@ -987,7 +1039,18 @@ export default function QRKodPage() {
       {!showCustomInput && !isLoading && (useGeneratedRooms ? generatedRooms : rooms).length > 0 && (
         <div className="hotel-card p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-gray-900">Hızlı Oda Seçimi</h3>
+            <div className="flex items-center gap-4">
+              <h3 className="text-lg font-medium text-gray-900">Hızlı Oda Seçimi</h3>
+              {selectedRoomIds.length > 0 && (
+                <button
+                  onClick={() => handleDeleteRooms(selectedRoomIds)}
+                  className="px-3 py-1 bg-red-100 text-red-600 rounded-lg text-xs font-semibold hover:bg-red-200 flex items-center gap-1 transition-colors"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  ({selectedRoomIds.length}) Seçileni Sil
+                </button>
+              )}
+            </div>
             <div className="text-sm text-gray-500">
               {(useGeneratedRooms ? generatedRooms : rooms).length} oda
             </div>
@@ -1004,27 +1067,47 @@ export default function QRKodPage() {
                 </h4>
                 <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2">
                   {floorRooms.map((room: any) => (
-                    <button
-                      key={room.number}
-                      onClick={() => {
-                        const activeGuest = room.guests && room.guests.length > 0 ? room.guests[0] : null;
-                        setRoomToSelect(room.number);
-                        if (activeGuest) {
-                          setGuestNameInput(`${activeGuest.firstName} ${activeGuest.lastName}`);
-                          setGuestCheckIn(activeGuest.checkIn ? new Date(activeGuest.checkIn).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
-                        } else {
-                          setGuestNameInput('');
-                          setGuestCheckIn(new Date().toISOString().split('T')[0]);
-                        }
-                        setShowGuestModal(true);
-                      }}
-                      className={`p-2 rounded-lg border-2 transition-all text-xs ${selectedRoom === room.number
-                        ? 'border-hotel-gold bg-hotel-gold text-white'
-                        : 'border-gray-200 hover:border-hotel-gold hover:bg-gray-50'
-                        }`}
-                    >
-                      <div className="font-bold">{room.number}</div>
-                    </button>
+                    <div key={room.number} className="relative group">
+                      <button
+                        onClick={() => {
+                          const activeGuest = room.guests && room.guests.length > 0 ? room.guests[0] : null;
+                          setRoomToSelect(room.number);
+                          if (activeGuest) {
+                            setGuestNameInput(`${activeGuest.firstName} ${activeGuest.lastName}`);
+                            setGuestCheckIn(activeGuest.checkIn ? new Date(activeGuest.checkIn).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
+                          } else {
+                            setGuestNameInput('');
+                            setGuestCheckIn(new Date().toISOString().split('T')[0]);
+                          }
+                          setShowGuestModal(true);
+                        }}
+                        className={`w-full p-2 rounded-lg border-2 transition-all text-xs text-center ${selectedRoom === room.number
+                          ? 'border-hotel-gold bg-hotel-gold text-white'
+                          : selectedRoomIds.includes(room.id)
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-hotel-gold hover:bg-gray-50'
+                          }`}
+                      >
+                        <div className="font-bold">{room.number}</div>
+                      </button>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleRoomSelection(room.id);
+                        }}
+                        className={`absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center shadow-sm transition-all ${selectedRoomIds.includes(room.id)
+                            ? 'bg-blue-600 text-white scale-110'
+                            : 'bg-white text-gray-400 opacity-0 group-hover:opacity-100'
+                          }`}
+                      >
+                        {selectedRoomIds.includes(room.id) ? (
+                          <CheckSquare className="w-3 h-3" />
+                        ) : (
+                          <Square className="w-3 h-3" />
+                        )}
+                      </button>
+                    </div>
                   ))}
                 </div>
               </div>

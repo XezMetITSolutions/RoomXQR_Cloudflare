@@ -2035,6 +2035,55 @@ app.post('/api/rooms/bulk', tenantMiddleware, async (req: Request, res: Response
   }
 })
 
+// Delete single room
+app.post('/api/rooms/delete', tenantMiddleware, authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = getTenantId(req)
+    const { id } = req.body
+
+    const room = await prisma.room.updateMany({
+      where: { id, tenantId },
+      data: { isActive: false }
+    })
+
+    if (room.count === 0) {
+      res.status(404).json({ message: 'Room not found' }); return;
+    }
+
+    res.json({ message: 'Room deleted successfully' }); return;
+  } catch (error) {
+    console.error('Room delete error:', error)
+    res.status(500).json({ message: 'Database error' })
+    return;
+  }
+})
+
+// Bulk delete rooms
+app.post('/api/rooms/bulk-delete', tenantMiddleware, authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = getTenantId(req)
+    const { ids } = req.body
+
+    if (!Array.isArray(ids) || ids.length === 0) {
+      res.status(400).json({ message: 'IDs array is required' }); return;
+    }
+
+    const rooms = await prisma.room.updateMany({
+      where: {
+        id: { in: ids },
+        tenantId
+      },
+      data: { isActive: false }
+    })
+
+    res.json({ message: `${rooms.count} rooms deleted successfully` }); return;
+  } catch (error) {
+    console.error('Bulk room delete error:', error)
+    res.status(500).json({ message: 'Database error' })
+    return;
+  }
+})
+
 // Rooms endpoint to get all rooms with status
 app.get('/api/rooms', tenantMiddleware, async (req: Request, res: Response) => {
   try {
