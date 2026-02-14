@@ -167,16 +167,27 @@ export default function ReceptionPanel() {
         token ? ApiService.getRooms(token) : Promise.resolve([]),
       ]);
 
-      console.log('Resepsiyon paneli - Yüklenen istekler:', requestsData);
+
+      if (!Array.isArray(requestsData)) {
+        console.warn('Requests data is not an array:', requestsData);
+      }
+      const safeRequestsData = Array.isArray(requestsData) ? requestsData : [];
+
+      if (!Array.isArray(roomsData)) {
+        console.warn('Rooms data is not an array:', roomsData);
+      }
+      const safeRoomsData = Array.isArray(roomsData) ? roomsData : [];
+
+      console.log('Resepsiyon paneli - Yüklenen istekler:', safeRequestsData);
       console.log('Resepsiyon paneli - LocalStorage içeriği:', localStorage.getItem('roomapp_requests'));
 
       // Filtre sayılarını debug et (yemek siparişleri hariç)
-      const nonFoodRequests = requestsData.filter(r => r.type !== 'food_order');
+      const nonFoodRequests = safeRequestsData.filter(r => r.type !== 'food_order');
       const urgentCount = nonFoodRequests.filter(r => r.priority === 'urgent' || r.priority === 'high').length;
-      const pendingCount = nonFoodRequests.filter(r => r.status === 'pending').length;
-      const inProgressCount = nonFoodRequests.filter(r => r.status === 'in_progress' || r.status === 'completed').length;
+      const pendingCount = safeRequestsData.filter(r => r.status === 'pending').length;
+      const inProgressCount = safeRequestsData.filter(r => r.status === 'in_progress' || r.status === 'completed').length;
       console.log('Filtre sayıları (yemek siparişleri hariç):', {
-        total: requestsData.length,
+        total: safeRequestsData.length,
         nonFoodTotal: nonFoodRequests.length,
         urgent: urgentCount,
         pending: pendingCount,
@@ -184,13 +195,13 @@ export default function ReceptionPanel() {
       });
 
       // Yeni istek kontrolü - ses bildirimi için (yemek siparişleri hariç)
-      const nonFoodRequestCount = requestsData.filter(r => r.type !== 'food_order').length;
+      const nonFoodRequestCount = safeRequestsData.filter(r => r.type !== 'food_order').length;
       if (nonFoodRequestCount > lastRequestCount && lastRequestCount > 0) {
         // Ses bildirimi hemen çal
         playNotificationSound();
 
         // Yeni gelen istekleri bul ve detaylı bildirim gönder (yemek siparişleri hariç)
-        const newRequests = requestsData.filter(r => r.type !== 'food_order').slice(0, nonFoodRequestCount - lastRequestCount);
+        const newRequests = safeRequestsData.filter(r => r.type !== 'food_order').slice(0, nonFoodRequestCount - lastRequestCount);
         newRequests.forEach(request => {
           const roomNumber = request.roomId.replace('room-', '');
 
@@ -213,11 +224,9 @@ export default function ReceptionPanel() {
       }
       setLastRequestCount(nonFoodRequestCount);
 
-      setLastRequestCount(nonFoodRequestCount);
-
-      setRequests(requestsData);
+      setRequests(safeRequestsData);
       setStatistics(statsData);
-      setRooms(roomsData);
+      setRooms(safeRoomsData);
 
       // Yeni talepleri kontrol et
       const newCount = requestsData.filter(r =>
@@ -757,8 +766,8 @@ export default function ReceptionPanel() {
               <button
                 onClick={() => setSelectedFloor('all')}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${selectedFloor === 'all'
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
               >
                 Tüm Odalar
@@ -768,8 +777,8 @@ export default function ReceptionPanel() {
                   key={floor}
                   onClick={() => setSelectedFloor(floor)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${selectedFloor === floor
-                      ? 'bg-blue-600 text-white shadow-md'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                 >
                   {floor}. Kat
