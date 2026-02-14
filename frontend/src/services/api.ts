@@ -206,26 +206,56 @@ export class ApiService {
   }
 
   // Tüm odaları çek
-  static async getRooms(): Promise<RoomStatus[]> {
+  static async getRooms(token?: string): Promise<RoomStatus[]> {
     try {
-      const response = await fetch(`${API_BASE_URL}/rooms`);
-      if (!response.ok) throw new Error('Failed to fetch rooms');
+      const headers: any = {
+        'Content-Type': 'application/json'
+      };
+
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      // Tenant slug'ı belirle
+      let tenantSlug = 'demo';
+      if (typeof window !== 'undefined') {
+        const hostname = window.location.hostname;
+        const subdomain = hostname.split('.')[0];
+        if (subdomain && subdomain !== 'www' && subdomain !== 'roomxqr' && subdomain !== 'roomxqr-backend') {
+          tenantSlug = subdomain;
+        }
+        headers['x-tenant'] = tenantSlug;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/rooms`, {
+        headers
+      });
+
+      if (!response.ok) throw new Error(`Failed to fetch rooms: ${response.status}`);
       return await response.json();
     } catch (error) {
       console.error('Error fetching rooms:', error);
-      // Fallback: Mock data
-      return [
-        { roomId: 'room-101', status: 'occupied', guestName: 'Ahmet Yılmaz', checkIn: new Date().toISOString() },
-        { roomId: 'room-102', status: 'occupied', guestName: 'Maria Garcia', checkIn: new Date().toISOString() },
-        { roomId: 'room-103', status: 'vacant' },
-        { roomId: 'room-104', status: 'occupied', guestName: 'Ali Veli', checkIn: new Date().toISOString() },
-        { roomId: 'room-105', status: 'vacant' },
-        { roomId: 'room-201', status: 'occupied', guestName: 'John Smith', checkIn: new Date().toISOString() },
-        { roomId: 'room-202', status: 'vacant' },
-        { roomId: 'room-203', status: 'vacant' },
-        { roomId: 'room-301', status: 'occupied', guestName: 'Ayşe Demir', checkIn: new Date().toISOString() },
-        { roomId: 'room-302', status: 'vacant' },
-      ];
+
+      // Fallback: localStorage'dan oluşturulan odaları dene (QR kod sayfasında oluşturulanlar)
+      if (typeof window !== 'undefined') {
+        try {
+          const savedGeneratedRooms = localStorage.getItem('qrKod_generatedRooms');
+          if (savedGeneratedRooms) {
+            const parsedRooms = JSON.parse(savedGeneratedRooms);
+            return parsedRooms.map((r: any) => ({
+              roomId: r.id || `room-${r.number}`,
+              number: r.number,
+              floor: r.floor,
+              status: 'vacant', // Varsayılan boş
+              guestName: undefined
+            }));
+          }
+        } catch (e) {
+          console.error('Error reading from localStorage:', e);
+        }
+      }
+
+      return [];
     }
   }
 

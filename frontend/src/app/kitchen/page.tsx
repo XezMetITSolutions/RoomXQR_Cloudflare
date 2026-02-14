@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useHotelStore } from '@/store/hotelStore';
 import { translate } from '@/lib/translations';
+import { useAuth } from '@/contexts/AuthContext';
 import { Language, Order, MenuItem } from '@/types';
 import { ApiService, RoomStatus } from '@/services/api';
 import {
@@ -23,6 +24,7 @@ import {
 } from 'lucide-react';
 
 export default function KitchenPanel() {
+  const { token } = useAuth();
   const [currentLanguage, setCurrentLanguage] = useState<Language>('tr');
   const [orders, setOrders] = useState<Order[]>([]);
   const [rooms, setRooms] = useState<RoomStatus[]>([]);
@@ -177,7 +179,7 @@ export default function KitchenPanel() {
           });
 
           // Odaları çek
-          const roomsData = await ApiService.getRooms();
+          const roomsData = token ? await ApiService.getRooms(token) : [];
           setRooms(roomsData);
         }
       } catch (error) {
@@ -432,8 +434,8 @@ export default function KitchenPanel() {
                   key={filterOption.id}
                   onClick={() => setFilter(filterOption.id as any)}
                   className={`px-4 py-2 rounded-lg font-medium transition-colors ${filter === filterOption.id
-                      ? 'bg-hotel-gold text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-hotel-gold text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                 >
                   {filterOption.label} ({filterOption.count})
@@ -506,8 +508,8 @@ export default function KitchenPanel() {
                         <div className="flex justify-between">
                           <span>Ödeme Durumu:</span>
                           <span className={`px-2 py-1 rounded-full text-xs ${order.paymentStatus === 'paid'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-yellow-100 text-yellow-800'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-yellow-100 text-yellow-800'
                             }`}>
                             {order.paymentStatus === 'paid' ? 'ÖDENDİ' : 'BEKLEMEDE'}
                           </span>
@@ -698,8 +700,8 @@ export default function KitchenPanel() {
                         ));
                       }}
                       className={`px-3 py-1 rounded-full text-xs font-medium ${item.available
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
                         }`}
                     >
                       {item.available ? 'Mevcut' : 'Mevcut Değil'}

@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 
 export default function ReceptionPanel() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [currentLanguage, setCurrentLanguage] = useState<Language>('tr');
   const [requests, setRequests] = useState<GuestRequest[]>([]);
   const [rooms, setRooms] = useState<RoomStatus[]>([]);
@@ -163,7 +163,7 @@ export default function ReceptionPanel() {
       const [requestsData, statsData, roomsData] = await Promise.all([
         ApiService.getGuestRequests(),
         ApiService.getStatistics(),
-        ApiService.getRooms(),
+        token ? ApiService.getRooms(token) : Promise.resolve([]),
       ]);
 
       console.log('Resepsiyon paneli - Yüklenen istekler:', requestsData);
@@ -649,8 +649,8 @@ export default function ReceptionPanel() {
                 <button
                   onClick={() => setShowNotifications(!showNotifications)}
                   className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-colors ${unreadCount > 0
-                      ? 'bg-red-500 text-white hover:bg-red-600'
-                      : 'bg-blue-500 text-white hover:bg-blue-600'
+                    ? 'bg-red-500 text-white hover:bg-red-600'
+                    : 'bg-blue-500 text-white hover:bg-blue-600'
                     }`}
                   title="Bildirimler"
                 >
@@ -708,14 +708,14 @@ export default function ReceptionPanel() {
                       key={notification.id}
                       onClick={() => markAsRead(notification.id)}
                       className={`p-3 rounded-lg border-l-4 cursor-pointer hover:opacity-80 transition-opacity ${notification.read
-                          ? 'opacity-60'
-                          : notification.type === 'success'
-                            ? 'bg-green-50 border-green-400'
-                            : notification.type === 'error'
-                              ? 'bg-red-50 border-red-400'
-                              : notification.type === 'warning'
-                                ? 'bg-yellow-50 border-yellow-400'
-                                : 'bg-blue-50 border-blue-400'
+                        ? 'opacity-60'
+                        : notification.type === 'success'
+                          ? 'bg-green-50 border-green-400'
+                          : notification.type === 'error'
+                            ? 'bg-red-50 border-red-400'
+                            : notification.type === 'warning'
+                              ? 'bg-yellow-50 border-yellow-400'
+                              : 'bg-blue-50 border-blue-400'
                         }`}
                     >
                       <div className="flex items-start justify-between">
@@ -804,8 +804,8 @@ export default function ReceptionPanel() {
                   key={filterOption.id}
                   onClick={() => setFilter(filterOption.id as any)}
                   className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl font-medium transition-all duration-200 text-xs sm:text-sm ${filter === filterOption.id
-                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md'
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md'
                     }`}
                 >
                   {filterOption.label} ({filterOption.count})
@@ -1041,8 +1041,8 @@ export default function ReceptionPanel() {
                       key={room.id}
                       onClick={() => setSelectedNewRoom(room.id)}
                       className={`p-3 rounded-lg border-2 text-left transition-colors ${selectedNewRoom === room.id
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300'
                         }`}
                     >
                       <div className="font-semibold text-gray-900">Oda {room.number}</div>
