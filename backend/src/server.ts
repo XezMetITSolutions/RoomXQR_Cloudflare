@@ -1328,16 +1328,22 @@ app.post('/api/guests/checkin', tenantMiddleware, async (req: Request, res: Resp
     // Format room ID (ensure it starts with room-)
     const formattedRoomId = String(roomId).startsWith('room-') ? roomId : `room-${roomId}`
 
-    // 1. Odayı bul
+    // 1. Odayı bul: Hem qrCode, hem id, hem de numara üzerinden ara (daha esnek olması için)
     const room = await prisma.room.findFirst({
       where: {
         tenantId,
-        qrCode: formattedRoomId
+        OR: [
+          { qrCode: formattedRoomId },
+          { id: formattedRoomId },
+          { number: String(roomId).replace('room-', '') },
+          { qrCode: { endsWith: `room-${String(roomId).replace('room-', '')}` } }
+        ]
       }
     })
 
     if (!room) {
-      res.status(404).json({ message: 'Room not found' })
+      console.log('Room not found for:', { tenantId, roomId, formattedRoomId });
+      res.status(404).json({ message: 'Oda bulunamadı.' })
       return
     }
 
