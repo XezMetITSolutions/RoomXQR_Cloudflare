@@ -133,17 +133,22 @@ export default function KitchenPanel() {
         });
 
         if (response.ok) {
-          const backendOrders = await response.json();
+          let backendOrders = await response.json();
+
+          if (!Array.isArray(backendOrders)) {
+            console.warn('Backend orders is not an array:', backendOrders);
+            backendOrders = [];
+          }
 
           // Backend Order formatını frontend Order formatına çevir
           const formattedOrders: Order[] = backendOrders.map((order: any) => {
-            const items = order.items.map((item: any) => ({
+            const items = Array.isArray(order.items) ? order.items.map((item: any) => ({
               menuItemId: item.menuItemId,
               name: item.menuItem?.name || 'Bilinmeyen Ürün',
               quantity: item.quantity,
               price: parseFloat(item.price) || 0,
               specialRequests: item.notes || '',
-            }));
+            })) : [];
 
             // Status mapping: PENDING -> pending, PREPARING -> preparing, READY -> ready, DELIVERED -> delivered, CANCELLED -> cancelled
             let status: Order['status'] = 'pending';
@@ -389,8 +394,8 @@ export default function KitchenPanel() {
               <button
                 onClick={() => setSelectedFloor('all')}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${selectedFloor === 'all'
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
               >
                 Tüm Odalar
@@ -400,8 +405,8 @@ export default function KitchenPanel() {
                   key={floor}
                   onClick={() => setSelectedFloor(floor)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${selectedFloor === floor
-                      ? 'bg-blue-600 text-white shadow-md'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                 >
                   {floor}. Kat
