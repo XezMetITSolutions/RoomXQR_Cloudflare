@@ -232,6 +232,7 @@ export const translations: Record<string, Translations> = {
     'sidebar.panels': 'Paneller',
     'sidebar.room_management': 'Oda Yönetimi',
     'sidebar.translate_ui': 'Arayüz Çevirileri',
+    'sidebar.debug_qr': 'QR Hata Ayıklama',
 
     // Page Titles
     'page.paneller.title': 'Otel Panelleri',
@@ -934,6 +935,8 @@ export const translations: Record<string, Translations> = {
     'sidebar.database_columns': 'Database Columns',
     'sidebar.panels': 'Panels',
     'sidebar.room_management': 'Room Management',
+    'sidebar.translate_ui': 'UI Translations',
+    'sidebar.debug_qr': 'Debug QR',
 
     // Page Titles
     'page.announcements.title': 'Announcement Management',
@@ -1576,6 +1579,9 @@ export const translations: Record<string, Translations> = {
     'sidebar.settings': 'Einstellungen',
     'sidebar.database_columns': 'Fehlende Spalten',
     'sidebar.room_management': 'Zimmerverwaltung',
+    'sidebar.panels': 'Panels',
+    'sidebar.translate_ui': 'UI-Übersetzungen',
+    'sidebar.debug_qr': 'QR-Fehlerbehebung',
 
     // Page Titles
     'page.announcements.title': 'Ankündigungsverwaltung',
@@ -2442,6 +2448,7 @@ export const translations: Record<string, Translations> = {
     'sidebar.panels': 'Панели',
     'sidebar.room_management': 'Управление номерами',
     'sidebar.translate_ui': 'Перевод интерфейса',
+    'sidebar.debug_qr': 'Отладка QR',
 
     // Page Titles
     'page.paneller.title': 'Панели отеля',
