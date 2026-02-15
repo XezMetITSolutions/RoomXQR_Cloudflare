@@ -33,9 +33,15 @@ export default function TranslateUiPage() {
     setMessage(null);
     setFiles(null);
     try {
+      const tenant =
+        typeof window !== 'undefined'
+          ? (window.location.hostname.split('.')[0] || 'demo').replace(/^(www|roomxqr|roomxqr-backend)$/i, 'demo') || 'demo'
+          : 'demo';
+      const headers: Record<string, string> = { 'x-tenant': tenant };
+      if (token) headers.Authorization = `Bearer ${token}`;
       const res = await fetch('/api/translate-ui/run', {
         method: 'POST',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        headers,
       });
       const data = await res.json().catch(() => ({}));
       if (data.success) {
