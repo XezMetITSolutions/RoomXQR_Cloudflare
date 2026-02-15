@@ -78,7 +78,21 @@ export default function TranslateUiPage() {
           Arayüz Çevirileri (4 Dil)
         </h1>
         <p className="text-gray-600 mt-1">
-          Tüm site metinlerini (admin paneli, müşteri QR, menü vb.) Türkçe kaynaktan DeepL ile Almanca, İngilizce ve Rusçaya çevirir. Çeviriler oturumda hemen yüklenir; kalıcı kullanım için dosyaları indirip <code className="bg-gray-100 px-1 rounded">public/locales/</code> altına koyabilirsiniz.
+          Tüm site metinlerini (admin paneli, müşteri QR, menü vb.) Türkçe kaynaktan DeepL ile Almanca, İngilizce ve Rusçaya çevirir. Çeviriler oturumda hemen yüklenir; kalıcı kullanım için dosyaları indirip <code className="bg-gray-100 px-1 rounded">public/locales/</code> altına koyabilir veya <strong>lokal script</strong> ile üretip repoya ekleyebilirsiniz.
+        </p>
+      </div>
+
+      <div className="rounded-lg border border-amber-200 bg-amber-50/80 p-4">
+        <h3 className="font-semibold text-amber-900 mb-2">Lokal çalıştırma (önerilen)</h3>
+        <p className="text-sm text-amber-800 mb-2">
+          Bilgisayarınızda <code className="bg-amber-100 px-1 rounded">frontend</code> klasörüne gidip aşağıdaki komutu çalıştırın. Oluşan <code className="bg-amber-100 px-1 rounded">public/locales/tr.json, de.json, en.json, ru.json</code> dosyalarını commit edip push edin; sitede kalıcı olarak 4 dil yüklü olur.
+        </p>
+        <pre className="text-xs bg-gray-900 text-green-300 p-3 rounded overflow-x-auto">
+          cd frontend{"\n"}
+          $env:DEEPL_API_KEY="ANAHTARINIZ"; npm run translate-ui
+        </pre>
+        <p className="text-xs text-amber-700 mt-2">
+          Windows PowerShell için. CMD: <code>set DEEPL_API_KEY=ANAHTARINIZ &amp; npm run translate-ui</code>
         </p>
       </div>
 
