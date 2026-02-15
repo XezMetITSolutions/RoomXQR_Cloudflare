@@ -590,15 +590,15 @@ function DigerIstekler({ onRequestSent, roomId }: { onRequestSent: (message: str
     { name: "Su", nameKey: "quick.water", emoji: "💧", color: "text-cyan-600" }
   ];
 
-  const handleQuickSelect = (item: string) => {
-    setSelectedItem(item);
-    setIstek(`${miktar} adet ${item}`);
+  const handleQuickSelect = (itemName: string) => {
+    setSelectedItem(itemName);
+    // setIstek useEffect ile güncellenecek
   };
 
   // Miktar değiştiğinde istek alanını güncelle
   useEffect(() => {
     if (selectedItem) {
-      setIstek(`${miktar} adet ${selectedItem}`);
+      setIstek(`${miktar} x ${selectedItem}`);
     }
   }, [miktar, selectedItem]);
 
@@ -616,13 +616,15 @@ function DigerIstekler({ onRequestSent, roomId }: { onRequestSent: (message: str
       let priority: 'urgent' | 'high' | 'medium' | 'low' = 'medium';
       let type: 'housekeeping' | 'maintenance' | 'concierge' | 'general' | 'food_order' = 'general';
 
-      if (istek.toLowerCase().includes('acil') || istek.toLowerCase().includes('urgent') || istek.toLowerCase().includes('arıza')) {
+      // Basit anahtar kelime kontrolü (çok dilli destek için genişletilebilir)
+      const lowerIstek = istek.toLowerCase();
+      if (lowerIstek.includes('acil') || lowerIstek.includes('urgent') || lowerIstek.includes('arıza') || lowerIstek.includes('notfall')) {
         priority = 'urgent';
         type = 'maintenance';
-      } else if (istek.toLowerCase().includes('temizlik') || istek.toLowerCase().includes('temizle')) {
+      } else if (lowerIstek.includes('temizlik') || lowerIstek.includes('temizle') || lowerIstek.includes('clean') || lowerIstek.includes('reinigung')) {
         priority = 'medium';
         type = 'housekeeping';
-      } else if (istek.toLowerCase().includes('konsiyerj') || istek.toLowerCase().includes('concierge') || istek.toLowerCase().includes('rezervasyon') || istek.toLowerCase().includes('transfer')) {
+      } else if (lowerIstek.includes('konsiyerj') || lowerIstek.includes('concierge') || lowerIstek.includes('rezervasyon') || lowerIstek.includes('transfer')) {
         priority = 'medium';
         type = 'concierge';
       }
@@ -638,7 +640,7 @@ function DigerIstekler({ onRequestSent, roomId }: { onRequestSent: (message: str
         description: istek,
       });
 
-      onRequestSent(`"${istek}" talebiniz resepsiyona iletildi. En kısa sürede yanıtlanacaktır.`);
+      onRequestSent(`"${istek}" ${safeGetTranslation('general.success_request', 'talebiniz alındı.')}`);
     } catch (error) {
       console.error('Error creating request:', error);
       const errMsg = error instanceof Error ? error.message : String(error);
@@ -664,12 +666,12 @@ function DigerIstekler({ onRequestSent, roomId }: { onRequestSent: (message: str
           {quickItems.map((item) => (
             <button
               key={item.name}
-              onClick={() => handleQuickSelect(item.name)}
-              className={`p-2 rounded-lg text-xs sm:text-sm transition-all duration-200 ${selectedItem === item.name ? 'shadow-md' : ''
+              onClick={() => handleQuickSelect(safeGetTranslation(item.nameKey, item.name))}
+              className={`p-2 rounded-lg text-xs sm:text-sm transition-all duration-200 ${selectedItem === safeGetTranslation(item.nameKey, item.name) ? 'shadow-md' : ''
                 }`}
               style={{
-                background: selectedItem === item.name ? theme.primaryColor : theme.borderColor,
-                color: selectedItem === item.name ? 'white' : theme.textColor
+                background: selectedItem === safeGetTranslation(item.nameKey, item.name) ? theme.primaryColor : theme.borderColor,
+                color: selectedItem === safeGetTranslation(item.nameKey, item.name) ? 'white' : theme.textColor
               }}
             >
               <div className="flex justify-center mb-1">
@@ -686,7 +688,7 @@ function DigerIstekler({ onRequestSent, roomId }: { onRequestSent: (message: str
         <div className="mb-3 rounded-lg p-3" style={{ background: `${theme.secondaryColor}20` }}>
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium" style={{ color: theme.textColor }}>
-              {selectedItem} miktarı:
+              {selectedItem}:
             </span>
             <div className="flex items-center gap-2">
               <button
@@ -707,7 +709,7 @@ function DigerIstekler({ onRequestSent, roomId }: { onRequestSent: (message: str
             </div>
           </div>
           <p className="text-xs mt-1" style={{ color: theme.textColor }}>
-            Seçili: {miktar} adet {selectedItem}
+            {miktar} x {selectedItem}
           </p>
         </div>
       )}
@@ -727,7 +729,7 @@ function DigerIstekler({ onRequestSent, roomId }: { onRequestSent: (message: str
             border: `1px solid ${theme.borderColor}`,
             boxShadow: 'none'
           }}
-          placeholder={selectedItem ? `${miktar} ${safeGetTranslation('room.quantity', 'adet')} ${selectedItem}` : safeGetTranslation('room.request_details', 'Lütfen isteğinizi yazınız...')}
+          placeholder={selectedItem ? `${miktar} x ${selectedItem}` : safeGetTranslation('room.request_details', 'Lütfen isteğinizi yazınız...')}
           value={istek}
           onChange={(e) => {
             const value = e.target.value;
@@ -737,8 +739,8 @@ function DigerIstekler({ onRequestSent, roomId }: { onRequestSent: (message: str
               setSelectedItem("");
               setMiktar(1);
             } else {
-              // Manuel girişte miktar kontrolü yap
-              const miktarMatch = value.match(/^(\d+)\s+adet\s+(.+)$/);
+              // Manuel girişte miktar kontrolü yap ("2 x Su" formatı)
+              const miktarMatch = value.match(/^(\d+)\s+x\s+(.+)$/);
               if (miktarMatch) {
                 const [, miktarStr, itemName] = miktarMatch;
                 const extractedMiktar = parseInt(miktarStr);
