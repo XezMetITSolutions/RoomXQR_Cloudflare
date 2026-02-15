@@ -25,6 +25,7 @@ export default function QRKodPage() {
   const [generatedRooms, setGeneratedRooms] = useState<any[]>([]);
   const [useGeneratedRooms, setUseGeneratedRooms] = useState(false);
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
+  const [guestLinks, setGuestLinks] = useState<Record<string, string>>({});
 
   const toggleRoomSelection = (roomId: string) => {
     setSelectedRoomIds(prev =>
@@ -260,10 +261,33 @@ export default function QRKodPage() {
             setUseGeneratedRooms(true);
           }
 
-          // İlk odayı seç
+          // Oda Yönetimi'nde giriş yapmış misafirlerin token'larını al (QR'da Hoşgeldiniz için)
+          let links: Record<string, string> = {};
+          try {
+            const linkRes = await fetch(`${API_BASE_URL}/api/rooms/guest-links`, {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'x-tenant': tenantSlug
+              }
+            });
+            if (linkRes.ok) {
+              const linkData = await linkRes.json();
+              links = linkData.links || {};
+              setGuestLinks(links);
+            }
+          } catch (_) {
+            setGuestLinks({});
+          }
+
+          const buildRoomUrl = (roomNum: string) => {
+            const t = links[roomNum];
+            return t ? `${baseURL}/guest/${roomNum}?g=${encodeURIComponent(t)}` : `${baseURL}/guest/${roomNum}`;
+          };
+
           if (formattedRooms.length > 0) {
-            setSelectedRoom(formattedRooms[0].number);
-            setQRCodeURL(`${baseURL}/guest/${formattedRooms[0].number}`);
+            const firstNum = formattedRooms[0].number;
+            setSelectedRoom(firstNum);
+            setQRCodeURL(buildRoomUrl(firstNum));
           }
         }
       } catch (error) {
@@ -751,8 +775,10 @@ export default function QRKodPage() {
                     <select
                       value={selectedRoom}
                       onChange={(e) => {
-                        setSelectedRoom(e.target.value);
-                        setQRCodeURL(`${baseURL}/guest/${e.target.value}`);
+                        const num = e.target.value;
+                        setSelectedRoom(num);
+                        const t = guestLinks[num];
+                        setQRCodeURL(t ? `${baseURL}/guest/${num}?g=${encodeURIComponent(t)}` : `${baseURL}/guest/${num}`);
                       }}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hotel-gold focus:border-transparent text-lg"
                     >
@@ -1125,8 +1151,10 @@ export default function QRKodPage() {
                     <div key={room.number} className="relative group">
                       <button
                         onClick={() => {
-                          setSelectedRoom(room.number);
-                          setQRCodeURL(`${baseURL}/guest/${room.number}`);
+                          const num = room.number;
+                          setSelectedRoom(num);
+                          const t = guestLinks[num];
+                          setQRCodeURL(t ? `${baseURL}/guest/${num}?g=${encodeURIComponent(t)}` : `${baseURL}/guest/${num}`);
                         }}
                         className={`w-full p-2 rounded-lg border-2 transition-all text-xs text-center ${selectedRoom === room.number
                           ? 'border-hotel-gold bg-hotel-gold text-white'

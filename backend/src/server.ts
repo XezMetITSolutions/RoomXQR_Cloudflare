@@ -1326,6 +1326,32 @@ app.get('/api/rooms/:number/active-guest', tenantMiddleware, async (req: Request
   }
 })
 
+// Yönetim paneli: Odadaki aktif misafirin token'ı (QR'da Hoşgeldiniz için; sadece yetkili)
+app.get('/api/rooms/guest-links', tenantMiddleware, authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = getTenantId(req)
+    const rooms = await prisma.room.findMany({
+      where: { tenantId, isActive: true },
+      select: { number: true, id: true }
+    })
+    const links: Record<string, string> = {}
+    for (const room of rooms) {
+      const guest = await prisma.guest.findFirst({
+        where: { tenantId, roomId: room.id, isActive: true, accessToken: { not: null } },
+        select: { accessToken: true },
+        orderBy: { checkIn: 'desc' }
+      })
+      if (guest?.accessToken) {
+        links[String(room.number)] = guest.accessToken
+      }
+    }
+    res.json({ links })
+  } catch (error) {
+    console.error('Guest links error:', error)
+    res.status(500).json({ message: 'Guest links alınamadı' })
+  }
+})
+
 // Guest Check-in API
 app.post('/api/guests/checkin', tenantMiddleware, async (req: Request, res: Response) => {
   try {
