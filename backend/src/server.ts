@@ -2129,27 +2129,53 @@ app.get('/api/rooms', tenantMiddleware, async (req: Request, res: Response) => {
   try {
     const tenantId = getTenantId(req)
 
-    // Get all active rooms for the tenant
-    const rooms = await prisma.room.findMany({
-      where: {
-        tenantId,
-        isActive: true
-      },
-      orderBy: { number: 'asc' },
-      include: {
-        guests: {
-          where: {
-            isActive: true
-          },
-          take: 1
-        }
+    const ensureRoomsNameColumn = async () => {
+      const hasName = await prisma.$queryRaw<{ exists: boolean }[]>`
+        SELECT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_schema = 'public' AND table_name = 'rooms' AND column_name = 'name'
+        ) as exists
+      `
+      if (!hasName[0]?.exists) {
+        await prisma.$executeRawUnsafe('ALTER TABLE "public"."rooms" ADD COLUMN IF NOT EXISTS "name" TEXT;')
       }
-    })
+    }
+
+    let rooms: Awaited<ReturnType<typeof prisma.room.findMany>>
+    try {
+      rooms = await prisma.room.findMany({
+        where: {
+          tenantId,
+          isActive: true
+        },
+        orderBy: { number: 'asc' },
+        include: {
+          guests: {
+            where: {
+              isActive: true
+            },
+            take: 1
+          }
+        }
+      })
+    } catch (firstErr: any) {
+      const msg = String(firstErr?.message || '')
+      if (msg.includes('column') && msg.includes('name') && (msg.includes('does not exist') || msg.includes('undefined'))) {
+        await ensureRoomsNameColumn()
+        rooms = await prisma.room.findMany({
+          where: { tenantId, isActive: true },
+          orderBy: { number: 'asc' },
+          include: {
+            guests: { where: { isActive: true }, take: 1 }
+          }
+        })
+      } else {
+        throw firstErr
+      }
+    }
 
     const formattedRooms = rooms.map(room => {
-      // Find current active guest if any
       const activeGuest = room.guests[0]
-
       return {
         roomId: room.id,
         number: room.number,

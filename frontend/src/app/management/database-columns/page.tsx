@@ -60,7 +60,8 @@ export default function EksikSutunlarPage() {
     setRunning(true);
     setMessage(null);
     try {
-      const res = await fetch(`${API_BASE_URL}/setup/ensure-columns`, {
+      const url = `${API_BASE_URL}/setup/ensure-columns`;
+      const res = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -69,7 +70,10 @@ export default function EksikSutunlarPage() {
         },
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.message || 'İşlem başarısız');
+      if (!res.ok) {
+        const msg = data?.message || data?.error || `HTTP ${res.status}`;
+        throw new Error(msg);
+      }
       const r = data.results || {};
       let text = 'Eksik sütunlar oluşturuldu.';
       if (r.guest_requests_tenantId === 'atlandi_tenant_yok') {
@@ -77,6 +81,8 @@ export default function EksikSutunlarPage() {
       }
       if (r.guests_accessToken === 'eklendi') text += ' guests.accessToken eklendi.';
       if (r.rooms_name === 'eklendi') text += ' rooms.name eklendi.';
+      if (r.orders_paymentMethod === 'eklendi') text += ' orders.paymentMethod eklendi.';
+      if (r.menu_items_translations === 'eklendi') text += ' menu_items.translations eklendi.';
       setMessage({ type: 'success', text });
       await fetchStatus();
     } catch (e: any) {
