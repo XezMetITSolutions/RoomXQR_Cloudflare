@@ -74,13 +74,21 @@ export async function POST(request: Request) {
         });
         const retryData = await retryRes.json().catch(() => ({}));
         if (retryRes.ok) {
-          return NextResponse.json({ success: true, guest: retryData.guest });
+          return NextResponse.json({
+            success: true,
+            guest: retryData.guest,
+            token: retryData.accessToken || retryData.guest?.accessToken
+          });
         }
       }
       return NextResponse.json(data || { message: 'Check-in yapılamadı.' }, { status: res.status });
     }
 
-    return NextResponse.json({ success: true, guest: data.guest });
+    return NextResponse.json({
+      success: true,
+      guest: data.guest,
+      token: data.accessToken || data.guest?.accessToken
+    });
   } catch (error) {
     console.error('Guest token error:', error);
     return NextResponse.json({ message: 'Sunucu hatası oluştu.' }, { status: 500 });

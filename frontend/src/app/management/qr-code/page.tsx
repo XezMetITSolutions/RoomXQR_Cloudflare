@@ -24,12 +24,6 @@ export default function QRKodPage() {
   const [roomsPerFloor, setRoomsPerFloor] = useState(5);
   const [generatedRooms, setGeneratedRooms] = useState<any[]>([]);
   const [useGeneratedRooms, setUseGeneratedRooms] = useState(false);
-  const [showGuestModal, setShowGuestModal] = useState(false);
-  const [roomToSelect, setRoomToSelect] = useState<string | null>(null);
-  const [guestNameInput, setGuestNameInput] = useState('');
-  const [guestTokenLoading, setGuestTokenLoading] = useState(false);
-  const [guestCheckIn, setGuestCheckIn] = useState('');
-  const [guestCheckOut, setGuestCheckOut] = useState('');
   const [selectedRoomIds, setSelectedRoomIds] = useState<string[]>([]);
 
   const toggleRoomSelection = (roomId: string) => {
@@ -206,9 +200,6 @@ export default function QRKodPage() {
           console.error('Kaydedilmiş özel odalar yüklenirken hata:', error);
         }
       }
-
-      // Set initial date only on client side to prevent hydration error
-      setGuestCheckIn(new Date().toISOString().split('T')[0]);
     }
   }, []);
 
@@ -248,12 +239,12 @@ export default function QRKodPage() {
             roomsData = data.rooms;
           }
 
-          // Oda numaralarına göre sırala ve formatla
+          // Oda numaralarına göre sırala ve formatla (misafir adı Oda Yönetimi ile aynı API'den)
           const formattedRooms = roomsData.map((room: any) => ({
             number: room.number || room.id,
             floor: room.floor || Math.floor(parseInt(room.number || '0') / 100) || 1,
             id: room.id,
-            guests: room.guests || []
+            guestName: room.guestName || null
           })).sort((a: any, b: any) => {
             const numA = parseInt(a.number) || 0;
             const numB = parseInt(b.number) || 0;
@@ -881,6 +872,16 @@ export default function QRKodPage() {
                   <span className="text-sm font-medium">Kopyala</span>
                 </button>
               </div>
+              {!showCustomInput && (() => {
+                const roomList = useGeneratedRooms ? generatedRooms : rooms;
+                const currentRoom = roomList.find((r: any) => r.number === selectedRoom);
+                const guestName = currentRoom?.guestName;
+                return guestName ? (
+                  <p className="mt-2 text-sm text-gray-600">
+                    Mevcut misafir (Oda Yönetimi): <strong>{guestName}</strong>
+                  </p>
+                ) : null;
+              })()}
             </div>
 
             {qrCodeURL && qrCodeURL.includes('?g=') && (
@@ -1124,16 +1125,8 @@ export default function QRKodPage() {
                     <div key={room.number} className="relative group">
                       <button
                         onClick={() => {
-                          const activeGuest = room.guests && room.guests.length > 0 ? room.guests[0] : null;
-                          setRoomToSelect(room.number);
-                          if (activeGuest) {
-                            setGuestNameInput(`${activeGuest.firstName} ${activeGuest.lastName}`);
-                            setGuestCheckIn(activeGuest.checkIn ? new Date(activeGuest.checkIn).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]);
-                          } else {
-                            setGuestNameInput('');
-                            setGuestCheckIn(new Date().toISOString().split('T')[0]);
-                          }
-                          setShowGuestModal(true);
+                          setSelectedRoom(room.number);
+                          setQRCodeURL(`${baseURL}/guest/${room.number}`);
                         }}
                         className={`w-full p-2 rounded-lg border-2 transition-all text-xs text-center ${selectedRoom === room.number
                           ? 'border-hotel-gold bg-hotel-gold text-white'
@@ -1167,152 +1160,6 @@ export default function QRKodPage() {
               </div>
             );
           })}
-        </div>
-      )}
-
-      {/* Misafir adı modal - Hızlı oda seçiminde açılır */}
-      {showGuestModal && roomToSelect && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Oda {roomToSelect} – Misafir Atama</h3>
-              <button onClick={() => { setShowGuestModal(false); setRoomToSelect(null); }} className="p-1 rounded-lg hover:bg-gray-100 text-gray-500">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <p className="text-sm text-gray-600 mb-3">Bu odaya yeni bir misafir girişi yapın. <b>Sabit QR kod modelinde</b> QR kodun fiziksel olarak değişmesine gerek yoktur; bu işlem sadece misafiri sistemde bu oda ile eşleştirir.</p>
-
-            <div className="space-y-4 mb-4">
-              <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Misafir Ad Soyad</label>
-                <input
-                  type="text"
-                  value={guestNameInput}
-                  onChange={(e) => setGuestNameInput(e.target.value)}
-                  placeholder="Örn: Leyla Yılmaz"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hotel-gold focus:border-transparent"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">Check-in Tarihi</label>
-                  <input
-                    type="date"
-                    value={guestCheckIn}
-                    onChange={(e) => setGuestCheckIn(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hotel-gold focus:border-transparent text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-500 mb-1">Check-out (Opsiyonel)</label>
-                  <input
-                    type="date"
-                    value={guestCheckOut}
-                    onChange={(e) => setGuestCheckOut(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hotel-gold focus:border-transparent text-sm"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-2 justify-end">
-              <button
-                onClick={() => { setShowGuestModal(false); setRoomToSelect(null); }}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-                disabled={guestTokenLoading}
-              >
-                İptal
-              </button>
-              <button
-                onClick={async () => {
-                  setSelectedRoom(roomToSelect);
-                  const name = guestNameInput.trim();
-
-                  // Varsayılan olarak kalıcı linki kullan
-                  setQRCodeURL(`${baseURL}/guest/${roomToSelect}`);
-
-                  // Eğer isim girilmişse, token oluşturulabilir ama öncelik sabit link
-                  if (name) {
-                    setGuestTokenLoading(true);
-                    try {
-                      const tenant = (() => {
-                        const h = window.location.hostname.split('.')[0];
-                        return h && h !== 'www' && h !== 'roomxqr' && h !== 'roomxqr-backend' ? h : 'demo';
-                      })();
-
-                      // Use absolute path for API to avoid 404 on subdomains
-                      const apiPath = `${window.location.origin}/api/guest-token`;
-                      const r = await fetch(apiPath, {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json',
-                          'x-tenant': tenant,
-                          'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({
-                          roomId: roomToSelect,
-                          guestName: name,
-                          checkIn: guestCheckIn,
-                          checkOut: guestCheckOut || null
-                        })
-                      });
-
-                      const d = await r.json().catch(() => ({}));
-
-                      // Update local state to reflect changes immediately
-                      const nameParts = name.trim().split(' ');
-                      const firstName = nameParts[0];
-                      const lastName = nameParts.slice(1).join(' ');
-
-                      const newGuest = {
-                        firstName,
-                        lastName,
-                        checkIn: guestCheckIn,
-                        checkOut: guestCheckOut
-                      };
-
-                      setRooms(prevRooms => prevRooms.map(room => {
-                        if (room.number === roomToSelect) {
-                          return {
-                            ...room,
-                            guests: [{ ...newGuest }]
-                          };
-                        }
-                        return room;
-                      }));
-
-                      if (useGeneratedRooms) {
-                        setGeneratedRooms(prevGen => prevGen.map(room => {
-                          if (room.number === roomToSelect) {
-                            return {
-                              ...room,
-                              guests: [{ ...newGuest }]
-                            };
-                          }
-                          return room;
-                        }));
-                      }
-
-                      // SADECE kullanıcı özellikle isterse tokenlı link kullanılabilir 
-                      // ama şu anki basitlik isteği üzerine kalıcı linki EZMİYORUZ.
-                      // setQRCodeURL(`${baseURL}/guest/${roomToSelect}?g=${encodeURIComponent(d.token)}`);
-                    } catch (err) {
-                      console.error('Token fetch error:', err);
-                    }
-                    setGuestTokenLoading(false);
-                  }
-
-                  setShowGuestModal(false);
-                  setRoomToSelect(null);
-                }}
-                className="px-4 py-2 bg-hotel-gold text-white rounded-lg hover:bg-hotel-navy disabled:opacity-50 font-medium"
-                disabled={guestTokenLoading}
-              >
-                {guestTokenLoading ? '...' : 'Misafiri Kaydet ve Ata'}
-              </button>
-            </div>
-          </div>
         </div>
       )}
     </div>
