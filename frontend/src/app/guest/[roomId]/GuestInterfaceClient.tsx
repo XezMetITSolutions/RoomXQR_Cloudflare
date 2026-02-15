@@ -44,14 +44,36 @@ interface GuestInterfaceClientProps {
   guestToken?: string;
 }
 
-/** Misafir adından "Sayın Ad S." formatı üretir (örn: Leyla Yılmaz -> Sayın Leyla Y.) */
-function formatGuestGreeting(fullName: string): string {
+/** Sadece isim formatlar: Mete B. */
+function formatGuestNameOnly(fullName: string): string {
   const parts = (fullName || '').trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return '';
-  if (parts.length === 1) return `Sayın ${parts[0]}`;
+  if (parts.length === 1) return parts[0];
   const firstName = parts[0];
   const lastInitial = parts[parts.length - 1].charAt(0).toUpperCase();
-  return `Sayın ${firstName} ${lastInitial}.`;
+  return `${firstName} ${lastInitial}.`;
+}
+
+/** Tam karşılama mesajı: Sayın Mete B. Otel'e Hoş Geldiniz / Welcome to Otel, Mete B. */
+function getWelcomeMessageWithGuest(guestName: string, hotelName: string, lang: string): string {
+  const formattedName = formatGuestNameOnly(guestName);
+
+  switch (lang) {
+    case 'tr':
+      return `Sayın ${formattedName} ${hotelWelcomeSuffix(hotelName)}`;
+    case 'de':
+      return `Willkommen im ${hotelName}, ${formattedName}`; // Basit ve samimi
+    case 'ru':
+      return `Добро пожаловать в ${hotelName}, ${formattedName}`;
+    case 'fr':
+      return `Bienvenue à ${hotelName}, ${formattedName}`;
+    case 'es':
+      return `Bienvenido a ${hotelName}, ${formattedName}`;
+    case 'it':
+      return `Benvenuti al ${hotelName}, ${formattedName}`;
+    default: // en ve diğerleri
+      return `Welcome to ${hotelName}, ${formattedName}`;
+  }
 }
 
 /** Otel adına göre "X Oteline hoş geldiniz" eki (Türkçe sesli uyum) */
@@ -289,13 +311,13 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
   // Sayfa başlığını misafir + otel ile güncelle
   useEffect(() => {
     if (displayGuestName && hotelName) {
-      document.title = `${formatGuestGreeting(displayGuestName)} ${hotelWelcomeSuffix(hotelName)}`;
+      document.title = getWelcomeMessageWithGuest(displayGuestName, hotelName, currentLanguage);
     } else if (hotelName) {
       document.title = formatWelcomeMessage(hotelName);
     } else {
-      document.title = 'Hoş Geldiniz';
+      document.title = safeGetTranslation('room.welcome', 'Hoş Geldiniz');
     }
-  }, [hotelName, displayGuestName]);
+  }, [hotelName, displayGuestName, currentLanguage]);
 
 
   if (showSurvey) {
@@ -310,7 +332,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
           <div className="flex-1">
             <h1 className="text-xl sm:text-2xl font-bold" style={{ color: theme.textColor }}>
               {displayGuestName && hotelName
-                ? `${formatGuestGreeting(displayGuestName)} ${hotelWelcomeSuffix(hotelName)}`
+                ? getWelcomeMessageWithGuest(displayGuestName, hotelName, currentLanguage)
                 : hotelName
                   ? formatWelcomeMessage(hotelName, currentLanguage)
                   : safeGetTranslation('room.welcome', 'Hoş Geldiniz')
@@ -371,7 +393,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
         <div className="flex-1">
           <h1 className="text-xl sm:text-2xl font-bold" style={{ color: theme.textColor }}>
             {displayGuestName && hotelName
-              ? `${formatGuestGreeting(displayGuestName)} ${hotelWelcomeSuffix(hotelName)}`
+              ? getWelcomeMessageWithGuest(displayGuestName, hotelName, currentLanguage)
               : hotelName
                 ? formatWelcomeMessage(hotelName, currentLanguage)
                 : safeGetTranslation('room.welcome', 'Hoş Geldiniz')
