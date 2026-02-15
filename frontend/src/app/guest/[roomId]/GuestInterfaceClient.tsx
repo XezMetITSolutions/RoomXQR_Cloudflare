@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   FaConciergeBell,
   FaWifi,
@@ -72,6 +72,7 @@ function hotelWelcomeSuffix(hotelName: string): string {
 
 export default function GuestInterfaceClient({ roomId, initialLang, guestName, guestToken }: GuestInterfaceClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showSurvey, setShowSurvey] = useState(false);
   /** Token doğrulandıktan sonra sadece oda eşleşirse dolu; yoksa legacy guestName kullanılır */
   const [resolvedGuestName, setResolvedGuestName] = useState<string | undefined>(undefined);
@@ -402,9 +403,10 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
                     onClick={() => {
                       setLanguage(lang.code);
                       setShowLanguageSelector(false);
-                      // URL'i güncelle
+                      // URL'i güncelle ve query parametrelerini koru
                       const roomNumber = roomId.replace('room-', '');
-                      router.push(`/${lang.code}/guest/${roomNumber}`);
+                      const paramsString = searchParams ? searchParams.toString() : '';
+                      router.push(`/${lang.code}/guest/${roomNumber}${paramsString ? `?${paramsString}` : ''}`);
                     }}
                     className={`w-full px-4 py-3 text-left transition-colors flex items-center space-x-3 ${currentLanguage === lang.code ? 'opacity-80' : ''
                       }`}
@@ -461,7 +463,9 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
             // Oda numarasını localStorage'a kaydet ve query parameter olarak ekle
             const roomNumber = roomId.replace('room-', '');
             localStorage.setItem('currentRoomId', roomId);
-            router.push(`/qr-menu?roomId=${roomNumber}`);
+            const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
+            params.set('roomId', roomNumber);
+            router.push(`/qr-menu?${params.toString()}`);
           }}
         >
           <FaConciergeBell className="text-2xl sm:text-3xl mb-2" style={{ color: theme.primaryColor }} />
@@ -504,7 +508,9 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
           style={{ background: `${theme.primaryColor}20` }}
           onClick={() => {
             const roomNumber = roomId.replace('room-', '');
-            router.push(`/concierge?roomId=${roomNumber}`);
+            const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
+            params.set('roomId', roomNumber);
+            router.push(`/concierge?${params.toString()}`);
           }}
         >
           <FaHeadset className="text-2xl sm:text-3xl mb-2" style={{ color: theme.primaryColor }} />
