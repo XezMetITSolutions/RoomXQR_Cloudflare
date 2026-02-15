@@ -72,7 +72,7 @@ export default function ManagementOrdersPage() {
         ) : (
           <div className="divide-y divide-gray-200 overflow-x-auto">
             {orders.map((order: any) => {
-              const room = (order.roomId || '').replace(/^room[-\s]?/i, '') || '—';
+              const room = (order.roomId || '').replace(/^\s*room[-\s_]*/i, '').trim() || '—';
               const itemsText = order.items?.map((i: any) => `${i.quantity}x ${i.menuItem?.name || i.name || 'Ürün'}`).join(', ') || '—';
               const status = order.status || 'PENDING';
               const amount = `₺${(parseFloat(order.totalAmount) || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;

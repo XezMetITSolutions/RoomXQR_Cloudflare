@@ -89,9 +89,9 @@ export default function ReceptionPanel() {
     email: string;
     payments: { id: string; item: string; amount: number; date: string; status: string }[];
   } => {
-    const roomNum = String(roomId || '').replace(/^room[-\s]?/i, '').trim();
+    const roomNum = String(roomId || '').replace(/^\s*room[-\s_]*/i, '').trim().trim();
     const fromApi = rooms.find(
-      r => String(r.number ?? r.roomId ?? '').replace(/^room[-\s]?/i, '').trim() === roomNum
+      r => String(r.number ?? r.roomId ?? '').replace(/^\s*room[-\s_]*/i, '').trim().trim() === roomNum
     );
     if (fromApi) {
       const checkOutStr = fromApi.checkOut
@@ -99,7 +99,7 @@ export default function ReceptionPanel() {
         : '—';
       const roomIdForOrders = fromApi.roomId;
       const roomOrders = Array.isArray(orders)
-        ? orders.filter((o: any) => (o.roomId && (o.roomId === roomIdForOrders || String(o.roomId || '').replace(/^room[-\s]?/i, '') === roomNum)))
+        ? orders.filter((o: any) => (o.roomId && (o.roomId === roomIdForOrders || String(o.roomId || '').replace(/^\s*room[-\s_]*/i, '').trim() === roomNum)))
         : [];
       const toNum = (v: any) => (typeof v === 'number' ? v : parseFloat(String(v)) || 0);
       const payments = roomOrders.map((o: any, i: number) => ({
@@ -219,7 +219,7 @@ export default function ReceptionPanel() {
         // Yeni gelen istekleri bul ve detaylı bildirim gönder (yemek siparişleri hariç)
         const newRequests = safeRequestsData.filter(r => r.type !== 'food_order').slice(0, nonFoodRequestCount - lastRequestCount);
         newRequests.forEach(request => {
-          const roomNumber = request.roomId.replace(/^room[-\s]?/i, '');
+          const roomNumber = request.roomId.replace(/^\s*room[-\s_]*/i, '').trim();
 
           // İstek türüne göre bildirim türü belirle
           let notificationType: 'info' | 'warning' | 'success' = 'info';
@@ -542,7 +542,7 @@ export default function ReceptionPanel() {
   // Mevcut odalar listesi — API'den gelen rooms kullanılır
   const availableRooms = rooms.map(r => ({
     id: r.roomId || `room-${r.number}`,
-    number: String(r.number ?? r.roomId ?? '').replace(/^room[-\s]?/i, ''),
+    number: String(r.number ?? r.roomId ?? '').replace(/^\s*room[-\s_]*/i, '').trim(),
     floor: r.floor != null ? `Kat ${r.floor}` : '—',
     type: r.type || 'Standard'
   }));
@@ -566,7 +566,7 @@ export default function ReceptionPanel() {
       addNotification({
         type: 'success',
         title: 'Oda Değişikliği',
-        message: `${getRoomLabel(currentLanguage)} ${fromRoomId.replace(/^room[-\s]?/i, '')} → ${getRoomLabel(currentLanguage)} ${toRoomId.replace(/^room[-\s]?/i, '')} değişikliği tamamlandı.`,
+        message: `${getRoomLabel(currentLanguage)} ${fromRoomId.replace(/^\s*room[-\s_]*/i, '').trim()} → ${getRoomLabel(currentLanguage)} ${toRoomId.replace(/^\s*room[-\s_]*/i, '').trim()} değişikliği tamamlandı.`,
       });
 
       setShowRoomChange(false);
@@ -597,7 +597,7 @@ export default function ReceptionPanel() {
         addNotification({
           type: 'success',
           title: 'Check-in Tamamlandı',
-          message: `${guestData.firstName} ${guestData.lastName} ${getRoomLabel(currentLanguage)} ${roomId.replace(/^room[-\s]?/i, '')} için check-in yapıldı.`,
+          message: `${guestData.firstName} ${guestData.lastName} ${getRoomLabel(currentLanguage)} ${roomId.replace(/^\s*room[-\s_]*/i, '').trim()} için check-in yapıldı.`,
         });
 
         // QR kod güncelleme bildirimi
@@ -605,7 +605,7 @@ export default function ReceptionPanel() {
           addNotification({
             type: 'info',
             title: 'QR Kod Oluşturuldu',
-            message: `${getRoomLabel(currentLanguage)} ${roomId.replace(/^room[-\s]?/i, '')} için müşteri adını içeren QR kod oluşturuldu.`,
+            message: `${getRoomLabel(currentLanguage)} ${roomId.replace(/^\s*room[-\s_]*/i, '').trim()} için müşteri adını içeren QR kod oluşturuldu.`,
           });
         }
 
@@ -657,7 +657,7 @@ export default function ReceptionPanel() {
         addNotification({
           type: 'success',
           title: 'Çıkış Tamamlandı',
-          message: `${getRoomLabel(currentLanguage)} ${roomId.replace(/^room[-\s]?/i, '')} için çıkış işlemi tamamlandı. QR kod yeni müşteri için hazırlandı.`,
+          message: `${getRoomLabel(currentLanguage)} ${roomId.replace(/^\s*room[-\s_]*/i, '').trim()} için çıkış işlemi tamamlandı. QR kod yeni müşteri için hazırlandı.`,
         });
 
         // QR kod güncelleme bildirimi
@@ -665,7 +665,7 @@ export default function ReceptionPanel() {
           addNotification({
             type: 'info',
             title: 'QR Kod Güncellendi',
-            message: `${getRoomLabel(currentLanguage)} ${roomId.replace(/^room[-\s]?/i, '')} için QR kod yeni müşteri için hazırlandı.`,
+            message: `${getRoomLabel(currentLanguage)} ${roomId.replace(/^\s*room[-\s_]*/i, '').trim()} için QR kod yeni müşteri için hazırlandı.`,
           });
         }
       } else {
@@ -675,7 +675,7 @@ export default function ReceptionPanel() {
         addNotification({
           type: 'success',
           title: 'Çıkış Tamamlandı',
-          message: `${getRoomLabel(currentLanguage)} ${roomId.replace(/^room[-\s]?/i, '')} için çıkış işlemi tamamlandı, istekler temizlendi ve QR kod sıfırlandı.`,
+          message: `${getRoomLabel(currentLanguage)} ${roomId.replace(/^\s*room[-\s_]*/i, '').trim()} için çıkış işlemi tamamlandı, istekler temizlendi ve QR kod sıfırlandı.`,
         });
       }
 
@@ -881,7 +881,7 @@ export default function ReceptionPanel() {
                 <div key={order.id} className="bg-white p-4 rounded-lg shadow border border-green-100">
                   <div className="flex justify-between items-start mb-2">
                     <span className="font-bold text-lg bg-green-100 text-green-800 px-2 py-0.5 rounded">
-                      {getRoomLabel(currentLanguage)} {String(order.roomId).replace(/^room[-\s]?/i, '')}
+                      {getRoomLabel(currentLanguage)} {String(order.roomId).replace(/^\s*room[-\s_]*/i, '').trim()}
                     </span>
                     <span className="text-xs text-gray-500 font-mono">
                       {new Date(order.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
@@ -955,9 +955,9 @@ export default function ReceptionPanel() {
               rooms
                 .filter(room => selectedFloor === 'all' || (room.floor || 1) === selectedFloor)
                 .map((room) => {
-                  const roomNum = String(room.number ?? room.roomId.replace(/^room[-\s]?/i, '')).trim();
+                  const roomNum = String(room.number ?? room.roomId.replace(/^\s*room[-\s_]*/i, '').trim()).trim();
                   const hasActiveRequest = requests.some(r =>
-                    String(r.roomId || '').replace(/^room[-\s]?/i, '') === roomNum && r.status === 'pending'
+                    String(r.roomId || '').replace(/^\s*room[-\s_]*/i, '').trim() === roomNum && r.status === 'pending'
                   );
                   return (
                     <div
@@ -1033,7 +1033,7 @@ export default function ReceptionPanel() {
                 <div className="flex-1">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
                     <span className="text-lg sm:text-xl font-bold text-gray-900">
-                      {getRoomLabel(currentLanguage)} {request.roomId.replace(/^room[-\s]?/i, '')}
+                      {getRoomLabel(currentLanguage)} {request.roomId.replace(/^\s*room[-\s_]*/i, '').trim()}
                     </span>
                     <div className="flex flex-wrap gap-2">
                       <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold border ${getPriorityColor(request.priority)}`}>
@@ -1132,7 +1132,7 @@ export default function ReceptionPanel() {
               </div>
               <div>
                 <h3 className="text-lg font-bold text-gray-900">Çıkış Onayı</h3>
-                <p className="text-sm text-gray-600">{getRoomLabel(currentLanguage)} {checkoutConfirm.roomId.replace(/^room[-\s]?/i, '')} için çıkış işlemi</p>
+                <p className="text-sm text-gray-600">{getRoomLabel(currentLanguage)} {checkoutConfirm.roomId.replace(/^\s*room[-\s_]*/i, '').trim()} için çıkış işlemi</p>
               </div>
             </div>
 
@@ -1228,7 +1228,7 @@ export default function ReceptionPanel() {
               </div>
               <div>
                 <h3 className="text-lg font-bold text-gray-900">Oda Değişikliği</h3>
-                <p className="text-sm text-gray-600">{getRoomLabel(currentLanguage)} {selectedRoomInfo.roomId.replace(/^room[-\s]?/i, '')} için yeni oda seçin</p>
+                <p className="text-sm text-gray-600">{getRoomLabel(currentLanguage)} {selectedRoomInfo.roomId.replace(/^\s*room[-\s_]*/i, '').trim()} için yeni oda seçin</p>
               </div>
             </div>
 
@@ -1295,7 +1295,7 @@ export default function ReceptionPanel() {
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3">
-              {getRoomLabel(currentLanguage)} {selectedRoomInfo.roomId.replace(/^room[-\s]?/i, '')} Bilgileri
+              {getRoomLabel(currentLanguage)} {selectedRoomInfo.roomId.replace(/^\s*room[-\s_]*/i, '').trim()} Bilgileri
             </h3>
 
             <div className="space-y-3">
@@ -1480,7 +1480,7 @@ export default function ReceptionPanel() {
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
-              {getRoomLabel(currentLanguage)} {selectedRequest.roomId.replace(/^room[-\s]?/i, '')} - Otomatik Yanıt
+              {getRoomLabel(currentLanguage)} {selectedRequest.roomId.replace(/^\s*room[-\s_]*/i, '').trim()} - Otomatik Yanıt
             </h3>
 
             <div className="mb-4 sm:mb-6">
@@ -1557,7 +1557,7 @@ export default function ReceptionPanel() {
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
-              Müşteri Check-in - {getRoomLabel(currentLanguage)} {checkInRoomId.replace(/^room[-\s]?/i, '')}
+              Müşteri Check-in - {getRoomLabel(currentLanguage)} {checkInRoomId.replace(/^\s*room[-\s_]*/i, '').trim()}
             </h3>
 
             <CheckInForm
@@ -1596,7 +1596,7 @@ export default function ReceptionPanel() {
                   <Utensils className="w-8 h-8 text-green-600" />
                 </div>
                 <h4 className="text-xl font-bold text-gray-900">
-                  {getRoomLabel(currentLanguage)} {String(selectedDeliveryOrder.roomId).replace(/^room[-\s]?/i, '')}
+                  {getRoomLabel(currentLanguage)} {String(selectedDeliveryOrder.roomId).replace(/^\s*room[-\s_]*/i, '').trim()}
                 </h4>
                 <p className="text-gray-500 text-sm mt-1">Sipariş teslimatı için onay gerekiyor</p>
               </div>

@@ -176,7 +176,7 @@ export default function KitchenPanel() {
 
             return {
               id: order.id,
-              roomId: order.roomId.replace(/^room[-\s]?/i, ''),
+              roomId: order.roomId.replace(/^\s*room[-\s_]*/i, '').trim(),
               guestId: order.guestId,
               items: items,
               totalAmount: parseFloat(order.totalAmount) || 0,
@@ -442,9 +442,9 @@ export default function KitchenPanel() {
               rooms
                 .filter(room => selectedFloor === 'all' || (room.floor || 1) === selectedFloor)
                 .map((room) => {
-                  const roomNum = String(room.number ?? room.roomId.replace(/^room[-\s]?/i, '')).trim();
+                  const roomNum = String(room.number ?? room.roomId.replace(/^\s*room[-\s_]*/i, '').trim()).trim();
                   const hasActiveOrder = orders.some(o =>
-                    String(o.roomId || '').replace(/^room[-\s]?/i, '') === roomNum && o.status === 'pending'
+                    String(o.roomId || '').replace(/^\s*room[-\s_]*/i, '').trim() === roomNum && o.status === 'pending'
                   );
                   return (
                     <div
