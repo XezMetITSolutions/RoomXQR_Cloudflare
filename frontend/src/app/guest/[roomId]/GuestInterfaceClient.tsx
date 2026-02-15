@@ -509,19 +509,10 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
         <button
           className="flex flex-col items-center justify-center rounded-xl p-4 sm:p-6 shadow hover:scale-105 transition"
           style={{ background: `${theme.secondaryColor}20` }}
-          onClick={async () => {
-            try {
-              await ApiService.createGuestRequest({
-                roomId: roomId,
-                type: 'housekeeping',
-                priority: 'medium',
-                status: 'pending',
-                description: safeGetTranslation('notifications.housekeeping_description', 'Oda temizliği talep edildi'),
-              });
-              addNotification('success', safeGetTranslation('notifications.housekeeping_title', 'Temizlik Talebi'), safeGetTranslation('notifications.housekeeping_message', 'Oda temizliği talebiniz resepsiyona iletildi. En kısa sürede yanıtlanacaktır.'));
-            } catch (error) {
-              addNotification('success', safeGetTranslation('notifications.housekeeping_title', 'Temizlik Talebi'), safeGetTranslation('notifications.housekeeping_message', 'Oda temizliği talebiniz resepsiyona iletildi. En kısa sürede yanıtlanacaktır.'));
-            }
+          onClick={() => {
+            const roomNumber = roomId.replace('room-', '');
+            // Mevcut dili al ve temizlik sayfasına yönlendir
+            router.push(`/${currentLanguage}/guest/${roomNumber}/cleaning`);
           }}
         >
           <FaBroom className="text-2xl sm:text-3xl mb-2" style={{ color: theme.secondaryColor }} />
