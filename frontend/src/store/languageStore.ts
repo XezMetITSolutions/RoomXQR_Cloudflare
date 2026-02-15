@@ -2824,6 +2824,17 @@ export const translations: Record<string, Translations> = {
     'room.quantity': 'Количество',
     'room.send_request': 'Отправить запрос',
 
+    // Cleaning Page
+    'cleaning.title': 'Уборка номера и запросы',
+    'cleaning.request_cleaning': 'Запрос на уборку',
+    'cleaning.clean_my_room': 'Уберите мой номер',
+    'cleaning.dnd': 'Не беспокоить',
+    'cleaning.dnd_title': 'Не беспокоить',
+    'cleaning.dnd_message': 'Ваш запрос получен. Ваш номер не будут беспокоить.',
+    'cleaning.need_something': 'Нужно что-нибудь?',
+    'cleaning.add_note': 'Добавить заметку (необязательно)...',
+    'cleaning.order_now': 'Заказать сейчас',
+
     // Быстрый выбор
     'quick.towel': 'Полотенце',
     'quick.slippers': 'Тапочки',
@@ -2833,6 +2844,7 @@ export const translations: Record<string, Translations> = {
     'quick.shampoo': 'Шампунь',
     'quick.soap': 'Мыло',
     'quick.water': 'Вода',
+    'quick.toilet_paper': 'Туалетная бумага',
 
     // Опрос/Оценка
     'survey.title': 'Оцените нас',
