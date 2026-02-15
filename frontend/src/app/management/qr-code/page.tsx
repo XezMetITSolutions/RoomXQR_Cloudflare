@@ -866,17 +866,17 @@ export default function QRKodPage() {
 
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
               <h4 className="text-sm font-semibold text-amber-900 mb-1">
-                📌 Sabit Oda Anahtarı Modeli Aktif
+                {getTranslation('qr.static_key_model_active')}
               </h4>
-              <p className="text-xs text-amber-700 leading-relaxed">
-                Bu QR kod odadaki misafir değişse bile <b>hiç değişmez</b>. Odanın içine bir kez asmanız yeterlidir.
-                Sistem odaya giriş yapan misafiri otomatik tanır.
-              </p>
+              <p
+                className="text-xs text-amber-700 leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: getTranslation('qr.static_key_desc') }}
+              />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Kalıcı QR Kod URL (Oda İçin)
+                {getTranslation('qr.permanent_qr_url')}
               </label>
               <div className="flex items-center space-x-2">
                 <input
@@ -895,7 +895,7 @@ export default function QRKodPage() {
                   className="px-4 py-3 bg-hotel-gold text-white rounded-lg hover:bg-hotel-navy transition-colors flex items-center space-x-2"
                 >
                   {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                  <span className="text-sm font-medium">Kopyala</span>
+                  <span className="text-sm font-medium">{getTranslation('qr.copy')}</span>
                 </button>
               </div>
               {!showCustomInput && (() => {
@@ -904,7 +904,7 @@ export default function QRKodPage() {
                 const guestName = currentRoom?.guestName;
                 return guestName ? (
                   <p className="mt-2 text-sm text-gray-600">
-                    Mevcut misafir (Oda Yönetimi): <strong>{guestName}</strong>
+                    {getTranslation('qr.current_guest')} <strong>{guestName}</strong>
                   </p>
                 ) : null;
               })()}
@@ -913,7 +913,7 @@ export default function QRKodPage() {
             {qrCodeURL && qrCodeURL.includes('?g=') && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 animate-in fade-in slide-in-from-top-2">
                 <label className="block text-sm font-bold text-blue-900 mb-2">
-                  ✨ Misafire Özel Link (WhatsApp/Dijital)
+                  {getTranslation('qr.guest_special_link')}
                 </label>
                 <div className="flex items-center space-x-2">
                   <input
@@ -925,23 +925,23 @@ export default function QRKodPage() {
                   <button
                     onClick={() => {
                       navigator.clipboard.writeText(qrCodeURL);
-                      alert('Özel link kopyalandı! Bu linki misafire dijital olarak gönderebilirsiniz.');
+                      alert(getTranslation('qr.special_link_copied'));
                     }}
                     className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                    title="Özel Linki Kopyala"
+                    title={getTranslation('qr.copy')}
                   >
                     <Copy className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setQRCodeURL('')}
                     className="p-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300"
-                    title="Görünümü Temizle"
+                    title={getTranslation('qr.clear_view')}
                   >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
                 <p className="text-[10px] text-blue-600 mt-2">
-                  * Bu link sadece bu misafire özeldir ve check-out tarihinde iptal olur.
+                  {getTranslation('qr.guest_special_link_desc')}
                 </p>
               </div>
             )}
@@ -1005,13 +1005,13 @@ export default function QRKodPage() {
 
             <div className="text-center">
               <h3 className="text-lg font-bold text-gray-900 mb-2">
-                Oda {showCustomInput ? (selectedCustomRoom || '...') : (selectedRoom || '...')}
+                {getTranslation('qr.room')} {showCustomInput ? (selectedCustomRoom || '...') : (selectedRoom || '...')}
               </h3>
               <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mb-3">
-                Kalıcı QR (Sabit Link)
+                {getTranslation('qr.permanent_qr_tag')}
               </div>
               <p className="text-sm text-gray-600">
-                Bu kodu odadaki masaya veya duvara asabilirsiniz.
+                {getTranslation('qr.hang_instruction')}
               </p>
             </div>
           </div>
@@ -1027,34 +1027,34 @@ export default function QRKodPage() {
             </div>
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-medium text-gray-900 mb-3">QR Kod Kullanım Talimatları</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-3">{getTranslation('qr.instructions_title')}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
               <ul className="space-y-2">
                 <li className="flex items-start">
                   <span className="w-6 h-6 bg-hotel-gold text-white rounded-full flex items-center justify-center text-xs font-bold mr-2 flex-shrink-0">1</span>
-                  <span>Her oda için benzersiz QR kod oluşturulur</span>
+                  <span>{getTranslation('qr.instruction_1')}</span>
                 </li>
                 <li className="flex items-start">
                   <span className="w-6 h-6 bg-hotel-gold text-white rounded-full flex items-center justify-center text-xs font-bold mr-2 flex-shrink-0">2</span>
-                  <span>Misafirler QR kodu tarayarak doğrudan oda menüsüne erişir</span>
+                  <span>{getTranslation('qr.instruction_2')}</span>
                 </li>
                 <li className="flex items-start">
                   <span className="w-6 h-6 bg-hotel-gold text-white rounded-full flex items-center justify-center text-xs font-bold mr-2 flex-shrink-0">3</span>
-                  <span>QR kodu yazdırıp oda içine yerleştirebilirsiniz</span>
+                  <span>{getTranslation('qr.instruction_3')}</span>
                 </li>
               </ul>
               <ul className="space-y-2">
                 <li className="flex items-start">
                   <span className="w-6 h-6 bg-hotel-gold text-white rounded-full flex items-center justify-center text-xs font-bold mr-2 flex-shrink-0">4</span>
-                  <span>Tüm odalar için toplu QR kod oluşturabilirsiniz</span>
+                  <span>{getTranslation('qr.instruction_4')}</span>
                 </li>
                 <li className="flex items-start">
                   <span className="w-6 h-6 bg-hotel-gold text-white rounded-full flex items-center justify-center text-xs font-bold mr-2 flex-shrink-0">5</span>
-                  <span>QR kodlar kalıcıdır, yeniden oluşturmanıza gerek yoktur</span>
+                  <span>{getTranslation('qr.instruction_5')}</span>
                 </li>
                 <li className="flex items-start">
                   <span className="w-6 h-6 bg-hotel-gold text-white rounded-full flex items-center justify-center text-xs font-bold mr-2 flex-shrink-0">6</span>
-                  <span>Misafirler telefonları ile QR kodu okutarak sipariş verebilir</span>
+                  <span>{getTranslation('qr.instruction_6')}</span>
                 </li>
               </ul>
             </div>
@@ -1067,7 +1067,7 @@ export default function QRKodPage() {
         <div className="hotel-card p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">
-              <h3 className="text-lg font-medium text-gray-900">Hızlı Oda Seçimi</h3>
+              <h3 className="text-lg font-medium text-gray-900">{getTranslation('qr.quick_room_selection')}</h3>
               {selectedRoomIds.length > 0 && (
                 <div className="flex items-center gap-2">
                   <button
@@ -1077,20 +1077,20 @@ export default function QRKodPage() {
                     }}
                     className="px-3 py-1 bg-blue-100 text-blue-600 rounded-lg text-xs font-semibold hover:bg-blue-200 flex items-center gap-1 transition-colors"
                   >
-                    Tümünü Seç
+                    {getTranslation('qr.select_all')}
                   </button>
                   <button
                     onClick={() => handleDeleteRooms(selectedRoomIds)}
                     className="px-3 py-1 bg-red-100 text-red-600 rounded-lg text-xs font-semibold hover:bg-red-200 flex items-center gap-1 transition-colors"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
-                    ({selectedRoomIds.length}) Seçileni Sil
+                    ({selectedRoomIds.length}) {getTranslation('qr.delete_selected')}
                   </button>
                 </div>
               )}
               <button
                 onClick={async () => {
-                  if (!confirm('DİKKAT! Oteldeki TÜM odalar silinecektir. Bu işlem geri alınamaz. Emin misiniz?')) return;
+                  if (!confirm(getTranslation('qr.reset_confirm'))) return;
 
                   try {
                     const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr.onrender.com';
@@ -1117,23 +1117,23 @@ export default function QRKodPage() {
                       setGeneratedRooms([]);
                       setSelectedRoomIds([]);
                       localStorage.removeItem('qrKod_generatedRooms');
-                      alert('Tüm odalar başarıyla silindi.');
+                      alert(getTranslation('qr.delete_success'));
                     } else {
-                      alert('Odalar silinirken bir hata oluştu.');
+                      alert(getTranslation('qr.delete_error'));
                     }
                   } catch (error) {
                     console.error('Delete all error:', error);
-                    alert('Bir hata oluştu.');
+                    alert(getTranslation('qr.delete_error'));
                   }
                 }}
                 className="px-3 py-1 text-red-600 hover:text-red-700 text-xs font-medium flex items-center gap-1 transition-colors opacity-60 hover:opacity-100"
               >
                 <X className="w-3.5 h-3.5" />
-                Sistemi Sıfırla (Tümünü Sil)
+                {getTranslation('qr.reset_system')}
               </button>
             </div>
             <div className="text-sm text-gray-500">
-              {(useGeneratedRooms ? generatedRooms : rooms).length} oda
+              {(useGeneratedRooms ? generatedRooms : rooms).length} {getTranslation('qr.room_count')}
             </div>
           </div>
 
@@ -1144,7 +1144,7 @@ export default function QRKodPage() {
             return (
               <div key={floorNumber} className="mb-6">
                 <h4 className="text-sm font-medium text-gray-700 mb-2">
-                  {floorNumber}. Kat ({floorRooms.length} oda)
+                  {floorNumber}{getTranslation('qr.floor_n')} ({floorRooms.length} {getTranslation('qr.room_count')})
                 </h4>
                 <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2">
                   {floorRooms.map((room: any) => (
