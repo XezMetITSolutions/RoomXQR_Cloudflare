@@ -34,11 +34,13 @@ export default function ReceptionPanel() {
   const { user, token, isLoading: authLoading } = useAuth();
   const [currentLanguage, setCurrentLanguage] = useState<Language>('tr');
 
-  const getRoomLabel = (lang: string) => {
-    switch (lang) {
-      case 'tr': return 'Oda';
-      case 'de': return 'Zimmer';
-      default: return 'Room';
+  const t = (key: string) => translate(key, currentLanguage);
+
+  const getLocale = () => {
+    switch (currentLanguage) {
+      case 'tr': return 'tr-TR';
+      case 'de': return 'de-DE';
+      default: return 'en-US';
     }
   };
 
@@ -95,7 +97,7 @@ export default function ReceptionPanel() {
     );
     if (fromApi) {
       const checkOutStr = fromApi.checkOut
-        ? new Date(fromApi.checkOut).toLocaleDateString('tr-TR')
+        ? new Date(fromApi.checkOut).toLocaleDateString(getLocale())
         : '—';
       const roomIdForOrders = fromApi.roomId;
       const roomOrders = Array.isArray(orders)
@@ -104,13 +106,13 @@ export default function ReceptionPanel() {
       const toNum = (v: any) => (typeof v === 'number' ? v : parseFloat(String(v)) || 0);
       const payments = roomOrders.map((o: any, i: number) => ({
         id: o.id || `ord-${i}`,
-        item: o.notes || 'Sipariş',
+        item: o.notes || t('r_order_fallback'),
         amount: toNum(o.totalAmount) || (Array.isArray(o.items) ? o.items.reduce((s: number, it: any) => s + toNum(it?.price) * (it?.quantity ?? 1), 0) : 0),
-        date: o.createdAt ? new Date(o.createdAt).toLocaleString('tr-TR') : '—',
+        date: o.createdAt ? new Date(o.createdAt).toLocaleString(getLocale()) : '—',
         status: (o.status === 'DELIVERED' || o.status === 'COMPLETED' ? 'paid' : 'pending') as string
       }));
       return {
-        floor: fromApi.floor != null ? `Kat ${fromApi.floor}` : '—',
+        floor: fromApi.floor != null ? `${t('r_floor_n')} ${fromApi.floor}` : '—',
         type: fromApi.type || 'Standard',
         guestName: fromApi.guestName || '—',
         checkOut: checkOutStr,
@@ -233,7 +235,7 @@ export default function ReceptionPanel() {
 
           addNotification({
             type: notificationType,
-            title: `${getRoomLabel(currentLanguage)} ${roomNumber}`,
+            title: `${t('room')} ${roomNumber}`,
             message: request.description,
           });
         });
@@ -304,8 +306,8 @@ export default function ReceptionPanel() {
   // Veri yükleme
   // Browser tab title'ını ayarla
   useEffect(() => {
-    document.title = 'Resepsiyon Paneli - RoomXQR';
-  }, []);
+    document.title = t('r_document_title');
+  }, [currentLanguage]);
 
   useEffect(() => {
     loadData();
@@ -328,21 +330,20 @@ export default function ReceptionPanel() {
 
   // İstek türüne göre otomatik cevaplar
   const getQuickResponses = (requestType: string) => {
-    // Tüm istek türleri için genel yanıtlar
     return [
       {
         id: 'in_progress',
-        text: 'Yetkili ekibimizi yönlendirdik. En kısa sürede yanınızda olacaklar.',
+        text: t('r_quick_resp_in_progress'),
         icon: Clock
       },
       {
         id: 'follow_up',
-        text: 'Sorun devam ederse lütfen tekrar çağrı oluşturun. Talebiniz öne çıkarılacaktır.',
+        text: t('r_quick_resp_follow_up'),
         icon: MessageSquare
       },
       {
         id: 'delayed',
-        text: 'Yoğunluk nedeniyle biraz daha beklememiz gerekiyor. Özür dileriz.',
+        text: t('r_quick_resp_delayed'),
         icon: Clock
       }
     ];
@@ -533,8 +534,8 @@ export default function ReceptionPanel() {
       console.error('Error processing checkout:', error);
       addNotification({
         type: 'error',
-        title: 'Hata',
-        message: 'Çıkış işlenirken bir hata oluştu.',
+        title: t('r_notif_error'),
+        message: t('r_notif_checkout_error'),
       });
     }
   };
@@ -543,7 +544,7 @@ export default function ReceptionPanel() {
   const availableRooms = rooms.map(r => ({
     id: r.roomId || `room-${r.number}`,
     number: String(r.number ?? r.roomId ?? '').replace(/^\s*room[-\s_]*/i, '').trim(),
-    floor: r.floor != null ? `Kat ${r.floor}` : '—',
+    floor: r.floor != null ? `${t('r_floor_n')} ${r.floor}` : '—',
     type: r.type || 'Standard'
   }));
 
@@ -565,8 +566,8 @@ export default function ReceptionPanel() {
 
       addNotification({
         type: 'success',
-        title: 'Oda Değişikliği',
-        message: `${getRoomLabel(currentLanguage)} ${fromRoomId.replace(/^\s*room[-\s_]*/i, '').trim()} → ${getRoomLabel(currentLanguage)} ${toRoomId.replace(/^\s*room[-\s_]*/i, '').trim()} değişikliği tamamlandı.`,
+        title: t('r_notif_room_change'),
+        message: `${t('room')} ${fromRoomId.replace(/^\s*room[-\s_]*/i, '').trim()} → ${t('room')} ${toRoomId.replace(/^\s*room[-\s_]*/i, '').trim()} ${t('r_notif_room_change_done')}`,
       });
 
       setShowRoomChange(false);
@@ -576,8 +577,8 @@ export default function ReceptionPanel() {
       console.error('Error changing room:', error);
       addNotification({
         type: 'error',
-        title: 'Hata',
-        message: 'Oda değişikliği sırasında bir hata oluştu.',
+        title: t('r_notif_error'),
+        message: t('r_notif_room_change_error'),
       });
     }
   };
@@ -596,16 +597,15 @@ export default function ReceptionPanel() {
       if (checkInResult.success) {
         addNotification({
           type: 'success',
-          title: 'Check-in Tamamlandı',
-          message: `${guestData.firstName} ${guestData.lastName} ${getRoomLabel(currentLanguage)} ${roomId.replace(/^\s*room[-\s_]*/i, '').trim()} için check-in yapıldı.`,
+          title: t('r_notif_checkin_done'),
+          message: `${guestData.firstName} ${guestData.lastName} ${t('room')} ${roomId.replace(/^\s*room[-\s_]*/i, '').trim()} ${t('r_notif_checkin_msg')}`,
         });
 
-        // QR kod güncelleme bildirimi
         if (checkInResult.qrCode) {
           addNotification({
             type: 'info',
-            title: 'QR Kod Oluşturuldu',
-            message: `${getRoomLabel(currentLanguage)} ${roomId.replace(/^\s*room[-\s_]*/i, '').trim()} için müşteri adını içeren QR kod oluşturuldu.`,
+            title: t('r_notif_qr_created'),
+            message: `${t('room')} ${roomId.replace(/^\s*room[-\s_]*/i, '').trim()} ${t('r_notif_qr_created_msg')}`,
           });
         }
 
@@ -614,16 +614,16 @@ export default function ReceptionPanel() {
       } else {
         addNotification({
           type: 'error',
-          title: 'Hata',
-          message: 'Check-in işlemi sırasında bir hata oluştu.',
+          title: t('r_notif_error'),
+          message: t('r_notif_checkin_error'),
         });
       }
     } catch (error) {
       console.error('Error processing check-in:', error);
       addNotification({
         type: 'error',
-        title: 'Hata',
-        message: 'Check-in işlenirken bir hata oluştu.',
+        title: t('r_notif_error'),
+        message: t('r_notif_checkin_process_error'),
       });
     }
   };
@@ -642,8 +642,8 @@ export default function ReceptionPanel() {
 
         addNotification({
           type: 'success',
-          title: 'Ödemeler Alındı',
-          message: `${pendingPayments.length} adet ödeme toplam ${pendingPayments.reduce((sum, p) => sum + p.amount, 0)} TL olarak alındı.`,
+          title: t('r_notif_payments_received'),
+          message: `${pendingPayments.length} ${t('r_notif_payments_received_msg')} ${pendingPayments.reduce((sum, p) => sum + p.amount, 0)} ${t('r_notif_payments_received_suffix')}`,
         });
       }
 
@@ -656,26 +656,24 @@ export default function ReceptionPanel() {
       if (checkoutResult.success) {
         addNotification({
           type: 'success',
-          title: 'Çıkış Tamamlandı',
-          message: `${getRoomLabel(currentLanguage)} ${roomId.replace(/^\s*room[-\s_]*/i, '').trim()} için çıkış işlemi tamamlandı. QR kod yeni müşteri için hazırlandı.`,
+          title: t('r_notif_checkout_done'),
+          message: `${t('room')} ${roomId.replace(/^\s*room[-\s_]*/i, '').trim()} ${t('r_notif_checkout_done_msg')}`,
         });
 
-        // QR kod güncelleme bildirimi
         if (checkoutResult.qrCode) {
           addNotification({
             type: 'info',
-            title: 'QR Kod Güncellendi',
-            message: `${getRoomLabel(currentLanguage)} ${roomId.replace(/^\s*room[-\s_]*/i, '').trim()} için QR kod yeni müşteri için hazırlandı.`,
+            title: t('r_notif_qr_updated'),
+            message: `${t('room')} ${roomId.replace(/^\s*room[-\s_]*/i, '').trim()} ${t('r_notif_qr_updated_msg')}`,
           });
         }
       } else {
-        // Fallback: Eski yöntem
         await ApiService.resetRoomQR(roomId);
 
         addNotification({
           type: 'success',
-          title: 'Çıkış Tamamlandı',
-          message: `${getRoomLabel(currentLanguage)} ${roomId.replace(/^\s*room[-\s_]*/i, '').trim()} için çıkış işlemi tamamlandı, istekler temizlendi ve QR kod sıfırlandı.`,
+          title: t('r_notif_checkout_done'),
+          message: `${t('room')} ${roomId.replace(/^\s*room[-\s_]*/i, '').trim()} ${t('r_notif_checkout_alt_msg')}`,
         });
       }
 
@@ -683,8 +681,8 @@ export default function ReceptionPanel() {
       console.error('Error processing checkout:', error);
       addNotification({
         type: 'error',
-        title: 'Hata',
-        message: 'Çıkış işlenirken bir hata oluştu.',
+        title: t('r_notif_error'),
+        message: t('r_notif_checkout_error'),
       });
     }
   };
@@ -694,12 +692,12 @@ export default function ReceptionPanel() {
 
   const getPaymentLabel = (method?: string) => {
     switch (method) {
-      case 'cash': return 'Nakit';
-      case 'pos': return 'Kredi Kartı / POS';
-      case 'room_charge': return 'Odaya Yaz';
-      case 'online': return 'Online Ödeme';
-      case 'card': return 'Kredi Kartı';
-      default: return 'Belirtilmedi';
+      case 'cash': return t('r_payment_cash');
+      case 'pos': return t('r_payment_pos');
+      case 'room_charge': return t('r_payment_room_charge');
+      case 'online': return t('r_payment_online');
+      case 'card': return t('r_payment_card');
+      default: return t('r_payment_unspecified');
     }
   };
 
@@ -728,16 +726,16 @@ export default function ReceptionPanel() {
 
       addNotification({
         type: 'success',
-        title: 'Teslim Edildi',
-        message: 'Sipariş başarıyla teslim edildi olarak işaretlendi',
+        title: t('r_notif_delivered'),
+        message: t('r_notif_delivered_msg'),
       });
 
     } catch (error) {
-      console.error('Sipariş güncellenemedi', error);
+      console.error('Order update failed', error);
       addNotification({
         type: 'error',
-        title: 'Hata',
-        message: 'İşlem sırasında bir hata oluştu',
+        title: t('r_notif_error'),
+        message: t('r_notif_delivery_error'),
       });
     } finally {
       setSelectedDeliveryOrder(null);
@@ -756,10 +754,10 @@ export default function ReceptionPanel() {
               </div>
               <div>
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
-                  {user?.hotel?.name || 'Otel'} Resepsiyon
+                  {user?.hotel?.name || t('r_hotel_fallback')} {t('r_reception')}
                 </h1>
                 <p className="text-sm sm:text-base text-gray-600">
-                  Misafir taleplerini yönetin ve takip edin
+                  {t('r_manage_requests')}
                 </p>
               </div>
             </div>
@@ -773,7 +771,7 @@ export default function ReceptionPanel() {
                     ? 'bg-red-500 text-white hover:bg-red-600'
                     : 'bg-blue-500 text-white hover:bg-blue-600'
                     }`}
-                  title="Bildirimler"
+                  title={t('r_notifications')}
                 >
                   <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
@@ -807,7 +805,7 @@ export default function ReceptionPanel() {
           <div className="absolute top-20 right-4 z-50 bg-white rounded-xl shadow-2xl border border-gray-200 w-80 max-h-96 overflow-y-auto">
             <div className="p-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">Bildirimler</h3>
+                <h3 className="text-lg font-semibold text-gray-900">{t('r_notifications')}</h3>
                 <button
                   onClick={() => setShowNotifications(false)}
                   className="text-gray-400 hover:text-gray-600"
@@ -820,7 +818,7 @@ export default function ReceptionPanel() {
               {notifications.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   <Bell className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                  <p>Henüz bildirim yok</p>
+                  <p>{t('r_no_notifications')}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -853,7 +851,7 @@ export default function ReceptionPanel() {
                             {notification.message}
                           </p>
                           <p className="text-gray-400 text-xs mt-2">
-                            {notification.timestamp.toLocaleString('tr-TR')}
+                            {notification.timestamp.toLocaleString(getLocale())}
                           </p>
                         </div>
                       </div>
@@ -873,7 +871,7 @@ export default function ReceptionPanel() {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-green-800 flex items-center gap-2">
                 <Utensils className="w-6 h-6" />
-                Mutfakta Hazır Bekleyen Siparişler ({readyOrders.length})
+                {t('r_ready_orders')} ({readyOrders.length})
               </h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -881,15 +879,15 @@ export default function ReceptionPanel() {
                 <div key={order.id} className="bg-white p-4 rounded-lg shadow border border-green-100">
                   <div className="flex justify-between items-start mb-2">
                     <span className="font-bold text-lg bg-green-100 text-green-800 px-2 py-0.5 rounded">
-                      {getRoomLabel(currentLanguage)} {String(order.roomId).replace(/^\s*room[-\s_]*/i, '').trim()}
+                      {t('room')} {String(order.roomId).replace(/^\s*room[-\s_]*/i, '').trim()}
                     </span>
                     <span className="text-xs text-gray-500 font-mono">
-                      {new Date(order.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(order.createdAt).toLocaleTimeString(getLocale(), { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
                   <ul className="text-sm text-gray-600 mb-3 space-y-1">
                     {order.items?.map((item: any, idx: number) => (
-                      <li key={idx}>- {item.quantity}x {item.menuItem?.name || item.name || 'Ürün'}</li>
+                      <li key={idx}>- {item.quantity}x {item.menuItem?.name || item.name || t('r_product_fallback')}</li>
                     ))}
                   </ul>
                   <div className="mb-3">
@@ -905,7 +903,7 @@ export default function ReceptionPanel() {
                     className="w-full py-2 bg-green-600 hover:bg-green-700 text-white rounded font-medium text-sm flex items-center justify-center gap-2 transition-colors"
                   >
                     <CheckCircle className="w-4 h-4" />
-                    Teslim Et
+                    {t('r_deliver')}
                   </button>
                 </div>
               ))}
@@ -917,7 +915,7 @@ export default function ReceptionPanel() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
         <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
-            <h2 className="text-lg font-bold text-gray-900">Tüm Odalar</h2>
+            <h2 className="text-lg font-bold text-gray-900">{t('r_all_rooms')}</h2>
 
             {/* Floor Tabs (Registerkarteler) */}
             <div className="flex overflow-x-auto pb-2 sm:pb-0 gap-2 w-full sm:w-auto no-scrollbar">
@@ -928,7 +926,7 @@ export default function ReceptionPanel() {
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
               >
-                Tüm Odalar
+                {t('r_all_rooms')}
               </button>
               {Array.from(new Set(rooms.map(r => r.floor || 1))).sort((a: any, b: any) => a - b).map(floor => (
                 <button
@@ -939,7 +937,7 @@ export default function ReceptionPanel() {
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                 >
-                  {floor}. Kat
+                  {floor}. {t('r_floor')}
                 </button>
               ))}
             </div>
@@ -949,7 +947,7 @@ export default function ReceptionPanel() {
             {isLoading && rooms.length === 0 ? (
               <div className="col-span-full text-center text-gray-400 py-8 flex flex-col items-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-2"></div>
-                <span>Oda bilgisi yükleniyor...</span>
+                <span>{t('r_loading_rooms')}</span>
               </div>
             ) : rooms.length > 0 ? (
               rooms
@@ -972,15 +970,15 @@ export default function ReceptionPanel() {
                     >
                       <div className={`font-bold text-lg ${hasActiveRequest ? 'text-red-700' : ''}`}>{roomNum}</div>
                       <div className="text-xs truncate font-medium">
-                        {hasActiveRequest ? '❗️ İstek Var' : (room.guestName || (room.status === 'occupied' ? 'Dolu' : 'Boş'))}
+                        {hasActiveRequest ? `❗️ ${t('r_has_request')}` : (room.guestName || (room.status === 'occupied' ? t('r_occupied') : t('r_vacant')))}
                       </div>
                     </div>
                   );
                 })
             ) : (
               <div className="col-span-full text-center text-gray-400 py-8">
-                <p>Henüz oda bulunmuyor.</p>
-                <p className="text-sm mt-2">Oda listesi API&apos;den alınır. QR Kod sayfasından oda oluşturabilirsiniz.</p>
+                <p>{t('r_no_rooms')}</p>
+                <p className="text-sm mt-2">{t('r_no_rooms_hint')}</p>
               </div>
             )}
           </div>
@@ -996,7 +994,7 @@ export default function ReceptionPanel() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
                   type="text"
-                  placeholder="Oda numarası veya açıklama ara..."
+                  placeholder={t('r_search_placeholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 sm:py-3 border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
@@ -1005,10 +1003,10 @@ export default function ReceptionPanel() {
             </div>
             <div className="flex flex-wrap gap-2">
               {[
-                { id: 'all', label: 'Tümü', count: requests.filter(r => r.type !== 'food_order').length },
-                { id: 'urgent', label: 'Acil', count: requests.filter(r => r.type !== 'food_order' && (r.priority === 'urgent' || r.priority === 'high')).length },
-                { id: 'pending', label: 'Bekleyen', count: requests.filter(r => r.type !== 'food_order' && r.status === 'pending').length },
-                { id: 'in_progress', label: 'İşlemde', count: requests.filter(r => r.type !== 'food_order' && (r.status === 'in_progress' || r.status === 'completed')).length }
+                { id: 'all', label: t('r_filter_all'), count: requests.filter(r => r.type !== 'food_order').length },
+                { id: 'urgent', label: t('r_filter_urgent'), count: requests.filter(r => r.type !== 'food_order' && (r.priority === 'urgent' || r.priority === 'high')).length },
+                { id: 'pending', label: t('r_filter_pending'), count: requests.filter(r => r.type !== 'food_order' && r.status === 'pending').length },
+                { id: 'in_progress', label: t('r_filter_in_progress'), count: requests.filter(r => r.type !== 'food_order' && (r.status === 'in_progress' || r.status === 'completed')).length }
               ].map((filterOption) => (
                 <button
                   key={filterOption.id}
@@ -1033,22 +1031,22 @@ export default function ReceptionPanel() {
                 <div className="flex-1">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
                     <span className="text-lg sm:text-xl font-bold text-gray-900">
-                      {getRoomLabel(currentLanguage)} {request.roomId.replace(/^\s*room[-\s_]*/i, '').trim()}
+                      {t('room')} {request.roomId.replace(/^\s*room[-\s_]*/i, '').trim()}
                     </span>
                     <div className="flex flex-wrap gap-2">
                       <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold border ${getPriorityColor(request.priority)}`}>
                         <div className="flex items-center space-x-1">
                           {getPriorityIcon(request.priority)}
-                          <span>{request.priority === 'urgent' ? 'YÜKSEK' :
-                            request.priority === 'high' ? 'YÜKSEK' :
-                              request.priority === 'medium' ? 'ORTA' :
-                                request.priority === 'low' ? 'DÜŞÜK' : String(request.priority || '').toUpperCase()}</span>
+                          <span>{request.priority === 'urgent' ? t('r_priority_high') :
+                            request.priority === 'high' ? t('r_priority_high') :
+                              request.priority === 'medium' ? t('r_priority_medium') :
+                                request.priority === 'low' ? t('r_priority_low') : String(request.priority || '').toUpperCase()}</span>
                         </div>
                       </span>
                       <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(request.status)}`}>
-                        {request.status === 'pending' ? 'BEKLEMEDE' :
-                          request.status === 'in_progress' ? 'İŞLEMDE' :
-                            request.status === 'completed' ? 'TAMAMLANDI' : 'İPTAL'}
+                        {request.status === 'pending' ? t('r_status_pending') :
+                          request.status === 'in_progress' ? t('r_status_in_progress') :
+                            request.status === 'completed' ? t('r_status_completed') : t('r_status_cancelled')}
                       </span>
                     </div>
                   </div>
@@ -1056,14 +1054,14 @@ export default function ReceptionPanel() {
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600 mb-3">
                     <div className="flex items-center space-x-1">
                       <span className="text-lg">{getRequestTypeIcon(request.type)}</span>
-                      <span>{request.type?.toLowerCase() === 'housekeeping' ? 'Temizlik' :
-                        request.type?.toLowerCase() === 'maintenance' ? 'Bakım' :
-                          request.type?.toLowerCase() === 'concierge' ? 'Konsiyerj' :
-                            request.type?.toLowerCase() === 'food_order' ? 'Yemek Siparişi' : request.type}</span>
+                      <span>{request.type?.toLowerCase() === 'housekeeping' ? t('r_type_housekeeping') :
+                        request.type?.toLowerCase() === 'maintenance' ? t('r_type_maintenance') :
+                          request.type?.toLowerCase() === 'concierge' ? t('r_type_concierge') :
+                            request.type?.toLowerCase() === 'food_order' ? t('r_type_food_order') : request.type}</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span>{new Date(request.createdAt).toLocaleString('tr-TR')}</span>
+                      <span>{new Date(request.createdAt).toLocaleString(getLocale())}</span>
                     </div>
                   </div>
 
@@ -1077,7 +1075,7 @@ export default function ReceptionPanel() {
                       <div className="flex items-start space-x-2">
                         <MessageSquare className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 mt-0.5" />
                         <div>
-                          <p className="text-xs sm:text-sm font-medium text-blue-900">Yanıt:</p>
+                          <p className="text-xs sm:text-sm font-medium text-blue-900">{t('r_response_label')}</p>
                           <p className="text-xs sm:text-sm text-blue-700">{request.notes}</p>
                         </div>
                       </div>
@@ -1090,14 +1088,14 @@ export default function ReceptionPanel() {
                     onClick={() => setSelectedRequest(request)}
                     className="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl hover:from-purple-600 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold text-sm sm:text-base"
                   >
-                    Detaylı Yanıt
+                    {t('r_detailed_response')}
                   </button>
 
                   <button
                     onClick={() => setSelectedRoomInfo(request)}
                     className="bg-gray-100 text-gray-700 px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl hover:bg-gray-200 transition-all duration-200 font-semibold text-sm sm:text-base"
                   >
-                    Oda Bilgisi
+                    {t('r_room_info')}
                   </button>
                 </div>
               </div>
@@ -1108,9 +1106,9 @@ export default function ReceptionPanel() {
         {filteredRequests.length === 0 && (
           <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
             <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">İstek Bulunamadı</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('r_no_requests')}</h3>
             <p className="text-gray-600">
-              {searchTerm ? 'Arama kriterlerinize uygun istek bulunamadı.' : 'Henüz hiç istek bulunmuyor.'}
+              {searchTerm ? t('r_no_requests_search') : t('r_no_requests_empty')}
             </p>
           </div>
         )}
@@ -1131,8 +1129,8 @@ export default function ReceptionPanel() {
                 <AlertTriangle className="w-5 h-5 text-orange-600" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-900">Çıkış Onayı</h3>
-                <p className="text-sm text-gray-600">{getRoomLabel(currentLanguage)} {checkoutConfirm.roomId.replace(/^\s*room[-\s_]*/i, '').trim()} için çıkış işlemi</p>
+                <h3 className="text-lg font-bold text-gray-900">{t('r_checkout_confirm')}</h3>
+                <p className="text-sm text-gray-600">{t('room')} {checkoutConfirm.roomId.replace(/^\s*room[-\s_]*/i, '').trim()} {t('r_checkout_for')}</p>
               </div>
             </div>
 
@@ -1140,8 +1138,8 @@ export default function ReceptionPanel() {
               <div className="flex items-start space-x-2">
                 <AlertTriangle className="w-5 h-5 text-orange-600 mt-0.5" />
                 <div className="text-sm text-orange-800">
-                  <p className="font-medium mb-1">İşlemden emin misiniz?</p>
-                  <p className="text-xs">Bu işlem geri alınamaz. Devam etmek istediğinizden emin misiniz?</p>
+                  <p className="font-medium mb-1">{t('r_are_you_sure')}</p>
+                  <p className="text-xs">{t('r_cannot_undo')}</p>
                 </div>
               </div>
             </div>
@@ -1151,7 +1149,7 @@ export default function ReceptionPanel() {
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
                 <div className="flex items-center space-x-2 mb-2">
                   <MessageSquare className="w-4 h-4 text-yellow-600" />
-                  <span className="font-semibold text-yellow-900 text-sm">Bekleyen Ödemeler</span>
+                  <span className="font-semibold text-yellow-900 text-sm">{t('r_pending_payments')}</span>
                 </div>
                 <div className="space-y-2">
                   {checkoutConfirm.pendingPayments.map((payment) => (
@@ -1162,7 +1160,7 @@ export default function ReceptionPanel() {
                   ))}
                   <div className="border-t border-yellow-200 pt-2 mt-2">
                     <div className="flex justify-between items-center font-semibold">
-                      <span className="text-gray-700">Toplam Tutar:</span>
+                      <span className="text-gray-700">{t('r_total_amount')}</span>
                       <span className="text-red-600 text-lg">{checkoutConfirm.totalAmount} TL</span>
                     </div>
                   </div>
@@ -1175,16 +1173,15 @@ export default function ReceptionPanel() {
                 onClick={() => setCheckoutConfirm(null)}
                 className="flex-1 bg-gray-100 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-200 transition-colors font-semibold"
               >
-                İptal
+                {t('r_cancel')}
               </button>
               <button
                 onClick={() => {
-                  // Oda değiştirme için selectedRoomInfo'yu set et
                   const roomInfo = {
                     id: checkoutConfirm.roomId,
                     roomId: checkoutConfirm.roomId,
                     type: 'room_change',
-                    description: 'Oda değişikliği',
+                    description: 'Room change',
                     priority: 'medium',
                     status: 'pending',
                     createdAt: new Date().toISOString(),
@@ -1196,7 +1193,7 @@ export default function ReceptionPanel() {
                 }}
                 className="flex-1 bg-blue-500 text-white px-4 py-3 rounded-lg hover:bg-blue-600 transition-colors font-semibold"
               >
-                Oda Değiştir
+                {t('r_change_room')}
               </button>
               <button
                 onClick={async () => {
@@ -1205,7 +1202,7 @@ export default function ReceptionPanel() {
                 }}
                 className="flex-1 bg-red-500 text-white px-4 py-3 rounded-lg hover:bg-red-600 transition-colors font-semibold"
               >
-                Çıkış Yap
+                {t('r_checkout_btn')}
               </button>
             </div>
           </div>
@@ -1227,8 +1224,8 @@ export default function ReceptionPanel() {
                 <Hotel className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-900">Oda Değişikliği</h3>
-                <p className="text-sm text-gray-600">{getRoomLabel(currentLanguage)} {selectedRoomInfo.roomId.replace(/^\s*room[-\s_]*/i, '').trim()} için yeni oda seçin</p>
+                <h3 className="text-lg font-bold text-gray-900">{t('r_room_change')}</h3>
+                <p className="text-sm text-gray-600">{t('room')} {selectedRoomInfo.roomId.replace(/^\s*room[-\s_]*/i, '').trim()} {t('r_select_new_room_for')}</p>
               </div>
             </div>
 
@@ -1236,15 +1233,15 @@ export default function ReceptionPanel() {
               <div className="flex items-start space-x-2">
                 <AlertTriangle className="w-5 h-5 text-blue-600 mt-0.5" />
                 <div className="text-sm text-blue-800">
-                  <p className="font-medium mb-1">Tüm bilgiler yeni odaya taşınacak</p>
-                  <p className="text-xs">Misafir bilgileri, ödemeler ve talepler yeni odaya aktarılacak.</p>
+                  <p className="font-medium mb-1">{t('r_info_will_be_moved')}</p>
+                  <p className="text-xs">{t('r_info_will_be_moved_detail')}</p>
                 </div>
               </div>
             </div>
 
             <div className="space-y-3 mb-6">
               <label className="block text-sm font-medium text-gray-700">
-                Yeni Oda Seçin
+                {t('r_select_new_room')}
               </label>
               <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
                 {availableRooms
@@ -1258,7 +1255,7 @@ export default function ReceptionPanel() {
                         : 'border-gray-200 hover:border-gray-300'
                         }`}
                     >
-                      <div className="font-semibold text-gray-900">{getRoomLabel(currentLanguage)} {room.number}</div>
+                      <div className="font-semibold text-gray-900">{t('room')} {room.number}</div>
                       <div className="text-xs text-gray-600">{room.floor} - {room.type}</div>
                     </button>
                   ))}
@@ -1270,14 +1267,14 @@ export default function ReceptionPanel() {
                 onClick={() => setShowRoomChange(false)}
                 className="flex-1 bg-gray-100 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-200 transition-colors font-semibold"
               >
-                İptal
+                {t('r_cancel')}
               </button>
               <button
                 onClick={() => handleRoomChange(selectedRoomInfo.roomId, selectedNewRoom)}
                 disabled={!selectedNewRoom}
                 className="flex-1 bg-blue-500 text-white px-4 py-3 rounded-lg hover:bg-blue-600 transition-colors font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
-                Oda Değiştir
+                {t('r_change_room')}
               </button>
             </div>
           </div>
@@ -1295,7 +1292,7 @@ export default function ReceptionPanel() {
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3">
-              {getRoomLabel(currentLanguage)} {selectedRoomInfo.roomId.replace(/^\s*room[-\s_]*/i, '').trim()} Bilgileri
+              {t('room')} {selectedRoomInfo.roomId.replace(/^\s*room[-\s_]*/i, '').trim()} {t('r_room_info_title')}
             </h3>
 
             <div className="space-y-3">
@@ -1306,15 +1303,15 @@ export default function ReceptionPanel() {
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                       <div className="flex items-center space-x-2 mb-2">
                         <Hotel className="w-4 h-4 text-blue-600" />
-                        <span className="font-semibold text-blue-900 text-sm">Oda Detayları</span>
+                        <span className="font-semibold text-blue-900 text-sm">{t('r_room_details')}</span>
                       </div>
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Kat:</span>
+                          <span className="text-gray-600">{t('r_floor')}:</span>
                           <span className="font-medium">{roomInfo.floor}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Tür:</span>
+                          <span className="text-gray-600">{t('r_type_label')}</span>
                           <span className="font-medium">{roomInfo.type}</span>
                         </div>
                       </div>
@@ -1323,23 +1320,23 @@ export default function ReceptionPanel() {
                     <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                       <div className="flex items-center space-x-2 mb-2">
                         <User className="w-4 h-4 text-green-600" />
-                        <span className="font-semibold text-green-900 text-sm">Mevcut Misafir</span>
+                        <span className="font-semibold text-green-900 text-sm">{t('r_current_guest')}</span>
                       </div>
                       <div className="space-y-1 text-xs">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Ad Soyad:</span>
+                          <span className="text-gray-600">{t('r_full_name')}:</span>
                           <span className="font-medium">{roomInfo.guestName}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Çıkış Saati:</span>
+                          <span className="text-gray-600">{t('r_checkout_time')}:</span>
                           <span className="font-medium">{roomInfo.checkOut}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Telefon:</span>
+                          <span className="text-gray-600">{t('r_phone')}:</span>
                           <span className="font-medium text-xs">{roomInfo.phone}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">E-posta:</span>
+                          <span className="text-gray-600">{t('r_email')}:</span>
                           <span className="font-medium text-xs">{roomInfo.email}</span>
                         </div>
                       </div>
@@ -1351,17 +1348,17 @@ export default function ReceptionPanel() {
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center space-x-2">
                             <MessageSquare className="w-4 h-4 text-yellow-600" />
-                            <span className="font-semibold text-yellow-900 text-sm">Ödeme Geçmişi</span>
+                            <span className="font-semibold text-yellow-900 text-sm">{t('r_payment_history')}</span>
                           </div>
                           <div className="flex items-center space-x-2">
                             <span className="text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full">
-                              {roomInfo.payments.filter(p => p.status === 'pending').length} Bekleyen
+                              {roomInfo.payments.filter(p => p.status === 'pending').length} {t('r_pending_count')}
                             </span>
                             <button
                               onClick={() => setShowPaymentDetails(!showPaymentDetails)}
                               className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full hover:bg-blue-200 transition-colors"
                             >
-                              {showPaymentDetails ? 'Gizle' : 'Detay'}
+                              {showPaymentDetails ? t('r_hide') : t('r_detail')}
                             </button>
                           </div>
                         </div>
@@ -1378,7 +1375,7 @@ export default function ReceptionPanel() {
                                 <div className="flex items-center space-x-1 ml-2">
                                   <span className="font-semibold text-gray-900">{payment.amount} TL</span>
                                   <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded">
-                                    Bekleyen
+                                    {t('r_pending_count')}
                                   </span>
                                 </div>
                               </div>
@@ -1396,7 +1393,7 @@ export default function ReceptionPanel() {
                                 <div className="flex items-center space-x-1 ml-2">
                                   <span className="font-semibold text-gray-600">{payment.amount} TL</span>
                                   <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
-                                    Ödendi
+                                    {t('r_paid')}
                                   </span>
                                 </div>
                               </div>
@@ -1404,14 +1401,14 @@ export default function ReceptionPanel() {
                         </div>
                         <div className="mt-2 pt-2 border-t border-yellow-200">
                           <div className="flex justify-between text-xs font-semibold">
-                            <span>Toplam Bekleyen:</span>
+                            <span>{t('r_total_pending')}</span>
                             <span className="text-red-600">
                               {roomInfo.payments.filter(p => p.status === 'pending').reduce((sum, p) => sum + p.amount, 0)} TL
                             </span>
                           </div>
                           {showPaymentDetails && (
                             <div className="flex justify-between text-xs font-semibold mt-1">
-                              <span className="text-gray-600">Toplam Ödenen:</span>
+                              <span className="text-gray-600">{t('r_total_paid')}</span>
                               <span className="text-green-600">
                                 {roomInfo.payments.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0)} TL
                               </span>
@@ -1425,11 +1422,11 @@ export default function ReceptionPanel() {
                     <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                       <div className="flex items-center justify-between">
                         <div>
-                          <div className="font-semibold text-red-900 text-sm">Çıkış İşlemi</div>
+                          <div className="font-semibold text-red-900 text-sm">{t('r_checkout_action')}</div>
                           <div className="text-xs text-red-700">
                             {roomInfo.payments.filter(p => p.status === 'pending').length > 0
-                              ? `${roomInfo.payments.filter(p => p.status === 'pending').length} adet bekleyen ödeme var`
-                              : 'Bekleyen ödeme yok'
+                              ? `${roomInfo.payments.filter(p => p.status === 'pending').length} ${t('r_pending_payments_exist')}`
+                              : t('r_no_pending_payments')
                             }
                           </div>
                         </div>
@@ -1447,7 +1444,7 @@ export default function ReceptionPanel() {
                             onClick={() => handleCheckout(selectedRoomInfo.roomId)}
                             className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-semibold text-xs"
                           >
-                            Çıkış Yap
+                            {t('r_checkout_btn')}
                           </button>
                         </div>
                       </div>
@@ -1462,7 +1459,7 @@ export default function ReceptionPanel() {
                 onClick={() => setSelectedRoomInfo(null)}
                 className="flex-1 bg-gray-100 text-gray-700 px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-200 transition-all duration-200 font-semibold text-xs sm:text-sm"
               >
-                Kapat
+                {t('r_close')}
               </button>
             </div>
           </div>
@@ -1480,16 +1477,16 @@ export default function ReceptionPanel() {
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
-              {getRoomLabel(currentLanguage)} {selectedRequest.roomId.replace(/^\s*room[-\s_]*/i, '').trim()} - Otomatik Yanıt
+              {t('room')} {selectedRequest.roomId.replace(/^\s*room[-\s_]*/i, '').trim()} - {t('r_auto_response')}
             </h3>
 
             <div className="mb-4 sm:mb-6">
-              <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-2">İstek:</p>
+              <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-2">{t('r_request_label')}</p>
               <p className="text-sm sm:text-base text-gray-900 bg-gray-50 p-3 rounded-lg sm:rounded-xl">{selectedRequest.description}</p>
             </div>
 
             <div className="space-y-2 sm:space-y-3">
-              <p className="text-xs sm:text-sm font-semibold text-gray-700">Otomatik Yanıtlar:</p>
+              <p className="text-xs sm:text-sm font-semibold text-gray-700">{t('r_auto_responses')}</p>
               {getQuickResponses(selectedRequest.type).map((response) => {
                 const IconComponent = response.icon;
                 return (
@@ -1509,11 +1506,11 @@ export default function ReceptionPanel() {
 
             {/* Özel Mesaj Alanı */}
             <div className="mt-6 pt-4 border-t border-gray-200">
-              <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-3">Özel Mesaj Yaz:</p>
+              <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-3">{t('r_custom_message')}</p>
               <textarea
                 value={customMessage}
                 onChange={(e) => setCustomMessage(e.target.value)}
-                placeholder="Kendi mesajınızı yazın..."
+                placeholder={t('r_custom_message_placeholder')}
                 className="w-full p-3 border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base resize-none"
                 rows={3}
               />
@@ -1523,13 +1520,13 @@ export default function ReceptionPanel() {
                   disabled={!customMessage.trim()}
                   className="flex-1 bg-blue-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all duration-200 font-semibold text-sm sm:text-base"
                 >
-                  Mesaj Gönder
+                  {t('r_send_message')}
                 </button>
                 <button
                   onClick={() => setCustomMessage('')}
                   className="px-4 sm:px-6 py-2 sm:py-3 bg-gray-100 text-gray-700 rounded-lg sm:rounded-xl hover:bg-gray-200 transition-all duration-200 font-semibold text-sm sm:text-base"
                 >
-                  Temizle
+                  {t('r_clear')}
                 </button>
               </div>
             </div>
@@ -1539,7 +1536,7 @@ export default function ReceptionPanel() {
                 onClick={() => setSelectedRequest(null)}
                 className="flex-1 bg-gray-100 text-gray-700 px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl hover:bg-gray-200 transition-all duration-200 font-semibold text-sm sm:text-base"
               >
-                İptal
+                {t('r_cancel')}
               </button>
             </div>
           </div>
@@ -1557,7 +1554,7 @@ export default function ReceptionPanel() {
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">
-              Müşteri Check-in - {getRoomLabel(currentLanguage)} {checkInRoomId.replace(/^\s*room[-\s_]*/i, '').trim()}
+              {t('r_checkin_title')} - {t('room')} {checkInRoomId.replace(/^\s*room[-\s_]*/i, '').trim()}
             </h3>
 
             <CheckInForm
@@ -1567,6 +1564,7 @@ export default function ReceptionPanel() {
                 setShowCheckInModal(false);
                 setCheckInRoomId('');
               }}
+              t={t}
             />
           </div>
         </div>
@@ -1579,7 +1577,7 @@ export default function ReceptionPanel() {
               <div className="flex justify-between items-center text-white">
                 <h3 className="text-lg font-bold flex items-center gap-2">
                   <CheckCircle className="w-6 h-6" />
-                  Sipariş Teslim Onayı
+                  {t('r_delivery_confirm')}
                 </h3>
                 <button
                   onClick={() => setSelectedDeliveryOrder(null)}
@@ -1596,14 +1594,14 @@ export default function ReceptionPanel() {
                   <Utensils className="w-8 h-8 text-green-600" />
                 </div>
                 <h4 className="text-xl font-bold text-gray-900">
-                  {getRoomLabel(currentLanguage)} {String(selectedDeliveryOrder.roomId).replace(/^\s*room[-\s_]*/i, '').trim()}
+                  {t('room')} {String(selectedDeliveryOrder.roomId).replace(/^\s*room[-\s_]*/i, '').trim()}
                 </h4>
-                <p className="text-gray-500 text-sm mt-1">Sipariş teslimatı için onay gerekiyor</p>
+                <p className="text-gray-500 text-sm mt-1">{t('r_delivery_needs_confirm')}</p>
               </div>
 
               <div className="bg-gray-50 rounded-lg p-4 mb-6 space-y-3">
                 <div className="flex justify-between items-center border-b border-gray-200 pb-2">
-                  <span className="text-gray-600">Ödeme Yöntemi:</span>
+                  <span className="text-gray-600">{t('r_payment_method')}</span>
                   <span className={`font-bold ${selectedDeliveryOrder.paymentMethod === 'room_charge' ? 'text-blue-600' :
                     selectedDeliveryOrder.paymentMethod === 'online' ? 'text-purple-600' :
                       'text-yellow-600'
@@ -1612,7 +1610,7 @@ export default function ReceptionPanel() {
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Toplam Tutar:</span>
+                  <span className="text-gray-600">{t('r_total_amount')}</span>
                   <span className="font-bold text-lg text-gray-900">
                     {Number(selectedDeliveryOrder.totalAmount || 0).toFixed(2)}₺
                   </span>
@@ -1624,14 +1622,14 @@ export default function ReceptionPanel() {
                   onClick={() => setSelectedDeliveryOrder(null)}
                   className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors"
                 >
-                  İptal
+                  {t('r_cancel')}
                 </button>
                 <button
                   onClick={confirmOrderDelivery}
                   className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
                 >
                   <CheckCircle className="w-4 h-4" />
-                  Teslim Edildi
+                  {t('r_delivered')}
                 </button>
               </div>
             </div>
@@ -1646,11 +1644,13 @@ export default function ReceptionPanel() {
 function CheckInForm({
   roomId,
   onSubmit,
-  onCancel
+  onCancel,
+  t
 }: {
   roomId: string;
   onSubmit: (roomId: string, guestData: any) => void;
   onCancel: () => void;
+  t: (key: string) => string;
 }) {
   const [formData, setFormData] = useState({
     firstName: '',
@@ -1672,7 +1672,7 @@ function CheckInForm({
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-1">
-            Ad *
+            {t('r_first_name')} *
           </label>
           <input
             type="text"
@@ -1680,12 +1680,12 @@ function CheckInForm({
             value={formData.firstName}
             onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Müşteri adı"
+            placeholder={t('r_first_name_placeholder')}
           />
         </div>
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-1">
-            Soyad *
+            {t('r_last_name')} *
           </label>
           <input
             type="text"
@@ -1693,14 +1693,14 @@ function CheckInForm({
             value={formData.lastName}
             onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Müşteri soyadı"
+            placeholder={t('r_last_name_placeholder')}
           />
         </div>
       </div>
 
       <div>
         <label className="block text-sm font-semibold text-gray-700 mb-1">
-          E-posta
+          {t('r_email')}
         </label>
         <input
           type="email"
@@ -1713,7 +1713,7 @@ function CheckInForm({
 
       <div>
         <label className="block text-sm font-semibold text-gray-700 mb-1">
-          Telefon
+          {t('r_phone')}
         </label>
         <input
           type="tel"
@@ -1726,7 +1726,7 @@ function CheckInForm({
 
       <div>
         <label className="block text-sm font-semibold text-gray-700 mb-1">
-          Dil Tercihi
+          {t('r_language_preference')}
         </label>
         <select
           value={formData.language}
@@ -1751,13 +1751,13 @@ function CheckInForm({
           onClick={onCancel}
           className="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-all duration-200 font-semibold"
         >
-          İptal
+          {t('r_cancel')}
         </button>
         <button
           type="submit"
           className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200 font-semibold"
         >
-          Check-in Yap
+          {t('r_checkin_btn')}
         </button>
       </div>
     </form>
@@ -1838,14 +1838,14 @@ function RequestDescription({ text, targetLang }: { text: string, targetLang: st
       {isTranslating ? (
         <div className="flex items-center space-x-2 text-gray-400">
           <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-          <span className="text-xs">Çevriliyor...</span>
+          <span className="text-xs">{translate('r_translating', targetLang as Language)}</span>
         </div>
       ) : (
         <>
           {translatedText || text}
           {translatedText && translatedText !== text && (
             <div className="mt-1 text-xs text-gray-400 font-normal italic border-t border-gray-100 pt-1">
-              Orijinal: {text}
+              {translate('r_original', targetLang as Language)} {text}
             </div>
           )}
         </>
