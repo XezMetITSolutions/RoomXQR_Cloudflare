@@ -74,7 +74,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: getTranslation('sidebar.analytics'), href: '/management/analytics', icon: BarChart3, key: 'analytics', color: 'text-indigo-600' },
     { name: getTranslation('sidebar.settings'), href: '/management/settings', icon: Settings, key: 'settings', color: 'text-gray-600' },
     { name: getTranslation('sidebar.database_columns'), href: '/management/database-columns', icon: Database, key: 'eksik-sutunlar', color: 'text-slate-600' },
-    { name: 'Arayüz Çevirileri', href: '/management/translate-ui', icon: Languages, key: 'translate-ui', color: 'text-violet-600' },
+    { name: getTranslation('sidebar.translate_ui'), href: '/management/translate-ui', icon: Languages, key: 'translate-ui', color: 'text-violet-600' },
   ], [getTranslation, currentLanguage]);
 
   // Auth kontrolü

@@ -188,10 +188,10 @@ export default function OdaYonetimiPage() {
       <div className="border-b border-gray-200 pb-4">
         <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
           <BedDouble className="w-7 h-7 text-amber-600" />
-          {getTranslation('sidebar.room_management')}
+          {getTranslation('page.room_management.title')}
         </h1>
         <p className="text-gray-600 mt-1">
-          Tüm odaları katlara göre görüntüleyin, dolu/boş durumu, misafir bilgileri ve çıkışta alınacak borçları yönetin.
+          {getTranslation('page.room_management.subtitle')}
         </p>
         {/* Kat sekmeleri (Registerkarte) */}
         <div className="flex flex-wrap gap-2 mt-4">
@@ -200,7 +200,7 @@ export default function OdaYonetimiPage() {
             onClick={() => setSelectedFloorTab('all')}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${selectedFloorTab === 'all' ? 'bg-amber-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
           >
-            Tüm Odalar
+            {getTranslation('room_mgmt.all_rooms')}
           </button>
           {floorNumbers.map(floor => (
             <button
@@ -209,7 +209,7 @@ export default function OdaYonetimiPage() {
               onClick={() => setSelectedFloorTab(floor)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${selectedFloorTab === floor ? 'bg-amber-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
             >
-              {floor}. Kat
+              {floor}{getTranslation('room_mgmt.floor_n')}
             </button>
           ))}
         </div>
@@ -228,8 +228,8 @@ export default function OdaYonetimiPage() {
       ) : rooms.length === 0 ? (
         <div className="rounded-xl border border-gray-200 bg-gray-50 p-8 text-center text-gray-600">
           <BedDouble className="w-12 h-12 mx-auto text-gray-400 mb-3" />
-          <p>Henüz oda kaydı yok.</p>
-          <p className="text-sm mt-1">QR Kod sayfasından oda oluşturabilirsiniz.</p>
+          <p>{getTranslation('room_mgmt.no_rooms_yet')}</p>
+          <p className="text-sm mt-1">{getTranslation('room_mgmt.no_rooms_hint')}</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -243,8 +243,8 @@ export default function OdaYonetimiPage() {
                   onClick={() => toggleFloor(floor)}
                   className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 text-left"
                 >
-                  <span className="font-semibold text-gray-900">{floor}. Kat</span>
-                  <span className="text-sm text-gray-500">{floorRooms.length} oda</span>
+                  <span className="font-semibold text-gray-900">{floor}{getTranslation('room_mgmt.floor_n')}</span>
+                  <span className="text-sm text-gray-500">{floorRooms.length} {getTranslation('room_mgmt.rooms_count')}</span>
                   <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                 </button>
                 {isOpen && (
@@ -270,7 +270,7 @@ export default function OdaYonetimiPage() {
                           <div className="min-w-0 flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-sm">
                             <div className="flex items-center gap-2">
                               <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${occupied ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
-                                {occupied ? 'Dolu' : 'Boş'}
+                                {occupied ? getTranslation('room_mgmt.occupied') : getTranslation('room_mgmt.vacant')}
                               </span>
                             </div>
                             <div className="flex items-center gap-1.5 text-gray-700">
@@ -295,10 +295,10 @@ export default function OdaYonetimiPage() {
                               type="button"
                               onClick={() => setSelectedRoom(room)}
                               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-sm font-medium"
-                              title="Detaylar"
+                              title={getTranslation('room_mgmt.detail')}
                             >
                               <Eye className="w-4 h-4" />
-                              Detay
+                              {getTranslation('room_mgmt.detail')}
                             </button>
                             <button
                               type="button"
@@ -310,7 +310,7 @@ export default function OdaYonetimiPage() {
                                 checkOut: room.checkOut ? new Date(room.checkOut).toISOString().slice(0, 10) : '',
                               })}
                               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-sm font-medium"
-                              title="Düzenle"
+                              title={getTranslation('room_mgmt.edit')}
                             >
                               <Pencil className="w-4 h-4" />
                             </button>
@@ -320,13 +320,13 @@ export default function OdaYonetimiPage() {
                                 onClick={() => setCheckOutConfirm({
                                   roomId: room.roomId,
                                   number: num,
-                                  guestName: room.guestName || 'Misafir',
+                                  guestName: room.guestName || getTranslation('room_mgmt.guest'),
                                   debt,
                                 })}
                                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-sm font-medium"
                               >
                                 <LogOut className="w-4 h-4" />
-                                Çıkış
+                                {getTranslation('room_mgmt.checkout')}
                               </button>
                             ) : (
                               <button
@@ -335,7 +335,7 @@ export default function OdaYonetimiPage() {
                                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600 text-white hover:bg-amber-700 text-sm font-medium"
                               >
                                 <LogIn className="w-4 h-4" />
-                                Giriş
+                                {getTranslation('room_mgmt.checkin')}
                               </button>
                             )}
                           </div>
@@ -407,17 +407,17 @@ export default function OdaYonetimiPage() {
       {checkOutConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Çıkış onayı</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">{getTranslation('room_mgmt.checkout_confirm_title')}</h3>
             <p className="text-gray-600 text-sm">
-              <strong>Oda {checkOutConfirm.number}</strong> – {checkOutConfirm.guestName}
+              <strong>{getTranslation('qr.room')} {checkOutConfirm.number}</strong> – {checkOutConfirm.guestName}
             </p>
             {checkOutConfirm.debt > 0 && (
               <p className="mt-2 text-amber-700 font-medium">
-                Çıkışta alınacak tutar: <strong>₺{checkOutConfirm.debt.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</strong>
+                {getTranslation('room_mgmt.checkout_amount')} <strong>₺{checkOutConfirm.debt.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</strong>
               </p>
             )}
             <p className="mt-2 text-sm text-gray-500">
-              Bu tutarı aldıktan sonra çıkış işlemini onaylayın.
+              {getTranslation('room_mgmt.checkout_confirm_hint')}
             </p>
             <div className="mt-6 flex gap-3 justify-end">
               <button
@@ -425,7 +425,7 @@ export default function OdaYonetimiPage() {
                 onClick={() => setCheckOutConfirm(null)}
                 className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
               >
-                İptal
+                {getTranslation('general.cancel')}
               </button>
               <button
                 type="button"
@@ -445,7 +445,7 @@ export default function OdaYonetimiPage() {
                 className="px-4 py-2 rounded-lg bg-amber-600 text-white hover:bg-amber-700 disabled:opacity-50 flex items-center gap-2"
               >
                 {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogOut className="w-4 h-4" />}
-                Çıkış yap
+                {getTranslation('room_mgmt.do_checkout')}
               </button>
             </div>
           </div>
@@ -466,6 +466,7 @@ function RoomDetailModal({
   onClose: () => void;
   onEdit: () => void;
 }) {
+  const { getTranslation } = useLanguageStore();
   const norm = (id: string | number) => (String(id) || '').replace(/^(room-)+/i, '').trim();
   const roomNum = norm(room.number ?? room.roomId);
 
@@ -506,8 +507,8 @@ function RoomDetailModal({
               {roomNum}
             </span>
             <div>
-              <h3 className="text-xl font-bold text-gray-900">Oda Detayları</h3>
-              <p className="text-sm text-gray-500">{room.floor}. Kat</p>
+              <h3 className="text-xl font-bold text-gray-900">{getTranslation('room_mgmt.room_details')}</h3>
+              <p className="text-sm text-gray-500">{room.floor}{getTranslation('room_mgmt.floor_n')}</p>
             </div>
           </div>
           <button type="button" onClick={onClose} className="p-2 rounded-lg hover:bg-gray-100">
@@ -520,14 +521,14 @@ function RoomDetailModal({
           <div className="flex items-start justify-between">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
               <div>
-                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Misafir</span>
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">{getTranslation('room_mgmt.guest')}</span>
                 <div className="flex items-center gap-2 mt-1">
                   <User className="w-5 h-5 text-gray-400" />
                   <span className="font-medium text-gray-900">{room.guestName || '—'}</span>
                 </div>
               </div>
               <div>
-                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Konaklama</span>
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">{getTranslation('room_mgmt.stay')}</span>
                 <div className="flex items-center gap-2 mt-1">
                   <Calendar className="w-5 h-5 text-gray-400" />
                   <span className="text-gray-900 text-sm">
@@ -542,7 +543,7 @@ function RoomDetailModal({
               <button
                 onClick={onEdit}
                 className="ml-4 p-2 text-amber-600 hover:bg-amber-50 rounded-lg flex-shrink-0"
-                title="Misafir Bilgilerini Düzenle"
+                title={getTranslation('room_mgmt.guest_info_edit')}
               >
                 <Pencil className="w-5 h-5" />
               </button>
@@ -668,6 +669,7 @@ function CheckInModal({
   submitting: boolean;
   setSubmitting: (v: boolean) => void;
 }) {
+  const { getTranslation } = useLanguageStore();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [checkIn, setCheckIn] = useState(() => new Date().toISOString().slice(0, 10));
@@ -709,12 +711,12 @@ function CheckInModal({
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
         <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-green-800">Check-in tamamlandı</h3>
+            <h3 className="text-lg font-semibold text-green-800">{getTranslation('room_mgmt.checkin_complete')}</h3>
             <button type="button" onClick={() => { setGuestLink(null); onClose(); }} className="p-1 rounded-lg hover:bg-gray-100">
               <X className="w-5 h-5 text-gray-500" />
             </button>
           </div>
-          <p className="text-sm text-gray-600 mb-2">Misafir linki (QR ile aynı; odaya yapıştırılacak):</p>
+          <p className="text-sm text-gray-600 mb-2">{getTranslation('room_mgmt.guest_link_hint')}</p>
           <div className="flex gap-2">
             <input readOnly value={guestLink} className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 bg-gray-50" />
             <button
@@ -722,10 +724,10 @@ function CheckInModal({
               onClick={() => { navigator.clipboard.writeText(guestLink); }}
               className="px-4 py-2 rounded-lg bg-amber-600 text-white text-sm font-medium whitespace-nowrap"
             >
-              Kopyala
+              {getTranslation('room_mgmt.copy')}
             </button>
           </div>
-          <p className="text-xs text-gray-500 mt-2">Checkout sonrası bu link iptal olur; yeni misafir için yeni link üretilir.</p>
+          <p className="text-xs text-gray-500 mt-2">{getTranslation('room_mgmt.checkout_link_note')}</p>
         </div>
       </div>
     );
@@ -735,14 +737,14 @@ function CheckInModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
       <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Oda {roomNumber} – Giriş</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{getTranslation('qr.room')} {roomNumber} – {getTranslation('room_mgmt.checkin')}</h3>
           <button type="button" onClick={onClose} className="p-1 rounded-lg hover:bg-gray-100">
             <X className="w-5 h-5 text-gray-500" />
           </button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Ad</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{getTranslation('room_mgmt.first_name')}</label>
             <input
               type="text"
               value={firstName}
@@ -752,7 +754,7 @@ function CheckInModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Soyad</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{getTranslation('room_mgmt.last_name')}</label>
             <input
               type="text"
               value={lastName}
@@ -762,7 +764,7 @@ function CheckInModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Giriş tarihi</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{getTranslation('room_mgmt.checkin_date')}</label>
             <input
               type="date"
               value={checkIn}
@@ -771,7 +773,7 @@ function CheckInModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Çıkış tarihi</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{getTranslation('room_mgmt.checkout_date')}</label>
             <input
               type="date"
               value={checkOut}
@@ -785,7 +787,7 @@ function CheckInModal({
               onClick={onClose}
               className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
             >
-              İptal
+              {getTranslation('general.cancel')}
             </button>
             <button
               type="submit"
@@ -793,7 +795,7 @@ function CheckInModal({
               className="flex-1 px-4 py-2 rounded-lg bg-amber-600 text-white hover:bg-amber-700 disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-              Giriş yap
+              {getTranslation('room_mgmt.do_checkin')}
             </button>
           </div>
         </form>
@@ -823,6 +825,7 @@ function EditGuestModal({
   submitting: boolean;
   setSubmitting: (v: boolean) => void;
 }) {
+  const { getTranslation } = useLanguageStore();
   const parts = (initialGuestName || '').trim().split(/\s+/);
   const [firstName, setFirstName] = useState(parts[0] || '');
   const [lastName, setLastName] = useState(parts.slice(1).join(' ') || '');
@@ -855,14 +858,14 @@ function EditGuestModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
       <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Oda {roomNumber} – Düzenle</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{getTranslation('qr.room')} {roomNumber} – {getTranslation('common.edit')}</h3>
           <button type="button" onClick={onClose} className="p-1 rounded-lg hover:bg-gray-100">
             <X className="w-5 h-5 text-gray-500" />
           </button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Ad</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{getTranslation('room_mgmt.first_name')}</label>
             <input
               type="text"
               value={firstName}
@@ -871,7 +874,7 @@ function EditGuestModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Soyad</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{getTranslation('room_mgmt.last_name')}</label>
             <input
               type="text"
               value={lastName}
@@ -880,7 +883,7 @@ function EditGuestModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Giriş tarihi</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{getTranslation('room_mgmt.checkin_date')}</label>
             <input
               type="date"
               value={checkIn}
@@ -889,7 +892,7 @@ function EditGuestModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Çıkış tarihi</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{getTranslation('room_mgmt.checkout_date')}</label>
             <input
               type="date"
               value={checkOut}
@@ -903,7 +906,7 @@ function EditGuestModal({
               onClick={onClose}
               className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
             >
-              İptal
+              {getTranslation('general.cancel')}
             </button>
             <button
               type="submit"
@@ -911,7 +914,7 @@ function EditGuestModal({
               className="flex-1 px-4 py-2 rounded-lg bg-amber-600 text-white hover:bg-amber-700 disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Pencil className="w-4 h-4" />}
-              Kaydet
+              {getTranslation('general.save')}
             </button>
           </div>
         </form>

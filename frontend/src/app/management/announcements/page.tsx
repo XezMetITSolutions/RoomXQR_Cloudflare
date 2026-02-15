@@ -142,30 +142,30 @@ export default function AnnouncementsManagement() {
     setFormData(newFormData);
   };
 
-  // İkon seçenekleri
+  // İkon seçenekleri (label çeviri anahtarı ile)
   const iconOptions = [
-    { name: 'info', label: 'Bilgi', icon: Info, color: 'text-blue-500' },
-    { name: 'megaphone', label: 'Duyuru', icon: Megaphone, color: 'text-orange-500' },
-    { name: 'star', label: 'Yıldız', icon: Star, color: 'text-yellow-500' },
-    { name: 'gift', label: 'Hediye', icon: Gift, color: 'text-green-500' },
-    { name: 'utensils', label: 'Yemek', icon: Utensils, color: 'text-red-500' },
-    { name: 'coffee', label: 'Kahve', icon: Coffee, color: 'text-amber-600' },
-    { name: 'wine', label: 'İçecek', icon: Wine, color: 'text-purple-500' },
-    { name: 'heart', label: 'Kalp', icon: Heart, color: 'text-pink-500' },
-    { name: 'leaf', label: 'Sağlıklı', icon: Leaf, color: 'text-green-600' },
-    { name: 'zap', label: 'Hızlı', icon: Zap, color: 'text-yellow-400' },
-    { name: 'crown', label: 'Premium', icon: Crown, color: 'text-yellow-600' },
-    { name: 'flame', label: 'Sıcak', icon: Flame, color: 'text-red-400' },
-    { name: 'sparkles', label: 'Özel', icon: Sparkles, color: 'text-indigo-500' },
-    { name: 'target', label: 'Hedef', icon: Target, color: 'text-blue-600' },
-    { name: 'trophy', label: 'Başarı', icon: Trophy, color: 'text-yellow-500' },
-    { name: 'bell', label: 'Bildirim', icon: Bell, color: 'text-gray-600' },
-    { name: 'home', label: 'Otel', icon: Home, color: 'text-gray-700' },
-    { name: 'users', label: 'Müşteri', icon: Users, color: 'text-blue-700' },
-    { name: 'settings', label: 'Sistem', icon: Settings, color: 'text-gray-500' },
-    { name: 'wrench', label: 'Bakım', icon: Wrench, color: 'text-orange-600' },
-    { name: 'alert-circle', label: 'Uyarı', icon: AlertCircle, color: 'text-red-500' },
-    { name: 'check-circle', label: 'Onay', icon: CheckCircle, color: 'text-green-500' },
+    { name: 'info', labelKey: 'announcements.type_info', icon: Info, color: 'text-blue-500' },
+    { name: 'megaphone', labelKey: 'announcements.type_megaphone', icon: Megaphone, color: 'text-orange-500' },
+    { name: 'star', labelKey: 'announcements.type_star', icon: Star, color: 'text-yellow-500' },
+    { name: 'gift', labelKey: 'announcements.type_gift', icon: Gift, color: 'text-green-500' },
+    { name: 'utensils', labelKey: 'announcements.type_utensils', icon: Utensils, color: 'text-red-500' },
+    { name: 'coffee', labelKey: 'announcements.type_coffee', icon: Coffee, color: 'text-amber-600' },
+    { name: 'wine', labelKey: 'announcements.type_wine', icon: Wine, color: 'text-purple-500' },
+    { name: 'heart', labelKey: 'announcements.type_heart', icon: Heart, color: 'text-pink-500' },
+    { name: 'leaf', labelKey: 'announcements.type_leaf', icon: Leaf, color: 'text-green-600' },
+    { name: 'zap', labelKey: 'announcements.type_zap', icon: Zap, color: 'text-yellow-400' },
+    { name: 'crown', labelKey: 'announcements.type_crown', icon: Crown, color: 'text-yellow-600' },
+    { name: 'flame', labelKey: 'announcements.type_flame', icon: Flame, color: 'text-red-400' },
+    { name: 'sparkles', labelKey: 'announcements.type_sparkles', icon: Sparkles, color: 'text-indigo-500' },
+    { name: 'target', labelKey: 'announcements.type_target', icon: Target, color: 'text-blue-600' },
+    { name: 'trophy', labelKey: 'announcements.type_trophy', icon: Trophy, color: 'text-yellow-500' },
+    { name: 'bell', labelKey: 'announcements.type_bell', icon: Bell, color: 'text-gray-600' },
+    { name: 'home', labelKey: 'announcements.type_home', icon: Home, color: 'text-gray-700' },
+    { name: 'users', labelKey: 'announcements.type_users', icon: Users, color: 'text-blue-700' },
+    { name: 'settings', labelKey: 'announcements.type_settings', icon: Settings, color: 'text-gray-500' },
+    { name: 'wrench', labelKey: 'announcements.type_wrench', icon: Wrench, color: 'text-orange-600' },
+    { name: 'alert-circle', labelKey: 'announcements.type_alert_circle', icon: AlertCircle, color: 'text-red-500' },
+    { name: 'check-circle', labelKey: 'announcements.type_check_circle', icon: CheckCircle, color: 'text-green-500' },
   ];
 
   // İkon render fonksiyonu
@@ -223,7 +223,7 @@ export default function AnnouncementsManagement() {
             const metadata = (a.metadata as any) || {};
             return {
               id: a.id,
-              title: a.title || 'Duyuru',
+              title: a.title || getTranslation('announcements.default_title'),
               content: a.message || '',
               type: (metadata.announcementType || (a.type === 'announcement' ? 'info' : 'info')) as 'info' | 'warning' | 'promotion' | 'maintenance' | 'advertisement',
               category: (metadata.category || 'general') as 'general' | 'menu' | 'hotel' | 'promotion',
@@ -300,17 +300,17 @@ export default function AnnouncementsManagement() {
   const getTypeLabel = (type: string) => {
     switch (type) {
       case 'info':
-        return 'Bilgi';
+        return getTranslation('announcements.type_info');
       case 'warning':
-        return 'Uyarı';
+        return getTranslation('announcements.type_warning');
       case 'promotion':
-        return 'Promosyon';
+        return getTranslation('announcements.type_promotion');
       case 'maintenance':
-        return 'Bakım';
+        return getTranslation('announcements.type_maintenance');
       case 'advertisement':
-        return 'Reklam';
+        return getTranslation('announcements.type_advertisement');
       default:
-        return 'Diğer';
+        return getTranslation('announcements.type_other');
     }
   };
 
@@ -958,7 +958,7 @@ export default function AnnouncementsManagement() {
                         }`}>
                           <IconComponent className="w-6 h-6" />
                         </div>
-                        <span className="text-xs text-gray-600 dark:text-gray-300 text-center">{option.label}</span>
+                        <span className="text-xs text-gray-600 dark:text-gray-300 text-center">{getTranslation(option.labelKey)}</span>
                       </label>
                     );
                   })}

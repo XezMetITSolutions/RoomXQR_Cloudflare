@@ -78,8 +78,8 @@ export default function PanelsPage() {
     }, [token]);
 
     const panels = [
-        { name: 'Mutfak / Sipariş Paneli', route: '/kitchen', key: 'kitchen', icon: ChefHat, color: 'bg-orange-600' },
-        { name: 'Resepsiyon / Talep Paneli', route: '/reception', key: 'reception', icon: Hotel, color: 'bg-amber-500' },
+        { name: getTranslation('page.panels.kitchen_panel'), route: '/kitchen', key: 'kitchen', icon: ChefHat, color: 'bg-orange-600' },
+        { name: getTranslation('page.panels.reception_panel'), route: '/reception', key: 'reception', icon: Hotel, color: 'bg-amber-500' },
     ];
 
     const getFullUrl = (route: string) => {
@@ -114,8 +114,8 @@ export default function PanelsPage() {
                                 <Globe className="w-6 h-6 text-white" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">Misafir Karşılama Arayüzü</h3>
-                                <p className="text-sm text-gray-500">Müşterilerin QR kod okuttuğunda gördüğü ana ekran.</p>
+                                <h3 className="text-lg font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">{getTranslation('page.panels.guest_interface')}</h3>
+                                <p className="text-sm text-gray-500">{getTranslation('page.panels.guest_interface_desc')}</p>
                                 <div className="mt-1 flex items-center space-x-2 text-indigo-600 font-mono text-xs">
                                     <span>{getFullUrl('/guest/101')}</span>
                                     <ExternalLink className="w-3 h-3" />
@@ -124,7 +124,7 @@ export default function PanelsPage() {
                         </div>
                         <div className="flex -space-x-2 overflow-hidden items-center">
                             <span className="text-xs font-semibold text-indigo-700 bg-indigo-100 px-3 py-1 rounded-full uppercase tracking-wider">
-                                🌍 Herkese Açık (Public)
+                                🌍 {getTranslation('page.panels.public')}
                             </span>
                         </div>
                     </div>
@@ -160,10 +160,10 @@ export default function PanelsPage() {
                                 <div className="mt-4 pt-4 border-t border-gray-100">
                                     <div className="flex items-center justify-between mb-2">
                                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center">
-                                            <ShieldCheck className="w-3 h-3 mr-1" /> Erişim İzni Olanlar
+                                            <ShieldCheck className="w-3 h-3 mr-1" /> {getTranslation('page.panels.access_holders')}
                                         </span>
                                         <span className="text-[10px] font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-                                            {isLoading ? '...' : `${accessList.length} Kişi`}
+                                            {isLoading ? '...' : `${accessList.length} ${getTranslation('room_mgmt.people_count')}`}
                                         </span>
                                     </div>
 
@@ -182,10 +182,10 @@ export default function PanelsPage() {
                                                 </div>
                                             ))
                                         ) : (
-                                            <span className="text-[10px] text-gray-400 italic">Sadece Adminler</span>
+                                            <span className="text-[10px] text-gray-400 italic">{getTranslation('page.panels.only_admins')}</span>
                                         )}
                                         {accessList.length > 5 && (
-                                            <span className="text-[10px] text-gray-400 flex items-center">+{accessList.length - 5} daha</span>
+                                            <span className="text-[10px] text-gray-400 flex items-center">+{accessList.length - 5} {getTranslation('page.panels.more')}</span>
                                         )}
                                     </div>
                                 </div>
