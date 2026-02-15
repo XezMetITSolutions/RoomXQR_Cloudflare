@@ -165,6 +165,17 @@ export const translations: Record<string, Translations> = {
     'concierge.footer': 'Talepleriniz resepsiyona iletilecektir. En kısa sürede size dönüş yapılacaktır.',
     'general.back': 'Geri',
 
+    // Cleaning Page
+    'cleaning.title': 'Oda Temizliği & İstekler',
+    'cleaning.request_cleaning': 'Oda Temizliği İsteniyor',
+    'cleaning.clean_my_room': 'Odamı Temizle',
+    'cleaning.dnd': 'Rahatsız Etmeyin',
+    'cleaning.dnd_title': 'Rahatsız Etmeyin',
+    'cleaning.dnd_message': 'Talebiniz alınmıştır. Odanız rahatsız edilmeyecektir.',
+    'cleaning.need_something': 'Bir şeye ihtiyacınız mı var?',
+    'cleaning.add_note': 'Not ekle (opsiyonel)...',
+    'cleaning.order_now': 'Hemen İste',
+
     // Hızlı seçim öğeleri
     'quick.towel': 'Havlu',
     'quick.slippers': 'Terlik',
@@ -174,6 +185,7 @@ export const translations: Record<string, Translations> = {
     'quick.shampoo': 'Şampuan',
     'quick.soap': 'Sabun',
     'quick.water': 'Su',
+    'quick.toilet_paper': 'Tuvalet Kağıdı',
 
     // Login
     'login.title': 'İşletme Paneline Giriş',
@@ -883,6 +895,17 @@ export const translations: Record<string, Translations> = {
     'concierge.footer': 'Your requests will be sent to reception. We will get back to you shortly.',
     'general.back': 'Back',
 
+    // Cleaning Page
+    'cleaning.title': 'Housekeeping & Requests',
+    'cleaning.request_cleaning': 'Request Cleaning',
+    'cleaning.clean_my_room': 'Clean My Room',
+    'cleaning.dnd': 'Do Not Disturb',
+    'cleaning.dnd_title': 'Do Not Disturb',
+    'cleaning.dnd_message': 'Your request has been received. Your room will not be disturbed.',
+    'cleaning.need_something': 'Need anything?',
+    'cleaning.add_note': 'Add note (optional)...',
+    'cleaning.order_now': 'Order Now',
+
     // Quick select items
     'quick.towel': 'Towel',
     'quick.slippers': 'Slippers',
@@ -892,6 +915,7 @@ export const translations: Record<string, Translations> = {
     'quick.shampoo': 'Shampoo',
     'quick.soap': 'Soap',
     'quick.water': 'Water',
+    'quick.toilet_paper': 'Toilet Paper',
 
     // Login
     'login.title': 'Business Panel Login',
@@ -1544,6 +1568,17 @@ export const translations: Record<string, Translations> = {
     'room.quantity': 'Menge',
     'room.send_request': 'Anfrage senden',
 
+    // Cleaning Page
+    'cleaning.title': 'Zimmerreinigung & Anfragen',
+    'cleaning.request_cleaning': 'Reinigung anfordern',
+    'cleaning.clean_my_room': 'Reinigen Sie mein Zimmer',
+    'cleaning.dnd': 'Bitte nicht stören',
+    'cleaning.dnd_title': 'Bitte nicht stören',
+    'cleaning.dnd_message': 'Ihre Anfrage wurde empfangen. Ihr Zimmer wird nicht gestört.',
+    'cleaning.need_something': 'Benötigen Sie etwas?',
+    'cleaning.add_note': 'Notiz hinzufügen (optional)...',
+    'cleaning.order_now': 'Jetzt bestellen',
+
     // Quick select items
     'quick.towel': 'Handtuch',
     'quick.slippers': 'Hausschuhe',
@@ -1553,6 +1588,7 @@ export const translations: Record<string, Translations> = {
     'quick.shampoo': 'Shampoo',
     'quick.soap': 'Seife',
     'quick.water': 'Wasser',
+    'quick.toilet_paper': 'Toilettenpapier',
 
     // Login
     'login.title': 'Business Panel Login',
