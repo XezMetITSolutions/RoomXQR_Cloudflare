@@ -29,11 +29,16 @@ export default function KitchenPanel() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [rooms, setRooms] = useState<RoomStatus[]>([]);
 
-  const getRoomLabel = (lang: string) => {
-    switch (lang) {
-      case 'tr': return 'Oda';
-      case 'de': return 'Zimmer';
-      default: return 'Room';
+  const t = (key: string) => translate(key, currentLanguage);
+
+  const getPaymentLabel = (method?: string) => {
+    if (!method) return '';
+    switch (method) {
+      case 'cash': return t('k_payment_cash');
+      case 'pos': return t('k_payment_pos');
+      case 'room_charge': return t('k_payment_checkout');
+      case 'card': return t('k_payment_card');
+      default: return '';
     }
   };
 
@@ -74,8 +79,8 @@ export default function KitchenPanel() {
   // Menüyü backend'den yükle
   // Browser tab title'ını ayarla
   useEffect(() => {
-    document.title = 'Mutfak Paneli - RoomXQR';
-  }, []);
+    document.title = `${translate('kitchen_panel_title', currentLanguage)} - RoomXQR`;
+  }, [currentLanguage]);
 
   useEffect(() => {
     const loadMenu = async () => {
@@ -160,7 +165,7 @@ export default function KitchenPanel() {
           const formattedOrders: Order[] = backendOrders.map((order: any) => {
             const items = Array.isArray(order.items) ? order.items.map((item: any) => ({
               menuItemId: item.menuItemId,
-              name: item.menuItem?.name || 'Bilinmeyen Ürün',
+              name: item.menuItem?.name || '',
               quantity: item.quantity,
               price: parseFloat(item.price) || 0,
               specialRequests: item.notes || '',
@@ -363,7 +368,7 @@ export default function KitchenPanel() {
       return itemName;
     }
     const menuItem = menu.find(m => m.id === menuItemId);
-    return menuItem?.name || 'Bilinmeyen Ürün';
+    return menuItem?.name || t('k_unknown_product');
   };
 
   return (
@@ -404,7 +409,7 @@ export default function KitchenPanel() {
         {/* Tüm Odalar Grid */}
         <div className="hotel-card p-6 mb-6">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
-            <h2 className="text-lg font-bold text-gray-900">Tüm Odalar</h2>
+            <h2 className="text-lg font-bold text-gray-900">{t('k_all_rooms')}</h2>
 
             {/* Floor Tabs (Registerkarteler) */}
             <div className="flex overflow-x-auto pb-2 sm:pb-0 gap-2 w-full sm:w-auto no-scrollbar">
@@ -415,7 +420,7 @@ export default function KitchenPanel() {
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
               >
-                Tüm Odalar
+                {t('k_all_rooms')}
               </button>
               {Array.from(new Set(rooms.map(r => r.floor || 1))).sort((a, b) => a - b).map(floor => (
                 <button
@@ -426,7 +431,7 @@ export default function KitchenPanel() {
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                 >
-                  {floor}. Kat
+                  {floor}. {t('k_floor')}
                 </button>
               ))}
             </div>
@@ -436,7 +441,7 @@ export default function KitchenPanel() {
             {isLoading && rooms.length === 0 ? (
               <div className="col-span-full text-center text-gray-400 py-8 flex flex-col items-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-2"></div>
-                <span>Oda bilgisi yükleniyor...</span>
+                <span>{t('k_loading_rooms')}</span>
               </div>
             ) : rooms.length > 0 ? (
               rooms
@@ -459,15 +464,15 @@ export default function KitchenPanel() {
                     >
                       <div className={`font-bold text-lg ${hasActiveOrder ? 'text-red-700' : ''}`}>{roomNum}</div>
                       <div className="text-xs truncate font-medium">
-                        {hasActiveOrder ? '❗️ Sipariş Var' : (room.guestName || (room.status === 'occupied' ? 'Dolu' : 'Boş'))}
+                        {hasActiveOrder ? `❗️ ${t('k_order_exists')}` : (room.guestName || (room.status === 'occupied' ? t('k_occupied') : t('k_vacant')))}
                       </div>
                     </div>
                   );
                 })
             ) : (
               <div className="col-span-full text-center text-gray-400 py-8">
-                <p>Henüz oda bulunmuyor.</p>
-                <p className="text-sm mt-2">QR Kod sayfasından oda oluşturabilirsiniz.</p>
+                <p>{t('k_no_rooms')}</p>
+                <p className="text-sm mt-2">{t('k_no_rooms_hint')}</p>
               </div>
             )}
           </div>
@@ -481,7 +486,7 @@ export default function KitchenPanel() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
                   type="text"
-                  placeholder="Oda numarası veya ürün ara..."
+                  placeholder={t('k_search_placeholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hotel-gold focus:border-transparent"
@@ -490,12 +495,12 @@ export default function KitchenPanel() {
             </div>
             <div className="flex space-x-2">
               {[
-                { id: 'all', label: 'Tümü', count: orders.length },
-                { id: 'pending', label: 'Bekleyen', count: orders.filter(o => o.status === 'pending').length },
-                { id: 'preparing', label: 'Hazırlanan', count: orders.filter(o => o.status === 'preparing').length },
-                { id: 'ready', label: 'Hazır', count: orders.filter(o => o.status === 'ready').length },
-                { id: 'delivered', label: 'Teslim Edilen', count: orders.filter(o => o.status === 'delivered').length },
-                { id: 'cancelled', label: 'İptal Edilen', count: orders.filter(o => o.status === 'cancelled').length }
+                { id: 'all', label: t('k_filter_all'), count: orders.length },
+                { id: 'pending', label: t('k_filter_pending'), count: orders.filter(o => o.status === 'pending').length },
+                { id: 'preparing', label: t('k_filter_preparing'), count: orders.filter(o => o.status === 'preparing').length },
+                { id: 'ready', label: t('k_filter_ready'), count: orders.filter(o => o.status === 'ready').length },
+                { id: 'delivered', label: t('k_filter_delivered'), count: orders.filter(o => o.status === 'delivered').length },
+                { id: 'cancelled', label: t('k_filter_cancelled'), count: orders.filter(o => o.status === 'cancelled').length }
               ].map((filterOption) => (
                 <button
                   key={filterOption.id}
@@ -520,34 +525,34 @@ export default function KitchenPanel() {
                 <div className="flex-1">
                   <div className="flex flex-wrap items-center gap-2 mb-3">
                     <span className="text-lg font-semibold text-gray-900">
-                      {getRoomLabel(currentLanguage)} {order.roomId}
+                      {t('room')} {order.roomId}
                     </span>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium border flex items-center space-x-1 ${getStatusColor(order.status)}`}>
                       {getStatusIcon(order.status)}
                       <span>
-                        {order.status === 'pending' ? 'BEKLEMEDE' :
-                          order.status === 'confirmed' ? 'ONAYLANDI' :
-                            order.status === 'preparing' ? 'HAZIRLANIYOR' :
-                              order.status === 'ready' ? 'HAZIR' :
-                                order.status === 'delivered' ? 'TESLİM EDİLDİ' : 'İPTAL'}
+                        {order.status === 'pending' ? t('k_status_pending') :
+                          order.status === 'confirmed' ? t('k_status_confirmed') :
+                            order.status === 'preparing' ? t('k_status_preparing') :
+                              order.status === 'ready' ? t('k_status_ready') :
+                                order.status === 'delivered' ? t('k_status_delivered') : t('k_status_cancelled')}
                       </span>
                     </span>
                     <span className="text-sm text-gray-600">
                       {new Date(order.createdAt).toLocaleString('tr-TR')}
                     </span>
                     <span className="text-xs text-gray-500">
-                      {order.paymentMethod === 'cash' ? 'Nakit' : order.paymentMethod === 'pos' ? 'POS' : order.paymentMethod === 'room_charge' ? 'Çıkışta' : order.paymentMethod === 'card' ? 'Kart' : ''}
+                      {getPaymentLabel(order.paymentMethod)}
                     </span>
                     {order.status === 'preparing' && (
                       <span className="text-sm text-orange-600 font-medium">
-                        Hazırlık süresi: {calculateTotalPreparationTime(order)} dk
+                        {t('k_prep_time')}: {calculateTotalPreparationTime(order)} {t('k_min')}
                       </span>
                     )}
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                      <h4 className="font-medium text-gray-900 mb-2">Sipariş Detayları:</h4>
+                      <h4 className="font-medium text-gray-900 mb-2">{t('k_order_details')}:</h4>
                       <div className="space-y-1">
                         {order.items.map((item, index) => (
                           <div key={index} className="flex justify-between text-sm">
@@ -563,26 +568,26 @@ export default function KitchenPanel() {
                     </div>
 
                     <div>
-                      <h4 className="font-medium text-gray-900 mb-2">Sipariş Bilgileri:</h4>
+                      <h4 className="font-medium text-gray-900 mb-2">{t('k_order_info')}:</h4>
                       <div className="space-y-1 text-sm text-gray-600">
                         <div className="flex justify-between">
-                          <span>Sipariş No:</span>
+                          <span>{t('k_order_no')}:</span>
                           <span className="font-medium text-gray-900 font-mono">{order.id.slice(0, 8)}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Toplam Tutar:</span>
+                          <span>{t('k_total_amount')}:</span>
                           <span className="font-medium text-gray-900">{order.totalAmount.toFixed(2)}₺</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Ödeme:</span>
+                          <span>{t('k_payment')}:</span>
                           <span className="font-medium text-gray-900">
-                            {order.paymentMethod === 'cash' ? 'Nakit' : order.paymentMethod === 'pos' ? 'POS' : order.paymentMethod === 'room_charge' ? 'Çıkışta' : order.paymentMethod === 'card' ? 'Kart' : '—'}
+                            {getPaymentLabel(order.paymentMethod) || '—'}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Tahmini Süre:</span>
+                          <span>{t('k_estimated_time')}:</span>
                           <span className="font-medium text-gray-900">
-                            {calculateTotalPreparationTime(order)} dk
+                            {calculateTotalPreparationTime(order)} {t('k_min')}
                           </span>
                         </div>
                       </div>
@@ -591,7 +596,7 @@ export default function KitchenPanel() {
 
                   {order.specialInstructions && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                      <p className="text-sm font-medium text-blue-900">Özel Talimatlar:</p>
+                      <p className="text-sm font-medium text-blue-900">{t('k_special_instructions')}:</p>
                       <p className="text-sm text-blue-700">{order.specialInstructions}</p>
                     </div>
                   )}
@@ -604,7 +609,7 @@ export default function KitchenPanel() {
                       className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors text-sm flex items-center space-x-2"
                     >
                       <Play className="w-4 h-4" />
-                      <span>Hazırlığa Başla</span>
+                      <span>{t('k_start_preparing')}</span>
                     </button>
                   )}
 
@@ -615,7 +620,7 @@ export default function KitchenPanel() {
                         className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors text-sm flex items-center space-x-2"
                       >
                         <CheckCircle className="w-4 h-4" />
-                        <span>Hazır</span>
+                        <span>{t('k_mark_ready')}</span>
                       </button>
                       <button
                         onClick={() => setCancelOrderId(order.id)}
@@ -629,16 +634,16 @@ export default function KitchenPanel() {
 
                   {order.status === 'ready' && (
                     <div className="bg-green-100 text-green-800 px-4 py-2 rounded-lg text-sm font-medium text-center">
-                      ✅ Hazır - Personel Bekleniyor
+                      ✅ {t('k_ready_waiting')}
                     </div>
                   )}
 
                   {order.status === 'delivered' && (
                     <div className="bg-green-100 text-green-800 px-4 py-2 rounded-lg text-sm font-medium text-center">
-                      ✅ Teslim Edildi
+                      ✅ {t('k_delivered_label')}
                       <div className="text-xs mt-1">
                         {order.deliveryTime && (
-                          <>Hazırlık süresi: {Math.round((new Date(order.deliveryTime).getTime() - new Date(order.createdAt).getTime()) / 60000)} dk</>
+                          <>{t('k_prep_time')}: {Math.round((new Date(order.deliveryTime).getTime() - new Date(order.createdAt).getTime()) / 60000)} {t('k_min')}</>
                         )}
                       </div>
                     </div>
@@ -646,7 +651,7 @@ export default function KitchenPanel() {
 
                   {order.status === 'cancelled' && (
                     <div className="bg-red-100 text-red-800 px-4 py-2 rounded-lg text-sm font-medium text-center">
-                      ❌ İptal Edildi
+                      ❌ {t('k_cancelled_label')}
                     </div>
                   )}
 
@@ -655,7 +660,7 @@ export default function KitchenPanel() {
                     className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors text-sm flex items-center space-x-2"
                   >
                     <Eye className="w-4 h-4" />
-                    <span>Detaylar</span>
+                    <span>{t('k_details')}</span>
                   </button>
                 </div>
               </div>
@@ -666,9 +671,9 @@ export default function KitchenPanel() {
         {filteredOrders.length === 0 && (
           <div className="hotel-card p-12 text-center">
             <ChefHat className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Sipariş Bulunamadı</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('k_no_orders')}</h3>
             <p className="text-gray-600">
-              {searchTerm ? 'Arama kriterlerinize uygun sipariş bulunamadı.' : 'Henüz hiç sipariş bulunmuyor.'}
+              {searchTerm ? t('k_no_orders_search') : t('k_no_orders_empty')}
             </p>
           </div>
         )}
@@ -685,12 +690,12 @@ export default function KitchenPanel() {
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Sipariş Detayları - {getRoomLabel(currentLanguage)} {selectedOrder.roomId}
+              {t('k_order_details')} - {t('room')} {selectedOrder.roomId}
             </h3>
 
             <div className="space-y-4">
               <div>
-                <h4 className="font-medium text-gray-900 mb-2">Sipariş Ürünleri:</h4>
+                <h4 className="font-medium text-gray-900 mb-2">{t('k_order_items')}:</h4>
                 <div className="space-y-2">
                   {selectedOrder.items.map((item, index) => (
                     <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
@@ -712,14 +717,14 @@ export default function KitchenPanel() {
 
               <div className="border-t pt-4">
                 <div className="flex justify-between items-center text-lg font-semibold">
-                  <span>Toplam Tutar:</span>
+                  <span>{t('k_total_amount')}:</span>
                   <span>{selectedOrder.totalAmount.toFixed(2)}₺</span>
                 </div>
               </div>
 
               {selectedOrder.specialInstructions && (
                 <div>
-                  <h4 className="font-medium text-gray-900 mb-2">Özel Talimatlar:</h4>
+                  <h4 className="font-medium text-gray-900 mb-2">{t('k_special_instructions')}:</h4>
                   <p className="text-gray-700 bg-blue-50 p-3 rounded-lg">
                     {selectedOrder.specialInstructions}
                   </p>
@@ -732,7 +737,7 @@ export default function KitchenPanel() {
                 onClick={() => setSelectedOrder(null)}
                 className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
               >
-                Kapat
+                {t('k_close')}
               </button>
             </div>
           </div>
@@ -749,7 +754,7 @@ export default function KitchenPanel() {
             className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Menü Yönetimi</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('k_menu_management')}</h3>
 
             <div className="space-y-4">
               {menu.map((item) => (
@@ -759,7 +764,7 @@ export default function KitchenPanel() {
                     <p className="text-sm text-gray-600">{item.description}</p>
                     <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
                       <span>{item.price}₺</span>
-                      <span>{item.preparationTime} dk</span>
+                      <span>{item.preparationTime} {t('k_min')}</span>
                       <span className="capitalize">{item.category}</span>
                     </div>
                   </div>
@@ -775,7 +780,7 @@ export default function KitchenPanel() {
                         : 'bg-red-100 text-red-800'
                         }`}
                     >
-                      {item.available ? 'Mevcut' : 'Mevcut Değil'}
+                      {item.available ? t('available') : t('unavailable')}
                     </button>
                     <button className="text-gray-400 hover:text-gray-600">
                       <Edit className="w-4 h-4" />
@@ -790,7 +795,7 @@ export default function KitchenPanel() {
                 onClick={() => setShowMenuModal(false)}
                 className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
               >
-                Kapat
+                {t('k_close')}
               </button>
             </div>
           </div>
@@ -808,11 +813,11 @@ export default function KitchenPanel() {
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Sipariş İptal Et
+              {t('k_cancel_order')}
             </h3>
 
             <p className="text-gray-700 mb-6">
-              Bu siparişi iptal etmek istediğinizden emin misiniz? İptal edilen siparişler geri alınamaz.
+              {t('k_cancel_confirm')}
             </p>
 
             <div className="flex space-x-3">
@@ -820,7 +825,7 @@ export default function KitchenPanel() {
                 onClick={() => setCancelOrderId(null)}
                 className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
               >
-                Vazgeç
+                {t('k_give_up')}
               </button>
               <button
                 onClick={() => {
@@ -829,7 +834,7 @@ export default function KitchenPanel() {
                 }}
                 className="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
               >
-                İptal Et
+                {t('k_cancel_btn')}
               </button>
             </div>
           </div>
