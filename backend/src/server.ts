@@ -7,7 +7,7 @@ import rateLimit from 'express-rate-limit'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
 import dotenv from 'dotenv'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, Prisma } from '@prisma/client'
 import { Request, Response } from 'express'
 import { tenantMiddleware, getTenantId } from './middleware/tenant'
 import { authMiddleware, requirePermission, generateToken } from './middleware/auth'
@@ -2141,7 +2141,8 @@ app.get('/api/rooms', tenantMiddleware, async (req: Request, res: Response) => {
       }
     }
 
-    let rooms: Awaited<ReturnType<typeof prisma.room.findMany>>
+    type RoomWithGuests = Prisma.RoomGetPayload<{ include: { guests: true } }>
+    let rooms: RoomWithGuests[]
     try {
       rooms = await prisma.room.findMany({
         where: {
