@@ -72,14 +72,14 @@ export default function ManagementOrdersPage() {
         ) : (
           <div className="divide-y divide-gray-200 overflow-x-auto">
             {orders.map((order: any) => {
-              const room = (order.roomId || '').replace(/^room-/, '') || '—';
+              const room = (order.roomId || '').replace(/^room[-\s]?/i, '') || '—';
               const itemsText = order.items?.map((i: any) => `${i.quantity}x ${i.menuItem?.name || i.name || 'Ürün'}`).join(', ') || '—';
               const status = order.status || 'PENDING';
               const amount = `₺${(parseFloat(order.totalAmount) || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
               return (
                 <div key={order.id} className="px-6 py-4 flex flex-wrap items-center justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <span className="text-sm font-medium text-gray-900">{getTranslation('dashboard.room')} {room}</span>
+                    <span className="text-sm font-medium text-gray-900">{getTranslation('analytics.room')} {room}</span>
                     <p className="text-sm text-gray-600 mt-1 truncate">{itemsText}</p>
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">

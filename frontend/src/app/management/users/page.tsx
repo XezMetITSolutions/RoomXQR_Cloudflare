@@ -126,13 +126,13 @@ export default function UsersManagement() {
   }, [token, user]);
 
   const roles = [
-    { value: 'all', label: 'Tüm Roller' },
-    { value: 'ADMIN', label: 'Yönetici' },
-    { value: 'MANAGER', label: 'Müdür' },
-    { value: 'STAFF', label: 'Personel' },
-    { value: 'RECEPTION', label: 'Resepsiyon' },
-    { value: 'KITCHEN', label: 'Mutfak' },
-    { value: 'WAITER', label: 'Garson' },
+    { value: 'all', label: getTranslation('common.all') },
+    { value: 'ADMIN', label: getTranslation('users.role_admin') },
+    { value: 'MANAGER', label: getTranslation('users.role_manager') },
+    { value: 'STAFF', label: getTranslation('users.role_staff') },
+    { value: 'RECEPTION', label: getTranslation('users.role_reception') },
+    { value: 'KITCHEN', label: getTranslation('users.role_kitchen') },
+    { value: 'WAITER', label: getTranslation('users.role_waiter') },
   ];
 
   const getRoleIcon = (role: string) => {
@@ -733,7 +733,7 @@ export default function UsersManagement() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Ad *
+                    {getTranslation('users.first_name_label')}
                   </label>
                   <input
                     type="text"
@@ -741,13 +741,13 @@ export default function UsersManagement() {
                     defaultValue={selectedUser?.firstName || ''}
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hotel-gold focus:border-transparent"
-                    placeholder="Ad"
+                    placeholder={getTranslation('users.first_name_label').replace(' *', '')}
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Soyad *
+                    {getTranslation('users.last_name_label')}
                   </label>
                   <input
                     type="text"
@@ -755,14 +755,14 @@ export default function UsersManagement() {
                     defaultValue={selectedUser?.lastName || ''}
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hotel-gold focus:border-transparent"
-                    placeholder="Soyad"
+                    placeholder={getTranslation('users.last_name_label').replace(' *', '')}
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  E-posta *
+                  {getTranslation('users.email_label')}
                 </label>
                 <input
                   type="email"
@@ -776,7 +776,7 @@ export default function UsersManagement() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Telefon
+                  {getTranslation('users.phone_label')}
                 </label>
                 <input
                   type="tel"
@@ -789,7 +789,7 @@ export default function UsersManagement() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Rol *
+                  {getTranslation('users.role_label')}
                 </label>
                 <select
                   name="role"
@@ -808,14 +808,14 @@ export default function UsersManagement() {
               {showAddModal && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Şifre *
+                    {getTranslation('users.password_label')}
                   </label>
                   <input
                     type="password"
                     name="password"
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hotel-gold focus:border-transparent"
-                    placeholder="Güçlü bir şifre girin"
+                    placeholder={getTranslation('users.password_placeholder')}
                   />
                 </div>
               )}
@@ -831,7 +831,7 @@ export default function UsersManagement() {
                 }}
                 className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                İptal
+                {getTranslation('users.cancel_btn')}
               </button>
               <button
                 type="button"
@@ -855,7 +855,7 @@ export default function UsersManagement() {
                 }}
                 className="px-4 py-2 bg-hotel-gold text-white rounded-lg hover:bg-hotel-navy transition-colors"
               >
-                {showAddModal ? 'Oluştur' : 'Güncelle'}
+                {showAddModal ? getTranslation('users.create_btn') : getTranslation('users.update_btn')}
               </button>
             </div>
           </div>
@@ -877,7 +877,7 @@ export default function UsersManagement() {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-lg font-medium text-gray-900">
-                  Yetki Yönetimi
+                  {getTranslation('users.manage_permissions')}
                 </h3>
                 <p className="text-sm text-gray-600 mt-1">
                   {selectedUser.firstName} {selectedUser.lastName} için sayfa yetkilerini düzenleyin
@@ -937,14 +937,14 @@ export default function UsersManagement() {
                   }}
                   className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
-                  İptal
+                  {getTranslation('users.cancel_btn')}
                 </button>
                 <button
                   type="button"
                   onClick={savePermissions}
                   className="px-4 py-2 bg-hotel-gold text-white rounded-lg hover:bg-hotel-navy transition-colors"
                 >
-                  Yetkileri Kaydet
+                  {getTranslation('common.save')}
                 </button>
               </div>
             </div>

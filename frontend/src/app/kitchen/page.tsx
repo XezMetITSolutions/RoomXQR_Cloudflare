@@ -28,6 +28,15 @@ export default function KitchenPanel() {
   const [currentLanguage, setCurrentLanguage] = useState<Language>('tr');
   const [orders, setOrders] = useState<Order[]>([]);
   const [rooms, setRooms] = useState<RoomStatus[]>([]);
+
+  const getRoomLabel = (lang: string) => {
+    switch (lang) {
+      case 'tr': return 'Oda';
+      case 'de': return 'Zimmer';
+      default: return 'Room';
+    }
+  };
+
   const [menu, setMenu] = useState<MenuItem[]>([]);
   const [filter, setFilter] = useState<'all' | 'pending' | 'preparing' | 'ready' | 'delivered' | 'cancelled'>('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -167,7 +176,7 @@ export default function KitchenPanel() {
 
             return {
               id: order.id,
-              roomId: order.roomId.replace('room-', ''),
+              roomId: order.roomId.replace(/^room[-\s]?/i, ''),
               guestId: order.guestId,
               items: items,
               totalAmount: parseFloat(order.totalAmount) || 0,
@@ -433,9 +442,9 @@ export default function KitchenPanel() {
               rooms
                 .filter(room => selectedFloor === 'all' || (room.floor || 1) === selectedFloor)
                 .map((room) => {
-                  const roomNum = String(room.number ?? room.roomId.replace(/^room-/, '')).trim();
+                  const roomNum = String(room.number ?? room.roomId.replace(/^room[-\s]?/i, '')).trim();
                   const hasActiveOrder = orders.some(o =>
-                    String(o.roomId || '').replace(/^room-/, '') === roomNum && o.status === 'pending'
+                    String(o.roomId || '').replace(/^room[-\s]?/i, '') === roomNum && o.status === 'pending'
                   );
                   return (
                     <div
@@ -511,7 +520,7 @@ export default function KitchenPanel() {
                 <div className="flex-1">
                   <div className="flex flex-wrap items-center gap-2 mb-3">
                     <span className="text-lg font-semibold text-gray-900">
-                      Oda {order.roomId}
+                      {getRoomLabel(currentLanguage)} {order.roomId}
                     </span>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium border flex items-center space-x-1 ${getStatusColor(order.status)}`}>
                       {getStatusIcon(order.status)}
@@ -676,7 +685,7 @@ export default function KitchenPanel() {
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Sipariş Detayları - Oda {selectedOrder.roomId}
+              Sipariş Detayları - {getRoomLabel(currentLanguage)} {selectedOrder.roomId}
             </h3>
 
             <div className="space-y-4">

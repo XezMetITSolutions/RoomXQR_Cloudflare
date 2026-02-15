@@ -7,12 +7,12 @@ import { useThemeStore } from '@/store/themeStore';
 import { useLanguageStore } from '@/store/languageStore';
 import { Moon, Sun } from 'lucide-react';
 
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  EyeOff, 
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
+  EyeOff,
   Calendar,
   Clock,
   Megaphone,
@@ -100,23 +100,23 @@ export default function AnnouncementsManagement() {
   // Otomatik çeviri fonksiyonu - Türkçe metin değiştiğinde tetiklenir
   const autoTranslateOnChange = async (field: 'title' | 'content' | 'linkText', value: string) => {
     if (!value.trim()) return;
-    
+
     const newFormData: any = { ...formData, [field]: value };
     const supportedLanguages = getSupportedLanguagesForTranslation();
-    
+
     // Türkçe'yi ekle
     if (!newFormData.translations) newFormData.translations = {};
     newFormData.translations['tr'] = {
       ...newFormData.translations['tr'],
       [field]: value
     };
-    
+
     // Otomatik çevirileri yap (sadece desteklenen diller için)
     for (const lang of supportedLanguages) {
       if (lang === 'tr') continue;
-      
+
       if (!newFormData.translations[lang]) newFormData.translations[lang] = {};
-      
+
       try {
         const translateWithTimeout = (text: string, targetLang: string, timeout: number = 5000): Promise<string> => {
           return Promise.race([
@@ -128,7 +128,7 @@ export default function AnnouncementsManagement() {
         };
 
         const translatedText = await translateWithTimeout(value, lang).catch(() => null);
-        
+
         if (translatedText && translatedText !== value && translatedText.trim() !== '') {
           newFormData.translations[lang][field] = translatedText;
         }
@@ -138,7 +138,7 @@ export default function AnnouncementsManagement() {
         }
       }
     }
-    
+
     setFormData(newFormData);
   };
 
@@ -171,10 +171,10 @@ export default function AnnouncementsManagement() {
   // İkon render fonksiyonu
   const renderIcon = (iconName?: string) => {
     if (!iconName) return <Megaphone className="w-5 h-5 text-gray-500" />;
-    
+
     const iconOption = iconOptions.find(option => option.name === iconName);
     if (!iconOption) return <Megaphone className="w-5 h-5 text-gray-500" />;
-    
+
     const IconComponent = iconOption.icon;
     return <IconComponent className={`w-5 h-5 ${iconOption.color}`} />;
   };
@@ -192,11 +192,11 @@ export default function AnnouncementsManagement() {
         setIsLoading(false);
         return;
       }
-      
+
       try {
         setIsLoading(true);
         const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
-        
+
         // URL'den tenant slug'ını al
         let tenantSlug = 'demo';
         if (typeof window !== 'undefined') {
@@ -217,7 +217,7 @@ export default function AnnouncementsManagement() {
         if (response.ok) {
           const data = await response.json();
           const announcementsData = Array.isArray(data) ? data : [];
-          
+
           // API'den gelen veriyi formatla
           const formattedAnnouncements = announcementsData.map((a: any) => {
             const metadata = (a.metadata as any) || {};
@@ -240,7 +240,7 @@ export default function AnnouncementsManagement() {
               translations: metadata.translations || undefined
             };
           });
-          
+
           setAnnouncements(formattedAnnouncements);
         } else {
           setAnnouncements([]);
@@ -337,10 +337,10 @@ export default function AnnouncementsManagement() {
 
   const handleToggleActive = async (id: string) => {
     if (!token) return;
-    
+
     try {
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
-      
+
       // URL'den tenant slug'ını al
       let tenantSlug = 'demo';
       if (typeof window !== 'undefined') {
@@ -368,7 +368,7 @@ export default function AnnouncementsManagement() {
       });
 
       if (response.ok) {
-        setAnnouncements(announcements.map(a => 
+        setAnnouncements(announcements.map(a =>
           a.id === id ? { ...a, isActive: !a.isActive } : a
         ));
       }
@@ -378,7 +378,7 @@ export default function AnnouncementsManagement() {
   };
 
   const handleDeleteAnnouncement = async (id: string) => {
-    if (!confirm('Bu duyuruyu silmek istediğinizden emin misiniz?')) {
+    if (!confirm(getTranslation('announcements.confirm_delete'))) {
       return;
     }
 
@@ -386,7 +386,7 @@ export default function AnnouncementsManagement() {
 
     try {
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
-      
+
       // URL'den tenant slug'ını al
       let tenantSlug = 'demo';
       if (typeof window !== 'undefined') {
@@ -430,7 +430,7 @@ export default function AnnouncementsManagement() {
 
     try {
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
-      
+
       // URL'den tenant slug'ını al
       let tenantSlug = 'demo';
       if (typeof window !== 'undefined') {
@@ -468,7 +468,7 @@ export default function AnnouncementsManagement() {
         if (response.ok) {
           const updated = await response.json();
           const metadata = (updated.metadata as any) || {};
-          setAnnouncements(announcements.map(a => 
+          setAnnouncements(announcements.map(a =>
             a.id === selectedAnnouncement.id ? {
               ...a,
               title: updated.title || a.title,
@@ -546,17 +546,17 @@ export default function AnnouncementsManagement() {
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formDataObj = new FormData(e.currentTarget);
-    
+
     // Otomatik çevirileri formData state'inden al
     const translations: { [lang: string]: { title: string; content: string; linkText?: string } } = {};
-    
+
     // Türkçe için form'dan al
     translations['tr'] = {
       title: formDataObj.get('title') as string,
       content: formDataObj.get('content') as string,
       ...(formDataObj.get('linkText') && { linkText: formDataObj.get('linkText') as string })
     };
-    
+
     // Diğer diller için formData state'inden al (desteklenen diller)
     const supportedLanguages = getSupportedLanguagesForTranslation();
     supportedLanguages.forEach(lang => {
@@ -568,7 +568,7 @@ export default function AnnouncementsManagement() {
         };
       }
     });
-    
+
     const announcementData = {
       title: formDataObj.get('title') as string,
       content: formDataObj.get('content') as string,
@@ -609,7 +609,7 @@ export default function AnnouncementsManagement() {
             <button
               onClick={() => {
                 const newMode = isDarkMode ? 'light' : 'dark';
-                theme.setTheme({ 
+                theme.setTheme({
                   mode: newMode,
                   backgroundColor: newMode === 'dark' ? '#0F172A' : '#FFFFFF',
                   textColor: newMode === 'dark' ? '#F9FAFB' : '#1F2937',
@@ -642,11 +642,10 @@ export default function AnnouncementsManagement() {
               <button
                 key={filterOption}
                 onClick={() => setFilter(filterOption)}
-                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                  filter === filterOption
+                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${filter === filterOption
                     ? 'bg-hotel-gold text-white'
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
+                  }`}
               >
                 {filterOption === 'all' ? getTranslation('announcements.all') : filterOption === 'active' ? getTranslation('announcements.active') : getTranslation('announcements.inactive')}
               </button>
@@ -670,17 +669,16 @@ export default function AnnouncementsManagement() {
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                     {getCategoryLabel(announcement.category)}
                   </span>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    announcement.isActive 
-                      ? 'bg-green-100 text-green-800' 
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${announcement.isActive
+                      ? 'bg-green-100 text-green-800'
                       : 'bg-red-100 text-red-800'
-                  }`}>
+                    }`}>
                     {announcement.isActive ? getTranslation('announcements.active') : getTranslation('announcements.inactive')}
                   </span>
                 </div>
-                
+
                 <p className="text-gray-600 dark:text-gray-300 mb-4">{announcement.content}</p>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-500 dark:text-gray-400">
                   <div className="flex items-center space-x-2">
                     <Calendar className="w-4 h-4" />
@@ -697,15 +695,14 @@ export default function AnnouncementsManagement() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-2 ml-4">
                 <button
                   onClick={() => handleToggleActive(announcement.id)}
-                  className={`p-2 rounded-lg ${
-                    announcement.isActive 
-                      ? 'text-green-600 hover:bg-green-50' 
+                  className={`p-2 rounded-lg ${announcement.isActive
+                      ? 'text-green-600 hover:bg-green-50'
                       : 'text-red-600 hover:bg-red-50'
-                  }`}
+                    }`}
                   title={announcement.isActive ? getTranslation('announcements.make_inactive') : getTranslation('announcements.make_active')}
                 >
                   {announcement.isActive ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
@@ -759,7 +756,7 @@ export default function AnnouncementsManagement() {
                 <X className="w-6 h-6" />
               </button>
             </div>
-            
+
             <form onSubmit={handleFormSubmit} className="space-y-4">
               {/* Ana Türkçe İçerik */}
               <div>
@@ -776,7 +773,7 @@ export default function AnnouncementsManagement() {
                   placeholder={getTranslation('announcements.title_placeholder')}
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   {getTranslation('announcements.content_label')}
@@ -802,123 +799,113 @@ export default function AnnouncementsManagement() {
                     className="bg-gray-500 text-white px-3 py-1 rounded-md text-sm hover:bg-gray-600 transition-colors flex items-center space-x-2"
                   >
                     <Eye className="w-4 h-4" />
-                    <span>{showTranslations ? 'Gizle' : 'Göster'}</span>
+                    <span>{showTranslations ? getTranslation('announcements.hide') : getTranslation('announcements.show')}</span>
                   </button>
                 </div>
-                
+
                 {showTranslations && (
                   <div className="space-y-4">
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                       <div className="flex items-center space-x-2 text-blue-800">
                         <Sparkles className="w-4 h-4" />
-                        <span className="text-sm font-medium">Otomatik Çeviri Aktif</span>
+                        <span className="text-sm font-medium">{getTranslation('announcements.auto_translate_active')}</span>
                       </div>
                       <p className="text-xs text-blue-600 mt-1">
-                        Türkçe metin yazdığınızda sistem otomatik olarak seçili dillere çevirir.
+                        {getTranslation('announcements.auto_translate_hint')}
                       </p>
                     </div>
-                    
-                {getSupportedLanguagesForTranslation().filter(lang => lang !== 'tr').map((lang) => {
-                  const langNames: { [key: string]: string } = {
-                    en: 'İngilizce',
-                    ru: 'Rusça', 
-                    ar: 'Arapça',
-                    de: 'Almanca',
-                    fr: 'Fransızca',
-                    es: 'İspanyolca',
-                    it: 'İtalyanca',
-                    zh: 'Çince'
-                  };
-                  
-                  return (
-                    <div key={lang} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700">
-                      <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-3">{langNames[lang as keyof typeof langNames]}</h4>
-                      
-                      <div className="space-y-3">
-                        <div>
-                          <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Başlık</label>
-                          <input
-                            type="text"
-                            name={`${lang}_title`}
-                            value={formData.translations?.[lang]?.title || ''}
-                            readOnly
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm text-gray-900 dark:text-gray-100 dark:bg-gray-800 dark:border-gray-600"
-                            placeholder="Otomatik çevrilecek..."
-                          />
-                        </div>
-                        
-                        <div>
-                          <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">İçerik</label>
-                          <textarea
-                            name={`${lang}_content`}
-                            value={formData.translations?.[lang]?.content || ''}
-                            readOnly
-                            rows={3}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm text-gray-900 dark:text-gray-100 dark:bg-gray-800 dark:border-gray-600"
-                            placeholder="Otomatik çevrilecek..."
-                          />
-                        </div>
-                        
-                        {formData.linkText && (
-                          <div>
-                            <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Link Metni</label>
-                            <input
-                              type="text"
-                              name={`${lang}_linkText`}
-                              value={formData.translations?.[lang]?.linkText || ''}
-                              readOnly
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm text-gray-900 dark:text-gray-100 dark:bg-gray-800 dark:border-gray-600"
-                              placeholder="Otomatik çevrilecek..."
-                            />
+
+                    {getSupportedLanguagesForTranslation().filter(lang => lang !== 'tr').map((lang) => {
+
+                      return (
+                        <div key={lang} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700">
+                          <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-3">{getTranslation(`language.${lang}`)}</h4>
+
+                          <div className="space-y-3">
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">{getTranslation('announcements.title_label')}</label>
+                              <input
+                                type="text"
+                                name={`${lang}_title`}
+                                value={formData.translations?.[lang]?.title || ''}
+                                readOnly
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm text-gray-900 dark:text-gray-100 dark:bg-gray-800 dark:border-gray-600"
+                                placeholder={getTranslation('announcements.auto_translate_placeholder')}
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">{getTranslation('announcements.content_label')}</label>
+                              <textarea
+                                name={`${lang}_content`}
+                                value={formData.translations?.[lang]?.content || ''}
+                                readOnly
+                                rows={3}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm text-gray-900 dark:text-gray-100 dark:bg-gray-800 dark:border-gray-600"
+                                placeholder={getTranslation('announcements.auto_translate_placeholder')}
+                              />
+                            </div>
+
+                            {formData.linkText && (
+                              <div>
+                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">{getTranslation('announcements.link_text_label')}</label>
+                                <input
+                                  type="text"
+                                  name={`${lang}_linkText`}
+                                  value={formData.translations?.[lang]?.linkText || ''}
+                                  readOnly
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm text-gray-900 dark:text-gray-100 dark:bg-gray-800 dark:border-gray-600"
+                                  placeholder={getTranslation('announcements.auto_translate_placeholder')}
+                                />
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Tip *
+                    {getTranslation('announcements.type_label')}
                   </label>
-                  <select 
+                  <select
                     name="type"
                     defaultValue={selectedAnnouncement?.type || 'info'}
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hotel-gold focus:border-transparent text-gray-900 bg-white dark:text-gray-100 dark:bg-gray-800 dark:border-gray-600"
                   >
-                    <option value="info">Bilgi</option>
-                    <option value="warning">Uyarı</option>
-                    <option value="promotion">Promosyon</option>
-                    <option value="maintenance">Bakım</option>
-                    <option value="advertisement">Reklam</option>
+                    <option value="info">{getTranslation('announcements.type_info')}</option>
+                    <option value="warning">{getTranslation('announcements.type_warning')}</option>
+                    <option value="promotion">{getTranslation('announcements.type_promotion')}</option>
+                    <option value="maintenance">{getTranslation('announcements.type_maintenance')}</option>
+                    <option value="advertisement">{getTranslation('announcements.type_advertisement')}</option>
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Kategori *
+                    {getTranslation('announcements.category_label')}
                   </label>
-                  <select 
+                  <select
                     name="category"
                     defaultValue={selectedAnnouncement?.category || 'general'}
                     required
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hotel-gold focus:border-transparent text-gray-900 bg-white dark:text-gray-100 dark:bg-gray-800 dark:border-gray-600"
                   >
-                    <option value="general">Genel</option>
-                    <option value="menu">Menü</option>
-                    <option value="hotel">Otel</option>
-                    <option value="promotion">Promosyon</option>
+                    <option value="general">{getTranslation('announcements.cat_general')}</option>
+                    <option value="menu">{getTranslation('announcements.cat_menu')}</option>
+                    <option value="hotel">{getTranslation('announcements.cat_hotel')}</option>
+                    <option value="promotion">{getTranslation('announcements.cat_promotion')}</option>
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Başlangıç Tarihi *
+                    {getTranslation('announcements.start_date_label')}
                   </label>
                   <input
                     type="date"
@@ -933,7 +920,7 @@ export default function AnnouncementsManagement() {
               {/* İkon Seçici */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  İkon Seçin (Opsiyonel)
+                  {getTranslation('announcements.select_icon_label')}
                 </label>
                 <div className="grid grid-cols-6 gap-2 p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 max-h-48 overflow-y-auto">
                   {iconOptions.map((option) => {
@@ -941,9 +928,8 @@ export default function AnnouncementsManagement() {
                     return (
                       <label
                         key={option.name}
-                        className={`flex flex-col items-center p-2 cursor-pointer hover:bg-white dark:hover:bg-gray-600 rounded-lg transition-colors group ${
-                          selectedIcon === option.name ? 'bg-blue-50 dark:bg-blue-900 border-2 border-blue-200 dark:border-blue-600' : ''
-                        }`}
+                        className={`flex flex-col items-center p-2 cursor-pointer hover:bg-white dark:hover:bg-gray-600 rounded-lg transition-colors group ${selectedIcon === option.name ? 'bg-blue-50 dark:bg-blue-900 border-2 border-blue-200 dark:border-blue-600' : ''
+                          }`}
                       >
                         <input
                           type="radio"
@@ -953,9 +939,8 @@ export default function AnnouncementsManagement() {
                           onChange={() => setSelectedIcon(option.name)}
                           className="sr-only"
                         />
-                        <div className={`p-2 rounded-lg mb-1 group-hover:scale-110 transition-transform ${option.color} ${
-                          selectedIcon === option.name ? 'scale-110' : ''
-                        }`}>
+                        <div className={`p-2 rounded-lg mb-1 group-hover:scale-110 transition-transform ${option.color} ${selectedIcon === option.name ? 'scale-110' : ''
+                          }`}>
                           <IconComponent className="w-6 h-6" />
                         </div>
                         <span className="text-xs text-gray-600 dark:text-gray-300 text-center">{getTranslation(option.labelKey)}</span>
@@ -964,13 +949,13 @@ export default function AnnouncementsManagement() {
                   })}
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Duyuruya uygun bir ikon seçin. Bu ikon QR menüde görünecektir.
+                  {getTranslation('announcements.select_icon_hint')}
                 </p>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Bitiş Tarihi (Opsiyonel)
+                  {getTranslation('announcements.end_date_label')}
                 </label>
                 <input
                   type="date"
@@ -979,24 +964,24 @@ export default function AnnouncementsManagement() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hotel-gold focus:border-transparent text-gray-900 bg-white dark:text-gray-100 dark:bg-gray-800 dark:border-gray-600"
                 />
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Link URL (Opsiyonel)
+                    {getTranslation('announcements.link_url_label')}
                   </label>
                   <input
                     type="url"
                     name="linkUrl"
                     defaultValue={selectedAnnouncement?.linkUrl || ''}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hotel-gold focus:border-transparent text-gray-900 bg-white dark:text-gray-100 dark:bg-gray-800 dark:border-gray-600"
-                    placeholder="https://example.com veya /sayfa"
+                    placeholder={getTranslation('announcements.link_url_placeholder')}
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Link Metni (Opsiyonel)
+                    {getTranslation('announcements.link_text_label')}
                   </label>
                   <input
                     type="text"
@@ -1004,11 +989,11 @@ export default function AnnouncementsManagement() {
                     defaultValue={selectedAnnouncement?.linkText || ''}
                     onChange={(e) => autoTranslateOnChange('linkText', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hotel-gold focus:border-transparent text-gray-900 bg-white dark:text-gray-100 dark:bg-gray-800 dark:border-gray-600"
-                    placeholder="Örnek: Menüyü İncele"
+                    placeholder={getTranslation('announcements.link_text_placeholder')}
                   />
                 </div>
               </div>
-              
+
               <div className="flex items-center">
                 <input
                   type="checkbox"
@@ -1017,11 +1002,11 @@ export default function AnnouncementsManagement() {
                   className="rounded border-gray-300 text-hotel-gold focus:ring-hotel-gold"
                 />
                 <label className="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                  Duyuru aktif
+                  {getTranslation('announcements.is_active_label')}
                 </label>
               </div>
             </form>
-            
+
             <div className="flex justify-end space-x-3 mt-6">
               <button
                 type="button"
@@ -1032,26 +1017,26 @@ export default function AnnouncementsManagement() {
                 }}
                 className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800"
               >
-                İptal
+                {getTranslation('announcements.cancel_btn')}
               </button>
-              <button 
+              <button
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
                   const form = document.querySelector('form');
                   if (form) {
                     const formDataObj = new FormData(form);
-                    
+
                     // Otomatik çevirileri formData state'inden al
                     const translations: { [lang: string]: { title: string; content: string; linkText?: string } } = {};
-                    
+
                     // Türkçe için form'dan al
                     translations['tr'] = {
                       title: formDataObj.get('title') as string,
                       content: formDataObj.get('content') as string,
                       ...(formDataObj.get('linkText') && { linkText: formDataObj.get('linkText') as string })
                     };
-                    
+
                     // Diğer diller için formData state'inden al (desteklenen diller)
                     const supportedLanguages = getSupportedLanguagesForTranslation();
                     supportedLanguages.forEach(lang => {
@@ -1063,7 +1048,7 @@ export default function AnnouncementsManagement() {
                         };
                       }
                     });
-                    
+
                     const announcementData = {
                       title: formDataObj.get('title') as string,
                       content: formDataObj.get('content') as string,
@@ -1081,7 +1066,7 @@ export default function AnnouncementsManagement() {
                 }}
                 className="px-4 py-2 bg-hotel-gold text-white rounded-lg hover:bg-hotel-navy"
               >
-                {showAddModal ? 'Oluştur' : 'Güncelle'}
+                {showAddModal ? getTranslation('announcements.create_btn') : getTranslation('announcements.update_btn')}
               </button>
             </div>
           </div>
