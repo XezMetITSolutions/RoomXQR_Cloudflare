@@ -590,8 +590,12 @@ function DigerIstekler({ onRequestSent, roomId }: { onRequestSent: (message: str
     { name: "Su", nameKey: "quick.water", emoji: "💧", color: "text-cyan-600" }
   ];
 
-  const handleQuickSelect = (itemName: string) => {
+  // Seçili öğenin çeviri anahtarını sakla
+  const [selectedItemKey, setSelectedItemKey] = useState("");
+
+  const handleQuickSelect = (itemName: string, key: string) => {
     setSelectedItem(itemName);
+    setSelectedItemKey(key);
     // setIstek useEffect ile güncellenecek
   };
 
@@ -605,11 +609,6 @@ function DigerIstekler({ onRequestSent, roomId }: { onRequestSent: (message: str
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!istek.trim()) return;
-
-    console.log('Gönderilen istek:', istek);
-    console.log('Miktar:', miktar);
-    console.log('Seçili öğe:', selectedItem);
-    console.log('RoomId format:', roomId);
 
     try {
       // İstek içeriğine göre priority belirle
@@ -629,7 +628,14 @@ function DigerIstekler({ onRequestSent, roomId }: { onRequestSent: (message: str
         type = 'concierge';
       }
 
-      console.log('İstek priority ve type:', { priority, type, istek });
+      // Backend'e gönderilecek açıklama
+      // Eğer hızlı seçim yapıldıysa ve metin değiştirilmediyse, çeviri anahtarını gönder
+      // Format: "QTY x TRANSLATION_KEY" -> "2 x quick.water"
+      // Resepsiyon paneli bu formatı tanıyıp kendi diline çevirecek
+      let descriptionToSend = istek;
+      if (selectedItemKey && istek.includes(selectedItem)) {
+        descriptionToSend = `${miktar} x ${selectedItemKey}`;
+      }
 
       // API'ye talep gönder
       await ApiService.createGuestRequest({
@@ -637,7 +643,7 @@ function DigerIstekler({ onRequestSent, roomId }: { onRequestSent: (message: str
         type: type,
         priority: priority,
         status: 'pending',
-        description: istek,
+        description: descriptionToSend,
       });
 
       onRequestSent(`"${istek}" ${safeGetTranslation('general.success_request', 'talebiniz alındı.')}`);
@@ -654,6 +660,7 @@ function DigerIstekler({ onRequestSent, roomId }: { onRequestSent: (message: str
 
     setIstek("");
     setSelectedItem("");
+    setSelectedItemKey("");
     setMiktar(1);
   };
 
@@ -666,7 +673,7 @@ function DigerIstekler({ onRequestSent, roomId }: { onRequestSent: (message: str
           {quickItems.map((item) => (
             <button
               key={item.name}
-              onClick={() => handleQuickSelect(safeGetTranslation(item.nameKey, item.name))}
+              onClick={() => handleQuickSelect(safeGetTranslation(item.nameKey, item.name), item.nameKey)}
               className={`p-2 rounded-lg text-xs sm:text-sm transition-all duration-200 ${selectedItem === safeGetTranslation(item.nameKey, item.name) ? 'shadow-md' : ''
                 }`}
               style={{
@@ -737,6 +744,7 @@ function DigerIstekler({ onRequestSent, roomId }: { onRequestSent: (message: str
 
             if (value === "") {
               setSelectedItem("");
+              setSelectedItemKey("");
               setMiktar(1);
             } else {
               // Manuel girişte miktar kontrolü yap ("2 x Su" formatı)
@@ -744,10 +752,19 @@ function DigerIstekler({ onRequestSent, roomId }: { onRequestSent: (message: str
               if (miktarMatch) {
                 const [, miktarStr, itemName] = miktarMatch;
                 const extractedMiktar = parseInt(miktarStr);
+                const trimmedItemName = itemName.trim();
+
                 if (extractedMiktar >= 1 && extractedMiktar <= 10) {
                   setMiktar(extractedMiktar);
-                  setSelectedItem(itemName.trim());
+                  // Eğer kullanıcı sadece miktarı değiştirdiyse key'i koru, ama isim değiştiyse key'i sil
+                  if (selectedItem !== trimmedItemName) {
+                    setSelectedItem(trimmedItemName);
+                    setSelectedItemKey(""); // İsim değişti, artık custom bir istek
+                  }
                 }
+              } else {
+                setSelectedItem("");
+                setSelectedItemKey("");
               }
             }
           }}

@@ -216,7 +216,7 @@ async function onlineTranslate(text: string, targetLang: string): Promise<string
       body: JSON.stringify({
         text: text,
         targetLang: targetLang,
-        sourceLang: 'tr' // Türkçe'den çevir
+        // sourceLang: 'tr' // Auto-detect source language
       }),
       signal: controller.signal
     });

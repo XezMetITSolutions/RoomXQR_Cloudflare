@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useHotelStore } from '@/store/hotelStore';
 import { sampleRequests } from '@/lib/sampleData';
 import { translate } from '@/lib/translations';
+import { translateText } from '@/lib/translateService';
 import { Language, Request } from '@/types';
 import { ApiService, GuestRequest, RoomStatus } from '@/services/api';
 import { useNotifications } from '@/hooks/useNotifications';
@@ -230,7 +231,47 @@ export default function ReceptionPanel() {
       }
       setLastRequestCount(nonFoodRequestCount);
 
-      setRequests(safeRequestsData);
+      // Hızlı seçim öğelerinin çeviri sözlüğü
+      const quickItemsTranslation: Record<string, Record<string, string>> = {
+        'quick.towel': { tr: 'Havlu', en: 'Towel', de: 'Handtuch', ru: 'Полотенце', fr: 'Serviette', es: 'Toalla', it: 'Asciugamano', ar: 'منشفة' },
+        'quick.slippers': { tr: 'Terlik', en: 'Slippers', de: 'Hausschuhe', ru: 'Тапочки', fr: 'Pantoufles', es: 'Zapatillas', it: 'Ciabatte', ar: 'شبشب' },
+        'quick.toothpaste': { tr: 'Diş Macunu', en: 'Toothpaste', de: 'Zahnpasta', ru: 'Зубная паста', fr: 'Dentifrice', es: 'Pasta de dientes', it: 'Dentifricio', ar: 'معجون أسنان' },
+        'quick.pillow': { tr: 'Yastık', en: 'Pillow', de: 'Kopfkissen', ru: 'Подушка', fr: 'Oreiller', es: 'Almohada', it: 'Cuscino', ar: 'وسادة' },
+        'quick.blanket': { tr: 'Battaniye', en: 'Blanket', de: 'Bettdecke', ru: 'Одеяло', fr: 'Couverture', es: 'Manta', it: 'Coperta', ar: 'بطانية' },
+        'quick.shampoo': { tr: 'Şampuan', en: 'Shampoo', de: 'Shampoo', ru: 'Шампунь', fr: 'Shampooing', es: 'Champú', it: 'Shampoo', ar: 'شامبو' },
+        'quick.soap': { tr: 'Sabun', en: 'Soap', de: 'Seife', ru: 'Мыло', fr: 'Savon', es: 'Jabón', it: 'Sapone', ar: 'صابون' },
+        'quick.water': { tr: 'Su', en: 'Water', de: 'Wasser', ru: 'Вода', fr: 'Eau', es: 'Agua', it: 'Acqua', ar: 'ماء' }
+      };
+
+      // Resepsiyon dili (currentLanguage state'inden alınıyor, ancak burada doğrudan erişilemiyor olabilir,
+      // bu yüzden ya prop olarak geçirilmeli ya da state güncellenirken işlenmeli.
+      // Şimdilik render sırasında işlenecek şekilde orijinal veriyi saklıyoruz,
+      // ama description alanını güncellemek daha iyi olabilir.)
+
+      const processedRequests = safeRequestsData.map(req => {
+        // Format: "2 x quick.water" kontrolü
+        const match = req.description.match(/^(\d+)\s+x\s+(.+)$/);
+        if (match) {
+          const [, qty, key] = match;
+          const translationDict = quickItemsTranslation[key];
+          if (translationDict) {
+            // currentLanguage state'i component içinde, burası useEffect içinde.
+            // Bu yüzden çeviriyi render sırasında yapmak daha doğru.
+            // Ancak, istek listesinde orijinal key'i saklayıp, görüntüleme anında çevirmek en iyisi.
+            // Şimdilik burada "translatedDescription" alanı ekleyelim.
+            return {
+              ...req,
+              originalDescription: req.description,
+              isTranslatable: true,
+              translationKey: key,
+              quantity: qty
+            };
+          }
+        }
+        return req;
+      });
+
+      setRequests(processedRequests);
       setStatistics(statsData);
       setRooms(safeRoomsData);
 
@@ -1017,7 +1058,10 @@ export default function ReceptionPanel() {
                     </div>
                   </div>
 
-                  <p className="text-sm sm:text-base text-gray-700 mb-4">{request.description}</p>
+                  <RequestDescription
+                    text={request.description}
+                    targetLang={currentLanguage}
+                  />
 
                   {request.notes && (
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
@@ -1708,5 +1752,95 @@ function CheckInForm({
         </button>
       </div>
     </form>
+  );
+}
+
+// Request description component with translation support
+// Quick items dictionary moved outside to prevent re-renders
+const quickItemsTranslation: Record<string, Record<string, string>> = {
+  'quick.towel': { tr: 'Havlu', en: 'Towel', de: 'Handtuch', ru: 'Полотенце', fr: 'Serviette', es: 'Toalla', it: 'Asciugamano', ar: 'منشفة' },
+  'quick.slippers': { tr: 'Terlik', en: 'Slippers', de: 'Hausschuhe', ru: 'Тапочки', fr: 'Pantoufles', es: 'Zapatillas', it: 'Ciabatte', ar: 'شبشب' },
+  'quick.toothpaste': { tr: 'Diş Macunu', en: 'Toothpaste', de: 'Zahnpasta', ru: 'Зубная паста', fr: 'Dentifrice', es: 'Pasta de dientes', it: 'Dentifricio', ar: 'معجون أسنان' },
+  'quick.pillow': { tr: 'Yastık', en: 'Pillow', de: 'Kopfkissen', ru: 'Подушка', fr: 'Oreiller', es: 'Almohada', it: 'Cuscino', ar: 'وسادة' },
+  'quick.blanket': { tr: 'Battaniye', en: 'Blanket', de: 'Bettdecke', ru: 'Одеяло', fr: 'Couverture', es: 'Manta', it: 'Coperta', ar: 'بطانية' },
+  'quick.shampoo': { tr: 'Şampuan', en: 'Shampoo', de: 'Shampoo', ru: 'Шампунь', fr: 'Shampooing', es: 'Champú', it: 'Shampoo', ar: 'şampuan' },
+  'quick.soap': { tr: 'Sabun', en: 'Soap', de: 'Seife', ru: 'Мыло', fr: 'Savon', es: 'Jabón', it: 'Sapone', ar: 'صابون' },
+  'quick.water': { tr: 'Su', en: 'Water', de: 'Wasser', ru: 'Вода', fr: 'Eau', es: 'Agua', it: 'Acqua', ar: 'ماء' }
+};
+
+function RequestDescription({ text, targetLang }: { text: string, targetLang: string }) {
+  const [translatedText, setTranslatedText] = useState<string | null>(null);
+  const [isTranslating, setIsTranslating] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    // Check if it's a quick item format "QTY x KEY"
+    const match = text.match(/^(\d+)\s+x\s+(.+)$/);
+    if (match) {
+      const [, qty, key] = match;
+      const translationDict = quickItemsTranslation[key];
+      if (translationDict) {
+        // Synchronous translation for quick items
+        const item = translationDict[targetLang] || translationDict['en'] || key;
+        if (isMounted) {
+          setTranslatedText(`${qty} x ${item}`);
+          setIsTranslating(false);
+        }
+        return;
+      }
+    }
+
+    // For regular text, use async translation
+    const performTranslation = async () => {
+      try {
+        setIsTranslating(true);
+        // Only translate if target language is different from source (we leverage DeepL auto-detect)
+        // If text is short or empty, skip
+        if (!text || text.length < 2) {
+          if (isMounted) {
+            setTranslatedText(text);
+            setIsTranslating(false);
+          }
+          return;
+        }
+
+        const result = await translateText(text, targetLang);
+        if (isMounted) {
+          setTranslatedText(result);
+          setIsTranslating(false);
+        }
+      } catch (error) {
+        console.error('Translation failed', error);
+        if (isMounted) {
+          setTranslatedText(text); // Fallback to original
+          setIsTranslating(false);
+        }
+      }
+    };
+
+    performTranslation();
+
+    return () => { isMounted = false; };
+  }, [text, targetLang, quickItemsTranslation]);
+
+  return (
+    <div className="text-sm sm:text-base text-gray-700 mb-4 p-3 bg-gray-50 rounded-lg border border-gray-100 font-medium relative">
+      {isTranslating ? (
+        <div className="flex items-center space-x-2 text-gray-400">
+          <div className="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+          <span className="text-xs">Çevriliyor...</span>
+        </div>
+      ) : (
+        <>
+          {translatedText || text}
+          {translatedText && translatedText !== text && (
+            <div className="mt-1 text-xs text-gray-400 font-normal italic border-t border-gray-100 pt-1">
+              Orijinal: {text}
+            </div>
+          )}
+        </>
+      )}
+    </div>
   );
 }
