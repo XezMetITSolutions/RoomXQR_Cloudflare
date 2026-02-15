@@ -1327,6 +1327,7 @@ app.get('/api/rooms/:number/active-guest', tenantMiddleware, async (req: Request
 })
 
 // Yönetim paneli: Odadaki aktif misafirin token'ı (QR'da Hoşgeldiniz için; sadece yetkili)
+// accessToken yoksa (eski kayıt) otomatik üretip günceller
 app.get('/api/rooms/guest-links', tenantMiddleware, authMiddleware, async (req: Request, res: Response) => {
   try {
     const tenantId = getTenantId(req)
@@ -1336,13 +1337,28 @@ app.get('/api/rooms/guest-links', tenantMiddleware, authMiddleware, async (req: 
     })
     const links: Record<string, string> = {}
     for (const room of rooms) {
-      const guest = await prisma.guest.findFirst({
+      let guest = await prisma.guest.findFirst({
         where: { tenantId, roomId: room.id, isActive: true, accessToken: { not: null } },
-        select: { accessToken: true },
+        select: { id: true, accessToken: true },
         orderBy: { checkIn: 'desc' }
       })
       if (guest?.accessToken) {
         links[String(room.number)] = guest.accessToken
+        continue
+      }
+      // Aktif misafir var ama accessToken null (eski check-in veya sütun sonradan eklendi)
+      guest = await prisma.guest.findFirst({
+        where: { tenantId, roomId: room.id, isActive: true },
+        select: { id: true, accessToken: true },
+        orderBy: { checkIn: 'desc' }
+      })
+      if (guest) {
+        const newToken = crypto.randomBytes(32).toString('hex')
+        await prisma.guest.update({
+          where: { id: guest.id },
+          data: { accessToken: newToken }
+        })
+        links[String(room.number)] = newToken
       }
     }
     res.json({ links })
