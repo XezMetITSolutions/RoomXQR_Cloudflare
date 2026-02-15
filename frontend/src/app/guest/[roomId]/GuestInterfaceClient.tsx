@@ -428,7 +428,10 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
                       // URL'i güncelle ve query parametrelerini koru
                       const roomNumber = roomId.replace('room-', '');
                       const paramsString = searchParams ? searchParams.toString() : '';
-                      router.push(`/${lang.code}/guest/${roomNumber}${paramsString ? `?${paramsString}` : ''}`);
+                      const newUrl = `/${lang.code}/guest/${roomNumber}${paramsString ? `?${paramsString}` : ''}`;
+
+                      // Sayfa yenilenmeden URL değişimi (AJAX hissi)
+                      window.history.pushState(null, '', newUrl);
                     }}
                     className={`w-full px-4 py-3 text-left transition-colors flex items-center space-x-3 ${currentLanguage === lang.code ? 'opacity-80' : ''
                       }`}
