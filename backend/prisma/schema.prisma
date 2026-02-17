@@ -132,6 +132,7 @@ model Room {
   guests      Guest[]
   orders      Order[]
   notifications Notification[]
+  requests      GuestRequest[]
 
   @@map("rooms")
 }
@@ -228,7 +229,6 @@ model OrderItem {
 
 model GuestRequest {
   id          String            @id @default(cuid())
-  roomId      String
   type        RequestType
   priority    RequestPriority
   status      RequestStatus     @default(PENDING)
@@ -243,6 +243,8 @@ model GuestRequest {
   tenant      Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   hotelId     String
   hotel       Hotel             @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  roomId      String
+  room        Room              @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
   @@map("guest_requests")
 }
