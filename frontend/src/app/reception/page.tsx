@@ -221,7 +221,8 @@ export default function ReceptionPanel() {
         // Yeni gelen istekleri bul ve detaylı bildirim gönder (yemek siparişleri hariç)
         const newRequests = safeRequestsData.filter(r => r.type !== 'food_order').slice(0, nonFoodRequestCount - lastRequestCount);
         newRequests.forEach(request => {
-          const roomNumber = request.roomId.replace(/^\s*room[-\s_]*/i, '').trim();
+          const roomObj = safeRoomsData.find(r => r.roomId === request.roomId);
+          const roomNumber = roomObj?.number || request.roomId.replace(/^\s*room[-\s_]*/i, '').trim();
 
           // İstek türüne göre bildirim türü belirle
           let notificationType: 'info' | 'warning' | 'success' = 'info';

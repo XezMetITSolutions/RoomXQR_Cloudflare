@@ -67,7 +67,7 @@ export default function ManagementRequestsPage() {
         ) : (
           <div className="divide-y divide-gray-200 overflow-x-auto">
             {requests.map((req: any) => {
-              const room = (req.roomId || '').replace(/^room-/, '') || '—';
+              const room = req.room?.number || (req.roomId || '').replace(/^room-/, '') || '—';
               const time = req.createdAt ? new Date(req.createdAt).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' }) : '—';
               return (
                 <div key={req.id} className="px-6 py-4 flex flex-wrap items-center justify-between gap-3">

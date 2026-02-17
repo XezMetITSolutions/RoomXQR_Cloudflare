@@ -210,9 +210,8 @@ export default function AdminDashboard() {
           const ordersData = await ordersRes.json();
           const orders = Array.isArray(ordersData) ? ordersData : (ordersData.orders || []);
           setRecentOrders(orders.slice(0, 4).map((order: any) => {
-            // Room ID'yi düzelt (room-101 -> 101)
-            const roomId = order.roomId || '';
-            const roomNumber = roomId.replace('room-', '') || '';
+            // Room Number'ı al (relation'dan veya roomId'den temizle)
+            const roomNumber = order.room?.number || order.roomId?.replace(/^\s*room[-\s_]*/i, '').trim() || '';
 
             // Items'ı düzelt (menuItem relation'dan name al)
             const itemsText = order.items?.map((item: any) => {
@@ -261,7 +260,7 @@ export default function AdminDashboard() {
           const requests = Array.isArray(requestsData) ? requestsData : (requestsData.requests || []);
           setRecentRequests(requests.slice(0, 3).map((req: any) => ({
             id: req.id || `REQ-${req.number || ''}`,
-            room: req.roomId?.replace('room-', '') || req.roomNumber || '',
+            room: req.room?.number || req.roomId?.replace(/^\s*room[-\s_]*/i, '').trim() || req.roomNumber || '',
             type: req.type || req.description || '',
             priority: req.priority || 'Medium',
             time: req.createdAt ? new Date(req.createdAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : ''
@@ -341,8 +340,8 @@ export default function AdminDashboard() {
                       setShowLanguageSelector(false);
                     }}
                     className={`w-full px-4 py-3 text-left transition-colors flex items-center space-x-3 ${currentLanguage === lang.code
-                        ? 'bg-hotel-gold bg-opacity-10'
-                        : 'hover:bg-gray-50'
+                      ? 'bg-hotel-gold bg-opacity-10'
+                      : 'hover:bg-gray-50'
                       }`}
                   >
                     <span className="text-lg">{lang.flag}</span>

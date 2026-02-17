@@ -127,13 +127,13 @@ export default function DebugRoomsPage() {
                                     rooms.map((room) => (
                                         <tr key={room.roomId} className="bg-white border-b hover:bg-gray-50">
                                             <td className="px-6 py-4 font-medium text-gray-900">
-                                                {room.number || room.roomId.replace('room-', '')}
+                                                {room.number || room.roomId?.replace(/^\s*room[-\s_]*/i, '').trim() || '—'}
                                             </td>
                                             <td className="px-6 py-4">{room.floor || '-'}</td>
                                             <td className="px-6 py-4">
                                                 <span className={`px-2 py-1 rounded-full text-xs font-semibold ${room.status === 'occupied'
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : 'bg-gray-100 text-gray-800'
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : 'bg-gray-100 text-gray-800'
                                                     }`}>
                                                     {room.status === 'occupied' ? 'Dolu' : 'Boş'}
                                                 </span>
