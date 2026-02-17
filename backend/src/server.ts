@@ -1959,13 +1959,29 @@ app.post('/api/requests', tenantMiddleware, async (req: Request, res: Response) 
       return
     }
     const { roomId, type, priority, status, description, notes } = req.body
+
+    // Resolve actual Room ID (UUID) if a number or qrCode was provided
+    const room = await prisma.room.findFirst({
+      where: {
+        tenantId,
+        OR: [
+          { id: roomId },
+          { qrCode: roomId },
+          { number: String(roomId).replace(/^(room-)+/i, '').trim() },
+          { qrCode: { endsWith: String(roomId).replace(/^(room-)+/i, '').trim() } }
+        ]
+      }
+    })
+
+    const finalRoomId = room ? room.id : roomId
+
     const normalizedType = (type || 'GENERAL').toString().toUpperCase()
     const normalizedPriority = (priority || 'MEDIUM').toString().toUpperCase()
     const normalizedStatus = (status || 'PENDING').toString().toUpperCase()
 
     const request = await prisma.guestRequest.create({
       data: {
-        roomId,
+        roomId: finalRoomId,
         type: normalizedType,
         priority: normalizedPriority,
         status: normalizedStatus,
@@ -1973,6 +1989,13 @@ app.post('/api/requests', tenantMiddleware, async (req: Request, res: Response) 
         notes,
         tenantId,
         hotelId: hotel.id
+      },
+      include: {
+        room: {
+          select: {
+            number: true
+          }
+        }
       }
     })
 
