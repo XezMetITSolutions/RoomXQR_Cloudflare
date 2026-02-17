@@ -4458,15 +4458,16 @@ async function ensureTranslationsColumn() {
 // Migration kontrolü ve çalıştırma
 async function runMigrations() {
   try {
-    console.log('🔄 Database migrations kontrol ediliyor...')
+    console.log('🔄 Database schema synchronization (db push)...')
     // Prisma migration'larını programatik olarak çalıştır
     const { execSync } = require('child_process')
     try {
-      execSync('npx prisma migrate deploy', {
+      // Use db push instead of migrate deploy for rapid development/schema sync without migration files
+      execSync('npx prisma db push --accept-data-loss', {
         stdio: 'inherit',
         cwd: process.cwd()
       })
-      console.log('✅ Migrations basariyla calistirildi')
+      console.log('✅ Database schema synchronized successfully')
     } catch (migrateError) {
       console.error('⚠️ Migration calistirma hatasi (devam ediliyor):', migrateError)
       // Migration hatası olsa bile devam et - belki zaten çalıştırılmış
