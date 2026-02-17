@@ -29,6 +29,10 @@ model Tenant {
   guestRequests GuestRequest[]
   notifications Notification[]
   features    TenantFeature[]
+  surveys     Survey[]
+  analytics   AnalyticsEvent[]
+  campaigns   Campaign[]
+  devices     DeviceStatus[]
 
   @@map("tenants")
 }
@@ -72,6 +76,10 @@ model Hotel {
   guests      Guest[]
   guestRequests GuestRequest[]
   notifications Notification[]
+  surveys     Survey[]
+  analytics   AnalyticsEvent[]
+  campaigns   Campaign[]
+  devices     DeviceStatus[]
 
   @@map("hotels")
 }
@@ -121,6 +129,12 @@ model Room {
   qrCode      String   @unique
   isOccupied  Boolean  @default(false)
   isActive    Boolean  @default(true)
+  
+  // New operational statuses
+  dnd         Boolean  @default(false) // Do Not Disturb
+  makeupRoom  Boolean  @default(false) // Clean My Room
+  lastCleaned DateTime?
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -133,6 +147,9 @@ model Room {
   orders      Order[]
   notifications Notification[]
   requests      GuestRequest[]
+  surveys       Survey[]
+  analytics     AnalyticsEvent[]
+  device        DeviceStatus?
 
   @@map("rooms")
 }
@@ -159,6 +176,8 @@ model Guest {
   roomId      String
   room        Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
   orders      Order[]
+  surveys     Survey[]
+  analytics   AnalyticsEvent[]
 
   @@map("guests")
 }
@@ -235,6 +254,7 @@ model GuestRequest {
   description String
   notes       String?
   isActive    Boolean           @default(true)
+  resolvedAt  DateTime?         // Talebin tamamlanma zamanı
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
 
@@ -268,6 +288,111 @@ model Notification {
 
   @@map("notifications")
 }
+
+// --- NEW ANALYTICS & REPORTS MODELS ---
+
+model Survey {
+  id          String   @id @default(cuid())
+  npsScore    Int?     // 0-10
+  cleanliness Int?     // 1-5
+  staff       Int?     // 1-5
+  comfort     Int?     // 1-5
+  facilities  Int?     // 1-5
+  wifi        Int?     // 1-5
+  food        Int?     // 1-5
+  comment     String?  @db.Text
+  status      String   @default("NEW") // NEW, REVIEWED, RESOLVED
+  
+  // Relations
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  hotelId     String
+  hotel       Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  roomId      String?  
+  room        Room?    @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  guestId     String?
+  guest       Guest?   @relation(fields: [guestId], references: [id], onDelete: SetNull)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("surveys")
+}
+
+model AnalyticsEvent {
+  id          String   @id @default(cuid())
+  eventType   String   // VIEW_PAGE, CLICK_BUTTON, OPEN_APP
+  eventCategory String // MENU, SERVICES, WIFI, SPA
+  eventLabel  String?  // "Burger Menu", "Connect WiFi"
+  eventValue  Int?     // Duration in seconds, etc.
+  metadata    Json?
+
+  // Relations
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  hotelId     String
+  hotel       Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  roomId      String?
+  room        Room?    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  guestId     String?
+  guest       Guest?   @relation(fields: [guestId], references: [id], onDelete: SetNull)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt // Added for consistency
+
+  @@map("analytics_events")
+}
+
+model Campaign {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  imageUrl    String?
+  targetUrl   String?
+  startDate   DateTime
+  endDate     DateTime?
+  isActive    Boolean  @default(true)
+  priority    Int      @default(0)
+  
+  // Stats
+  views       Int      @default(0)
+  clicks      Int      @default(0)
+
+  // Relations
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  hotelId     String
+  hotel       Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("campaigns")
+}
+
+model DeviceStatus {
+  id          String   @id @default(cuid())
+  batteryLevel Int?
+  isCharging   Boolean?
+  appVersion   String?
+  wifiSignal   Int?     // RSSI or percentage
+  lastHeartbeat DateTime @default(now())
+  status       String   @default("ONLINE") // ONLINE, OFFLINE, ERROR
+
+  // Relations
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  hotelId     String
+  hotel       Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  roomId      String   @unique // One device per room usually
+  room        Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  updatedAt   DateTime @updatedAt
+
+  @@map("device_statuses")
+}
+
+// --- ENUMS ---
 
 enum UserRole {
   SUPER_ADMIN
