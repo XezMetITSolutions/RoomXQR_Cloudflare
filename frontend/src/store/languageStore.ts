@@ -787,6 +787,26 @@ export const translations: Record<string, Translations> = {
     'privacyPolicy': 'Gizlilik Politikası',
     'termsOfService': 'Kullanım Şartları',
     'legalInfo': 'Künye',
+
+    // Footer & Pricing
+    'planBasicTitle': 'Basic Paket',
+    'planBasicPriceTL': '29.900 ₺',
+    'planBasicDesc': 'Küçük oteller ve butik işletmeler için ideal başlangıç paketi.',
+    'planBasicFeat1': 'QR Menü Sistemi',
+    'planBasicFeat2': 'Oda Servisi Yönetimi',
+    'planBasicFeat3': 'Temel Raporlama',
+    'planProTitle': 'Pro Paket',
+    'planProPriceTL': '39.900 ₺',
+    'planProDesc': 'Orta ölçekli oteller için gelişmiş özellikler ve entegrasyonlar.',
+    'planProFeat1': 'Her Şey Dahil (Basic +)',
+    'planProFeat2': 'Çoklu Dil Desteği',
+    'planProFeat3': 'Gelişmiş Analitik',
+    'planEntTitle': 'Enterprise Paket',
+    'planEntPriceTL': 'Özel Teklif',
+    'planEntDesc': 'Zincir oteller ve büyük tesisler için özel çözümler.',
+    'planEntFeat1': 'Tüm Özellikler (Pro +)',
+    'planEntFeat2': 'Özel Entegrasyonlar',
+    'planEntFeat3': '7/24 Öncelikli Destek',
   },
 
   en: {
@@ -1475,6 +1495,26 @@ export const translations: Record<string, Translations> = {
     'privacyPolicy': 'Privacy Policy',
     'termsOfService': 'Terms of Service',
     'legalInfo': 'Legal Info',
+
+    // Footer & Pricing
+    'planBasicTitle': 'Basic Plan',
+    'planBasicPriceTL': '29,900 ₺',
+    'planBasicDesc': 'Ideal starter package for small hotels and boutique businesses.',
+    'planBasicFeat1': 'QR Menu System',
+    'planBasicFeat2': 'Room Service Management',
+    'planBasicFeat3': 'Basic Reporting',
+    'planProTitle': 'Pro Plan',
+    'planProPriceTL': '39,900 ₺',
+    'planProDesc': 'Advanced features and integrations for medium-sized hotels.',
+    'planProFeat1': 'All Inclusive (Basic +)',
+    'planProFeat2': 'Multi-Language Support',
+    'planProFeat3': 'Advanced Analytics',
+    'planEntTitle': 'Enterprise Plan',
+    'planEntPriceTL': 'Special Offer',
+    'planEntDesc': 'Custom solutions for hotel chains and large facilities.',
+    'planEntFeat1': 'All Features (Pro +)',
+    'planEntFeat2': 'Custom Integrations',
+    'planEntFeat3': '24/7 Priority Support',
   },
 
   de: {
