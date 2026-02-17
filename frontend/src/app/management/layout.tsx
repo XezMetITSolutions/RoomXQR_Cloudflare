@@ -26,7 +26,8 @@ import {
   BedDouble,
   Database,
   Languages,
-  Bug
+  Bug,
+  FileText
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -73,6 +74,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: getTranslation('sidebar.users'), href: '/management/users', icon: Users, key: 'users', color: 'text-green-600' },
     { name: getTranslation('sidebar.notifications'), href: '/management/notifications', icon: Bell, key: 'notifications', color: 'text-pink-600' },
     { name: getTranslation('sidebar.analytics'), href: '/management/analytics', icon: BarChart3, key: 'analytics', color: 'text-indigo-600' },
+    { name: getTranslation('sidebar.reports'), href: '/management/reports', icon: FileText, key: 'reports', color: 'text-violet-600' },
     { name: getTranslation('sidebar.settings'), href: '/management/settings', icon: Settings, key: 'settings', color: 'text-gray-600' },
     { name: getTranslation('sidebar.database_columns'), href: '/management/database-columns', icon: Database, key: 'eksik-sutunlar', color: 'text-slate-600' },
     { name: getTranslation('sidebar.translate_ui'), href: '/management/translate-ui', icon: Languages, key: 'translate-ui', color: 'text-violet-600' },

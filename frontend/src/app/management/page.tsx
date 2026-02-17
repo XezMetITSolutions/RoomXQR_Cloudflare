@@ -12,7 +12,8 @@ import {
   DollarSign,
   Globe,
   QrCode,
-  ChevronDown
+  ChevronDown,
+  FileText
 } from 'lucide-react';
 import { useLanguageStore, languages } from '@/store/languageStore';
 
@@ -506,10 +507,10 @@ export default function AdminDashboard() {
             <span className="text-sm font-medium text-gray-700">{getTranslation('dashboard.add_staff')}</span>
           </button>
           <button
-            onClick={() => router.push('/management/analytics')}
+            onClick={() => router.push('/management/reports')}
             className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
           >
-            <TrendingUp className="w-5 h-5 text-hotel-gold mr-3" />
+            <FileText className="w-5 h-5 text-hotel-gold mr-3" />
             <span className="text-sm font-medium text-gray-700">{getTranslation('dashboard.view_reports')}</span>
           </button>
           <button
