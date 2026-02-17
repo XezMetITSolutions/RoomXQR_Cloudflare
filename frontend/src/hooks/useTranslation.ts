@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
 export type SupportedLanguage = 'tr' | 'en' | 'de' | 'fr' | 'es' | 'it' | 'ru' | 'ar' | 'zh';
 
@@ -18,25 +18,43 @@ interface UseTranslationReturn {
 export function useTranslation(): UseTranslationReturn {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
-  const translate = async (
-    text: string, 
-    targetLang: SupportedLanguage, 
+
+
+  const translate = useCallback(async (
+    text: string,
+    targetLang: SupportedLanguage,
     sourceLang?: SupportedLanguage
   ): Promise<TranslationResult | null> => {
     setLoading(true);
     setError(null);
-    
+
     try {
       // Eğer hedef dil Türkçe ise çeviri yapma
       if (targetLang === 'tr') {
-        return {
+        const result = {
           translatedText: text,
           detectedLanguage: 'tr',
           success: true,
         };
+        return result;
       }
-      
+
+      // Check cache first
+      const cacheKey = `trans_${targetLang}_${text}`;
+      if (typeof window !== 'undefined') {
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+            // Optionally check timestamp expiration here
+            setLoading(false);
+            return parsed;
+          } catch (e) {
+            console.warn('Cache parse error', e);
+          }
+        }
+      }
+
       const response = await fetch('/api/translate', {
         method: 'POST',
         headers: {
@@ -48,26 +66,41 @@ export function useTranslation(): UseTranslationReturn {
           sourceLang: sourceLang || 'tr',
         }),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Çeviri başarısız');
       }
-      
+
       const data = await response.json();
+
+      // Save to cache
+      if (typeof window !== 'undefined' && data.success) {
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify(data));
+        } catch (e) {
+          console.warn('Cache write error (likely full)', e);
+        }
+      }
+
       return data;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Bilinmeyen hata';
       setError(errorMessage);
       console.error('Translation error:', err);
-      return null;
+      // Fallback: return original text as translated text on error, so UI shows something
+      return {
+        translatedText: text,
+        detectedLanguage: sourceLang || 'tr',
+        success: false
+      };
     } finally {
       setLoading(false);
     }
-  };
-  
+  }, []);
+
   const clearError = () => setError(null);
-  
+
   return { translate, loading, error, clearError };
 }
 
@@ -75,7 +108,7 @@ export function useTranslation(): UseTranslationReturn {
 export const LANGUAGE_CODES: Record<SupportedLanguage, string> = {
   'tr': 'TR',
   'en': 'EN',
-  'de': 'DE', 
+  'de': 'DE',
   'fr': 'FR',
   'es': 'ES',
   'it': 'IT',
