@@ -21,6 +21,7 @@ import { v4 as uuidv4 } from 'uuid'
 import nodemailer from 'nodemailer'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
+import { exec } from 'child_process'
 
 // Load environment variables
 dotenv.config()
@@ -4659,6 +4660,42 @@ app.post('/api/translate', tenantMiddleware, authMiddleware, async (req: Request
     res.status(500).json({ message: 'Translation error', error: error instanceof Error ? error.message : 'Unknown error' });
     return;
   }
+});
+
+// System migration endpoint
+app.post('/api/admin/system/migrate', authMiddleware, async (req: any, res: any) => {
+  // Check for admin role (optional, but recommended)
+  // if (req.user?.role !== 'SUPER_ADMIN') {
+  //   return res.status(403).json({ message: 'Forbidden: Super Admin access required' });
+  // }
+
+  console.log('🔄 Triggering database migration via API...');
+
+  // Execute prisma db push
+  exec('npx prisma db push --accept-data-loss', { cwd: process.cwd() }, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`❌ Migration execution error: ${error.message}`);
+      return res.status(500).json({
+        success: false,
+        message: 'Migration execution failed',
+        error: error.message,
+        details: stderr
+      });
+    }
+
+    if (stderr) {
+      console.warn(`⚠️ Migration stderr: ${stderr}`);
+    }
+
+    console.log(`✅ Migration output: ${stdout}`);
+
+    return res.json({
+      success: true,
+      message: 'Database schema updated successfully',
+      output: stdout,
+      warnings: stderr
+    });
+  });
 });
 
 // Start server
