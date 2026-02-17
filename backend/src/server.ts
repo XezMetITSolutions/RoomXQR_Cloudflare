@@ -1924,8 +1924,15 @@ app.get('/api/requests', tenantMiddleware, async (req: Request, res: Response) =
     const requests = await prisma.guestRequest.findMany({
       where: {
         tenantId,
-        ...where,
+        ...(roomId ? { roomId: roomId as string } : {}),
         isActive: true
+      },
+      include: {
+        room: {
+          select: {
+            number: true
+          }
+        }
       },
       orderBy: { createdAt: 'desc' },
       take: limit ? parseInt(limit as string) : undefined

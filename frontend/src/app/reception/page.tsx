@@ -260,18 +260,19 @@ export default function ReceptionPanel() {
       // ama description alanını güncellemek daha iyi olabilir.)
 
       const processedRequests = safeRequestsData.map(req => {
+        // Oda numarasını bul (UUID yerine "101" gibi görünmesi için)
+        const roomObj = safeRoomsData.find(r => r.roomId === req.roomId);
+        const displayRoomNumber = roomObj?.number || req.roomId.replace(/^\s*room[-\s_]*/i, '').trim();
+
         // Format: "2 x quick.water" kontrolü
         const match = req.description.match(/^(\d+)\s+x\s+(.+)$/);
         if (match) {
           const [, qty, key] = match;
           const translationDict = quickItemsTranslation[key];
           if (translationDict) {
-            // currentLanguage state'i component içinde, burası useEffect içinde.
-            // Bu yüzden çeviriyi render sırasında yapmak daha doğru.
-            // Ancak, istek listesinde orijinal key'i saklayıp, görüntüleme anında çevirmek en iyisi.
-            // Şimdilik burada "translatedDescription" alanı ekleyelim.
             return {
               ...req,
+              displayRoomNumber,
               originalDescription: req.description,
               isTranslatable: true,
               translationKey: key,
@@ -279,7 +280,10 @@ export default function ReceptionPanel() {
             };
           }
         }
-        return req;
+        return {
+          ...req,
+          displayRoomNumber
+        };
       });
 
       setRequests(processedRequests);
@@ -1031,7 +1035,7 @@ export default function ReceptionPanel() {
                 <div className="flex-1">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
                     <span className="text-lg sm:text-xl font-bold text-gray-900">
-                      {t('room')} {request.roomId.replace(/^\s*room[-\s_]*/i, '').trim()}
+                      {t('room')} {(request as any).displayRoomNumber || request.roomId.replace(/^\s*room[-\s_]*/i, '').trim()}
                     </span>
                     <div className="flex flex-wrap gap-2">
                       <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold border ${getPriorityColor(request.priority)}`}>
@@ -1225,7 +1229,7 @@ export default function ReceptionPanel() {
               </div>
               <div>
                 <h3 className="text-lg font-bold text-gray-900">{t('r_room_change')}</h3>
-                <p className="text-sm text-gray-600">{t('room')} {selectedRoomInfo.roomId.replace(/^\s*room[-\s_]*/i, '').trim()} {t('r_select_new_room_for')}</p>
+                <p className="text-sm text-gray-600">{t('room')} {(selectedRoomInfo as any).displayRoomNumber || selectedRoomInfo.roomId.replace(/^\s*room[-\s_]*/i, '').trim()} {t('r_select_new_room_for')}</p>
               </div>
             </div>
 
@@ -1292,7 +1296,7 @@ export default function ReceptionPanel() {
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-3">
-              {t('room')} {selectedRoomInfo.roomId.replace(/^\s*room[-\s_]*/i, '').trim()} {t('r_room_info_title')}
+              {t('room')} {(selectedRoomInfo as any).displayRoomNumber || selectedRoomInfo.roomId.replace(/^\s*room[-\s_]*/i, '').trim()} {t('r_room_info_title')}
             </h3>
 
             <div className="space-y-3">

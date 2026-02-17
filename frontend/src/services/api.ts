@@ -60,7 +60,7 @@ export class ApiService {
       }
     }
 
-    let tenantSlug = 'demo';
+    let tenantSlug = ''; // Default slug removed
     if (typeof window !== 'undefined') {
       const hostname = window.location.hostname;
       const subdomain = hostname.split('.')[0];
@@ -491,6 +491,8 @@ export class ApiService {
     email?: string;
     phone?: string;
     language?: string;
+    checkIn?: string;
+    checkOut?: string;
   }): Promise<{ success: boolean; qrCode?: string; accessToken?: string }> {
     try {
       const headers = this.getHeaders();

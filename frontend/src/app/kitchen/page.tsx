@@ -179,9 +179,12 @@ export default function KitchenPanel() {
             else if (order.status === 'DELIVERED') status = 'delivered';
             else if (order.status === 'CANCELLED') status = 'cancelled';
 
+            // Oda numarasını al (UUID yerine "101" gibi görünmesi için)
+            const displayRoomNumber = order.room?.number || order.roomId.replace(/^\s*room[-\s_]*/i, '').trim();
+
             return {
               id: order.id,
-              roomId: order.roomId.replace(/^\s*room[-\s_]*/i, '').trim(),
+              roomId: displayRoomNumber,
               guestId: order.guestId,
               items: items,
               totalAmount: parseFloat(order.totalAmount) || 0,

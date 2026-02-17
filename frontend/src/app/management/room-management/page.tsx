@@ -102,15 +102,19 @@ export default function OdaYonetimiPage() {
       if (ordersRes.ok) {
         const ordersData = await ordersRes.json();
         const list = Array.isArray(ordersData) ? ordersData : [];
-        setOrders(list.map((o: any) => ({
-          id: o.id,
-          roomId: o.roomId || '',
-          totalAmount: parseFloat(o.totalAmount) || 0,
-          status: (o.status || '').toUpperCase(),
-          createdAt: o.createdAt,
-          items: o.items || [],
-          paymentMethod: o.paymentMethod
-        })));
+        setOrders(list.map((o: any) => {
+          // Use room number if available from the included room object
+          const displayRoomId = o.room?.number || o.roomId || '';
+          return {
+            id: o.id,
+            roomId: displayRoomId,
+            totalAmount: parseFloat(o.totalAmount) || 0,
+            status: (o.status || '').toUpperCase(),
+            createdAt: o.createdAt,
+            items: o.items || [],
+            paymentMethod: o.paymentMethod
+          };
+        }));
       } else {
         setOrders([]);
       }

@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
 
       // URL'den tenant slug'ını al
-      let tenantSlug = 'demo'; // Varsayılan
+      let tenantSlug = ''; // Default slug removed
       if (typeof window !== 'undefined') {
         const hostname = window.location.hostname;
         const subdomain = hostname.split('.')[0];
@@ -169,7 +169,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // Token'ı doğrula (backend'den mevcut kullanıcı bilgilerini al)
           try {
             const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr.onrender.com';
-            let tenantSlug = 'demo';
+            let tenantSlug = '';
             if (typeof window !== 'undefined') {
               const hostname = window.location.hostname;
               const subdomain = hostname.split('.')[0];
