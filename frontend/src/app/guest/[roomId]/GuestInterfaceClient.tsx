@@ -25,7 +25,7 @@ import AnnouncementBanner from '@/components/AnnouncementBanner';
 import { useSocialMediaStore } from '@/store/socialMediaStore';
 import { useLanguageStore, languages } from '@/store/languageStore';
 import { useThemeStore } from '@/store/themeStore';
-import { Globe, ChevronDown } from 'lucide-react';
+import { Globe, ChevronDown, Home, LayoutGrid, Settings, Utensils, Wifi, Sparkles, Headset } from 'lucide-react';
 
 const DEFAULT_ACTIVITY_IMAGES = [
   { title: 'Spa', imageUrl: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&q=80' },
@@ -386,27 +386,27 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center py-8 relative" style={{ background: theme.backgroundColor }}>
+    <div className="min-h-screen flex flex-col relative" style={{ background: theme.backgroundColor || '#f9fafb' }}>
 
-      {/* Header */}
-      <div className="w-full max-w-md px-4 mb-4 flex items-center justify-between">
-        <div className="flex-1">
-          <h1 className="text-xl sm:text-2xl font-bold" style={{ color: theme.textColor }}>
-            {displayGuestName && hotelName
-              ? getWelcomeMessageWithGuest(displayGuestName, hotelName, currentLanguage)
-              : hotelName
-                ? formatWelcomeMessage(hotelName, currentLanguage)
-                : safeGetTranslation('room.welcome', 'Hoş Geldiniz')
-            }
-          </h1>
-        </div>
+      {/* Scrollable Content Area */}
+      <div className="flex-1 pb-24">
+        {/* Header */}
+        <div className="px-6 pt-6 pb-2 flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold" style={{ color: theme.textColor }}>
+              {hotelName || safeGetTranslation('room.welcome', 'Hoş Geldiniz')}
+            </h1>
+            {displayGuestName && (
+              <p className="text-sm opacity-80" style={{ color: theme.textColor }}>
+                {safeGetTranslation('welcome_guest', 'Hoş geldiniz')}, {formatGuestNameOnly(displayGuestName)}
+              </p>
+            )}
+          </div>
 
-        <div className="flex items-center gap-2">
-          {/* Dil Seçici */}
           <div className="relative language-selector">
             <button
               onClick={() => setShowLanguageSelector(!showLanguageSelector)}
-              className="flex items-center space-x-2 px-3 py-2 rounded-lg shadow-sm transition-colors"
+              className="flex items-center space-x-2 px-3 py-2 rounded-full shadow-sm transition-colors"
               style={{ background: theme.cardBackground, border: `1px solid ${theme.borderColor}` }}
             >
               <Globe className="w-4 h-4" style={{ color: theme.textColor }} />
@@ -416,135 +416,163 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
               <ChevronDown className="w-4 h-4" style={{ color: theme.textColor }} />
             </button>
 
-            {/* Dil Seçenekleri Dropdown */}
+            {/* Language Dropdown */}
             {showLanguageSelector && (
-              <div className="absolute right-0 top-full mt-1 w-48 rounded-lg shadow-lg z-50" style={{ background: theme.cardBackground, border: `1px solid ${theme.borderColor}` }}>
+              <div className="absolute right-0 top-full mt-2 w-48 rounded-xl shadow-xl z-50 overflow-hidden" style={{ background: theme.cardBackground, border: `1px solid ${theme.borderColor}` }}>
                 {supportedLanguages.map((lang) => (
                   <button
                     key={lang.code}
                     onClick={() => {
                       setLanguage(lang.code);
                       setShowLanguageSelector(false);
-                      // URL'i güncelle ve query parametrelerini koru
                       const roomNumber = roomId.replace('room-', '');
                       const paramsString = searchParams ? searchParams.toString() : '';
                       const newUrl = `/${lang.code}/guest/${roomNumber}${paramsString ? `?${paramsString}` : ''}`;
-
-                      // Sayfa yenilenmeden URL değişimi (AJAX hissi)
                       window.history.pushState(null, '', newUrl);
                     }}
-                    className={`w-full px-4 py-3 text-left transition-colors flex items-center space-x-3 ${currentLanguage === lang.code ? 'opacity-80' : ''
-                      }`}
-                    style={{
-                      background: currentLanguage === lang.code ? `${theme.primaryColor}20` : 'transparent',
-                      color: theme.textColor
-                    }}
+                    className={`w-full px-4 py-3 text-left transition-colors flex items-center space-x-3 hover:bg-black/5`}
                   >
                     <span className="text-lg">{lang.flag}</span>
-                    <div>
-                      <div className="font-medium">{lang.name}</div>
-                      <div className="text-xs opacity-70">{lang.nativeName}</div>
-                    </div>
+                    <span className="font-medium text-sm" style={{ color: theme.textColor }}>{lang.name}</span>
                   </button>
                 ))}
               </div>
             )}
           </div>
         </div>
-      </div>
 
-      {/* Üstte sürekli dönen slideshow - yazısız tek görsel */}
-      <div className="w-full max-w-md mb-4 px-4">
-        <div className="relative w-full h-44 sm:h-52 rounded-2xl overflow-hidden shadow-lg border" style={{ borderColor: theme.borderColor }}>
-          {activityList.map((item, idx) => (
-            <div
-              key={idx}
-              className="absolute inset-0 transition-opacity duration-700 ease-in-out"
-              style={{ opacity: idx === slideIndex ? 1 : 0, zIndex: idx === slideIndex ? 1 : 0 }}
+        {/* Hero Slideshow */}
+        <div className="px-4 mt-4">
+          <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden shadow-lg">
+            {activityList.map((item, idx) => (
+              <div
+                key={idx}
+                className="absolute inset-0 transition-opacity duration-1000 ease-in-out"
+                style={{ opacity: idx === slideIndex ? 1 : 0 }}
+              >
+                <img
+                  src={item.imageUrl}
+                  alt={item.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                <div className="absolute bottom-4 left-4 text-white">
+                  <p className="font-medium text-lg">{item.title}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Announcement Banner */}
+        <div className="px-4 mt-6">
+          <AnnouncementBanner roomId={roomId} />
+        </div>
+
+        {/* Service Grid */}
+        <div className="px-4 mt-6">
+          <h2 className="text-lg font-semibold mb-4 px-1" style={{ color: theme.textColor }}>
+            {safeGetTranslation('services', 'Hizmetler')}
+          </h2>
+          <div className="grid grid-cols-2 gap-4">
+            {/* Oda Servisi */}
+            <button
+              onClick={() => {
+                const roomNumber = roomId.replace('room-', '');
+                localStorage.setItem('currentRoomId', roomId);
+                const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
+                params.set('roomId', roomNumber);
+                router.push(`/qr-menu?${params.toString()}`);
+              }}
+              className="aspect-square rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition-all active:scale-95 group"
+              style={{ background: theme.cardBackground }}
             >
-              <img
-                src={item.imageUrl}
-                alt=""
-                className="w-full h-full object-cover"
-                loading={idx === 0 ? 'eager' : 'lazy'}
-                referrerPolicy="no-referrer"
-              />
-            </div>
-          ))}
+              <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform" style={{ background: `${theme.primaryColor}15` }}>
+                <Utensils className="w-6 h-6" style={{ color: theme.primaryColor }} />
+              </div>
+              <span className="font-medium text-sm" style={{ color: theme.textColor }}>
+                {safeGetTranslation('room.room_service', 'Oda Servisi')}
+              </span>
+            </button>
+
+            {/* Bilgi & Wifi -> Spa/Info styling */}
+            <button
+              onClick={() => router.push('/info')}
+              className="aspect-square rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition-all active:scale-95 group"
+              style={{ background: theme.cardBackground }}
+            >
+              <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform" style={{ background: `${theme.accentColor}15` }}>
+                <Wifi className="w-6 h-6" style={{ color: theme.accentColor }} />
+              </div>
+              <span className="font-medium text-sm" style={{ color: theme.textColor }}>
+                {safeGetTranslation('room.wifi', 'Bilgi & Wifi')}
+              </span>
+            </button>
+
+            {/* Oda Temizliği -> Controls styling */}
+            <button
+              onClick={() => {
+                const roomNumber = roomId.replace('room-', '');
+                router.push(`/${currentLanguage}/guest/${roomNumber}/cleaning`);
+              }}
+              className="aspect-square rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition-all active:scale-95 group"
+              style={{ background: theme.cardBackground }}
+            >
+              <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform" style={{ background: `${theme.secondaryColor}15` }}>
+                <Sparkles className="w-6 h-6" style={{ color: theme.secondaryColor }} />
+              </div>
+              <span className="font-medium text-sm" style={{ color: theme.textColor }}>
+                {safeGetTranslation('room.housekeeping', 'Oda Temizliği')}
+              </span>
+            </button>
+
+            {/* Konsiyerj */}
+            <button
+              onClick={() => {
+                const roomNumber = roomId.replace('room-', '');
+                const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
+                params.set('roomId', roomNumber);
+                router.push(`/concierge?${params.toString()}`);
+              }}
+              className="aspect-square rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition-all active:scale-95 group"
+              style={{ background: theme.cardBackground }}
+            >
+              <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform" style={{ background: `${theme.primaryColor}15` }}>
+                <Headset className="w-6 h-6" style={{ color: theme.primaryColor }} />
+              </div>
+              <span className="font-medium text-sm" style={{ color: theme.textColor }}>
+                {safeGetTranslation('room.concierge', 'Konsiyerj')}
+              </span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Duyuru Banner */}
-      <div className="w-full max-w-md mb-4 px-4">
-        <AnnouncementBanner roomId={roomId} />
-      </div>
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t px-6 py-2 flex justify-between items-center z-50 safe-area-bottom" style={{ borderColor: theme.borderColor, backgroundColor: theme.cardBackground + 'EE' }}>
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="flex flex-col items-center p-2 rounded-lg"
+        >
+          <Home className="w-6 h-6 mb-1" style={{ color: theme.primaryColor }} />
+          <span className="text-[10px] font-medium" style={{ color: theme.textColor }}>{safeGetTranslation('home', 'Ana Sayfa')}</span>
+        </button>
 
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full max-w-md mb-4 px-4">
-        {/* Oda Servisi */}
         <button
-          className="flex flex-col items-center justify-center rounded-xl p-4 sm:p-6 shadow hover:scale-105 transition"
-          style={{ background: `${theme.primaryColor}20` }}
-          onClick={() => {
-            // Oda numarasını localStorage'a kaydet ve query parameter olarak ekle
-            const roomNumber = roomId.replace('room-', '');
-            localStorage.setItem('currentRoomId', roomId);
-            const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
-            params.set('roomId', roomNumber);
-            router.push(`/qr-menu?${params.toString()}`);
-          }}
+          className="flex flex-col items-center p-2 rounded-lg opacity-50"
         >
-          <FaConciergeBell className="text-2xl sm:text-3xl mb-2" style={{ color: theme.primaryColor }} />
-          <span className="font-medium text-sm sm:text-base" style={{ color: theme.textColor }}>{safeGetTranslation('room.room_service', 'Oda Servisi')}</span>
+          <LayoutGrid className="w-6 h-6 mb-1" style={{ color: theme.textColor }} />
+          <span className="text-[10px] font-medium" style={{ color: theme.textColor }}>{safeGetTranslation('services', 'Hizmetler')}</span>
         </button>
-        {/* Bilgi & Wifi */}
+
         <button
-          className="flex flex-col items-center justify-center rounded-xl p-4 sm:p-6 shadow hover:scale-105 transition"
-          style={{ background: `${theme.accentColor}20` }}
-          onClick={() => router.push('/info')}
+          onClick={() => setShowSurvey(true)}
+          className="flex flex-col items-center p-2 rounded-lg"
         >
-          <FaWifi className="text-2xl sm:text-3xl mb-2" style={{ color: theme.accentColor }} />
-          <span className="font-medium text-sm sm:text-base" style={{ color: theme.textColor }}>{safeGetTranslation('room.wifi', 'Bilgi & Wifi')}</span>
-        </button>
-        {/* Oda Temizliği */}
-        <button
-          className="flex flex-col items-center justify-center rounded-xl p-4 sm:p-6 shadow hover:scale-105 transition"
-          style={{ background: `${theme.secondaryColor}20` }}
-          onClick={() => {
-            const roomNumber = roomId.replace('room-', '');
-            // Mevcut dili al ve temizlik sayfasına yönlendir
-            router.push(`/${currentLanguage}/guest/${roomNumber}/cleaning`);
-          }}
-        >
-          <FaBroom className="text-2xl sm:text-3xl mb-2" style={{ color: theme.secondaryColor }} />
-          <span className="font-medium text-sm sm:text-base" style={{ color: theme.textColor }}>{safeGetTranslation('room.housekeeping', 'Oda Temizliği')}</span>
-        </button>
-        {/* Konsiyerj - yeni sayfaya yönlendir */}
-        <button
-          className="flex flex-col items-center justify-center rounded-xl p-4 sm:p-6 shadow hover:scale-105 transition"
-          style={{ background: `${theme.primaryColor}20` }}
-          onClick={() => {
-            const roomNumber = roomId.replace('room-', '');
-            const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
-            params.set('roomId', roomNumber);
-            router.push(`/concierge?${params.toString()}`);
-          }}
-        >
-          <FaHeadset className="text-2xl sm:text-3xl mb-2" style={{ color: theme.primaryColor }} />
-          <span className="font-medium text-sm sm:text-base" style={{ color: theme.textColor }}>{safeGetTranslation('room.concierge', 'Konsiyerj')}</span>
+          <Settings className="w-6 h-6 mb-1" style={{ color: theme.textColor }} />
+          <span className="text-[10px] font-medium" style={{ color: theme.textColor }}>{safeGetTranslation('settings', 'Ayarlar')}</span>
         </button>
       </div>
-
-      {/* Bizi Puanla Butonu */}
-      <button
-        onClick={() => setShowSurvey(true)}
-        className="w-full max-w-md text-white rounded-xl p-3 sm:p-4 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 mb-4 sm:mb-6 mx-4"
-        style={{ background: theme.gradientColors?.length ? `linear-gradient(135deg, ${theme.gradientColors[0]} 0%, ${theme.gradientColors[1]} 100%)` : theme.primaryColor }}
-      >
-        <div className="flex items-center justify-center gap-2 sm:gap-3">
-          <FaStar className="text-xl sm:text-2xl" />
-          <span className="text-base sm:text-lg font-semibold">{safeGetTranslation('room.survey', 'Bizi Puanla')}</span>
-        </div>
-      </button>
 
     </div>
   );
