@@ -4104,6 +4104,116 @@ app.put('/api/hotel/info', tenantMiddleware, authMiddleware, async (req: Request
   }
 })
 
+// Campaign endpoints
+app.get('/api/campaigns', tenantMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = getTenantId(req);
+    const campaigns = await prisma.campaign.findMany({
+      where: { tenantId },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json({ campaigns }); return;
+  } catch (error) {
+    console.error('Get campaigns error:', error);
+    res.status(500).json({ message: 'Internal server error' }); return;
+  }
+});
+
+app.post('/api/campaigns', tenantMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = getTenantId(req);
+    const { title, description, image, isActive, startDate, endDate, type, translations } = req.body;
+
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+      include: { hotels: true }
+    });
+
+    if (!tenant || !tenant.hotels[0]) {
+      res.status(404).json({ message: 'Hotel not found for tenant' }); return;
+    }
+
+    const campaign = await prisma.campaign.create({
+      data: {
+        title,
+        description,
+        image,
+        isActive: isActive ?? true,
+        startDate: startDate ? new Date(startDate) : null,
+        endDate: endDate ? new Date(endDate) : null,
+        type: type || 'GENERAL',
+        translations: translations || {},
+        tenantId,
+        hotelId: tenant.hotels[0].id
+      }
+    });
+
+    res.json({ success: true, campaign }); return;
+  } catch (error) {
+    console.error('Create campaign error:', error);
+    res.status(500).json({ message: 'Internal server error', error: (error as Error).message }); return;
+  }
+});
+
+app.put('/api/campaigns/:id', tenantMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = getTenantId(req);
+    const { id } = req.params;
+    const { title, description, image, isActive, startDate, endDate, type, translations } = req.body;
+
+    const campaign = await prisma.campaign.findFirst({
+      where: { id, tenantId }
+    });
+
+    if (!campaign) {
+      res.status(404).json({ message: 'Campaign not found' }); return;
+    }
+
+    const updatedCampaign = await prisma.campaign.update({
+      where: { id },
+      data: {
+        title,
+        description,
+        image,
+        isActive,
+        startDate: startDate ? new Date(startDate) : null,
+        endDate: endDate ? new Date(endDate) : null,
+        type,
+        translations
+      }
+    });
+
+    res.json({ success: true, campaign: updatedCampaign }); return;
+  } catch (error) {
+    console.error('Update campaign error:', error);
+    res.status(500).json({ message: 'Internal server error', error: (error as Error).message }); return;
+  }
+});
+
+app.delete('/api/campaigns/:id', tenantMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = getTenantId(req);
+    const { id } = req.params;
+
+    const campaign = await prisma.campaign.findFirst({
+      where: { id, tenantId }
+    });
+
+    if (!campaign) {
+      res.status(404).json({ message: 'Campaign not found' }); return;
+    }
+
+    await prisma.campaign.delete({
+      where: { id }
+    });
+
+    res.json({ success: true, message: 'Campaign deleted successfully' }); return;
+  } catch (error) {
+    console.error('Delete campaign error:', error);
+    res.status(500).json({ message: 'Internal server error', error: (error as Error).message }); return;
+  }
+});
+
 // Tüm mevcut özellikleri listele
 // Database Restore Endpoints
 const uploadsDir = path.join(process.cwd(), 'uploads', 'backups')

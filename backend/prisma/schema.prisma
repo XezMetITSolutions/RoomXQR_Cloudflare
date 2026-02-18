@@ -347,11 +347,13 @@ model Campaign {
   id          String   @id @default(cuid())
   title       String
   description String?
-  imageUrl    String?
+  image       String?
   targetUrl   String?
-  startDate   DateTime
+  startDate   DateTime?
   endDate     DateTime?
   isActive    Boolean  @default(true)
+  type        String   @default("GENERAL") // GENERAL, FOOD, DRINK, SPA, EVENT
+  translations Json?
   priority    Int      @default(0)
   
   // Stats

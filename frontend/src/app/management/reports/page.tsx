@@ -182,7 +182,6 @@ export default function ReportsPage() {
         { id: 'revenue', label: 'Gelir & Upsell', icon: DollarSign, color: 'text-emerald-600' },
         { id: 'kitchen', label: 'Mutfak', icon: Utensils, color: 'text-orange-600' },
         { id: 'operation', label: 'Operasyon', icon: ClipboardList, color: 'text-blue-600' },
-        { id: 'technical', label: 'Teknik Durum', icon: Activity, color: 'text-rose-600' },
     ];
 
     if (isLoading) {
