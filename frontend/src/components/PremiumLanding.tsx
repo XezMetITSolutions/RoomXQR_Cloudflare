@@ -552,7 +552,6 @@ export default function PremiumLanding() {
                                 <h3 className="text-2xl font-black mb-4 uppercase tracking-tighter">{plan.title}</h3>
                                 <div className="mb-6">
                                     <span className="text-4xl md:text-5xl font-black">{plan.price}</span>
-                                    {plan.price !== 'Custom' && plan.price !== 'Özel' && <span className="text-sm font-bold opacity-60 ml-2">TL</span>}
                                 </div>
                                 <p className={`mb-8 font-medium italic ${plan.featured ? 'text-slate-400' : 'text-slate-500'}`}>{plan.desc}</p>
                                 <div className="space-y-4 mb-12 flex-grow">

@@ -2286,6 +2286,26 @@ export const translations: Record<string, Translations> = {
     'privacyPolicy': 'Datenschutzerklärung',
     'termsOfService': 'Nutzungsbedingungen',
     'legalInfo': 'Impressum',
+
+    // Footer & Pricing
+    'planBasicTitle': 'Basic Paket',
+    'planBasicPriceTL': '29.900 ₺',
+    'planBasicDesc': 'Ideales Starterpaket für kleine Hotels und Boutique-Unternehmen.',
+    'planBasicFeat1': 'QR-Menüsystem',
+    'planBasicFeat2': 'Zimmerservice-Verwaltung',
+    'planBasicFeat3': 'Basis-Berichterstattung',
+    'planProTitle': 'Pro Paket',
+    'planProPriceTL': '39.900 ₺',
+    'planProDesc': 'Erweiterte Funktionen und Integrationen für mittelgroße Hotels.',
+    'planProFeat1': 'Alles inklusive (Basic +)',
+    'planProFeat2': 'Mehrsprachige Unterstützung',
+    'planProFeat3': 'Erweiterte Analytik',
+    'planEntTitle': 'Enterprise Paket',
+    'planEntPriceTL': 'Spezialangebot',
+    'planEntDesc': 'Maßgeschneiderte Lösungen für Hotelketten und Großanlagen.',
+    'planEntFeat1': 'Alle Funktionen (Pro +)',
+    'planEntFeat2': 'Benutzerdefinierte Integrationen',
+    'planEntFeat3': '24/7 Prioritäts-Support',
   },
 
   fr: {
