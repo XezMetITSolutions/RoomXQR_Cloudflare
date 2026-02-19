@@ -104,6 +104,25 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
   const [activityImages, setActivityImages] = useState<{ title: string; imageUrl: string }[]>([]);
   const [slideIndex, setSlideIndex] = useState(0);
   const { addNotification } = useNotifications();
+  const [bgIndex, setBgIndex] = useState(0);
+
+  const hotelBackgrounds = [
+    "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600&q=80",
+    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1600&q=80",
+    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=1600&q=80",
+    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1600&q=80",
+    "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=1600&q=80",
+    "https://images.unsplash.com/photo-1535827841776-24afc1e255ac?w=1600&q=80",
+    "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=1600&q=80"
+  ];
+
+  // Background rotation effect
+  useEffect(() => {
+    const bgTimer = setInterval(() => {
+      setBgIndex((prev) => (prev + 1) % hotelBackgrounds.length);
+    }, 7000); // Rotate every 7 seconds
+    return () => clearInterval(bgTimer);
+  }, [hotelBackgrounds.length]);
 
   // Dil store'u
   const { currentLanguage, setLanguage, getTranslation, getCurrentLanguage, getSupportedLanguages } = useLanguageStore();
@@ -388,12 +407,16 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
   return (
     <div className="min-h-screen flex flex-col relative text-white font-sans overflow-x-hidden">
       {/* Background Image with Overlay */}
-      <div className="fixed inset-0 z-0">
-        <img
-          src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600&q=80"
-          alt="Hotel Background"
-          className="w-full h-full object-cover scale-105 blur-[2px]"
-        />
+      <div className="fixed inset-0 z-0 overflow-hidden">
+        {hotelBackgrounds.map((src, idx) => (
+          <img
+            key={src}
+            src={src}
+            alt="Hotel Background"
+            className={`absolute inset-0 w-full h-full object-cover scale-105 blur-[2px] transition-opacity duration-[3000ms] ease-in-out ${idx === bgIndex ? 'opacity-100' : 'opacity-0'
+              }`}
+          />
+        ))}
         <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
       </div>
 
@@ -554,14 +577,19 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
           >
             <div className="w-12 h-12 flex items-center justify-center mr-4">
               <img
-                src="https://img.icons8.com/3d-fluency/94/clipboard.png"
-                alt="Info"
+                src="https://img.icons8.com/3d-fluency/94/wi-fi.png"
+                alt="Wifi"
                 className="w-10 h-10"
               />
             </div>
-            <span className="font-bold text-gray-800 text-xl flex-1 text-left">
-              {safeGetTranslation('room.wifi', 'Bilgi')}
-            </span>
+            <div className="flex flex-col flex-1 text-left">
+              <span className="font-bold text-gray-800 text-xl leading-tight">
+                {safeGetTranslation('room.wifi', 'WiFi / Bilgi')}
+              </span>
+              <span className="text-xs text-gray-500 font-medium opacity-80">
+                Network & Hotel Info
+              </span>
+            </div>
             <ChevronDown className="w-6 h-6 text-gray-400 -rotate-90" />
           </button>
 
