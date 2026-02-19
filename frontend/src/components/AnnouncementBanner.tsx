@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { 
-  X, 
-  Info, 
-  AlertTriangle, 
-  Megaphone, 
+import {
+  X,
+  Info,
+  AlertTriangle,
+  Megaphone,
   Wrench,
   Clock,
   ExternalLink,
@@ -18,9 +18,10 @@ import { RealtimeTranslator } from '@/components/RealtimeTranslator';
 interface AnnouncementBannerProps {
   roomId?: string;
   className?: string;
+  minimal?: boolean;
 }
 
-export default function AnnouncementBanner({ roomId, className = '' }: AnnouncementBannerProps) {
+export default function AnnouncementBanner({ roomId, className = '', minimal = false }: AnnouncementBannerProps) {
   const { getAnnouncementsByRoom, getActiveAnnouncements } = useAnnouncementStore();
   const { currentLanguage } = useLanguageStore();
   const [announcements, setAnnouncements] = useState<any[]>([]);
@@ -30,21 +31,21 @@ export default function AnnouncementBanner({ roomId, className = '' }: Announcem
 
   useEffect(() => {
     const loadAnnouncements = () => {
-      const activeAnnouncements = roomId 
+      const activeAnnouncements = roomId
         ? getAnnouncementsByRoom(roomId)
         : getActiveAnnouncements();
-      
+
       // Oda QR sayfasında menü kategorisindeki duyuruları filtrele (sadece menü duyuruları QR menüde görünsün)
-      const filtered = activeAnnouncements.filter(announcement => 
+      const filtered = activeAnnouncements.filter(announcement =>
         !dismissedAnnouncements.includes(announcement.id) &&
         announcement.category !== 'menu'
       );
-      
+
       setAnnouncements(filtered);
     };
 
     loadAnnouncements();
-    
+
     // Her 30 saniyede bir güncelle
     const interval = setInterval(loadAnnouncements, 30000);
     return () => clearInterval(interval);
@@ -52,16 +53,16 @@ export default function AnnouncementBanner({ roomId, className = '' }: Announcem
 
   // Dil değiştiğinde duyuruları yeniden yükle (re-render için)
   useEffect(() => {
-    const activeAnnouncements = roomId 
+    const activeAnnouncements = roomId
       ? getAnnouncementsByRoom(roomId)
       : getActiveAnnouncements();
-    
+
     // Oda QR sayfasında menü kategorisindeki duyuruları filtrele (sadece menü duyuruları QR menüde görünsün)
-    const filtered = activeAnnouncements.filter(announcement => 
+    const filtered = activeAnnouncements.filter(announcement =>
       !dismissedAnnouncements.includes(announcement.id) &&
       announcement.category !== 'menu'
     );
-    
+
     setAnnouncements(filtered);
   }, [currentLanguage, roomId, getAnnouncementsByRoom, getActiveAnnouncements, dismissedAnnouncements]);
 
@@ -69,11 +70,11 @@ export default function AnnouncementBanner({ roomId, className = '' }: Announcem
   useEffect(() => {
     if (announcements.length > 1 && autoRotate) {
       const rotationInterval = setInterval(() => {
-        setCurrentAnnouncementIndex((prevIndex) => 
+        setCurrentAnnouncementIndex((prevIndex) =>
           (prevIndex + 1) % announcements.length
         );
       }, 4000); // 4 saniyede bir değiştir
-      
+
       return () => clearInterval(rotationInterval);
     }
   }, [announcements.length, autoRotate]);
@@ -149,6 +150,27 @@ export default function AnnouncementBanner({ roomId, className = '' }: Announcem
 
   const currentAnnouncement = visibleAnnouncements[currentAnnouncementIndex];
 
+  if (minimal) {
+    return (
+      <div className={`overflow-hidden ${className}`}>
+        <div className="flex flex-col">
+          <h4 className="font-bold text-gray-800 text-sm truncate">
+            <RealtimeTranslator
+              text={currentAnnouncement.translations?.[currentLanguage]?.title || currentAnnouncement.title}
+              targetLang={currentLanguage as any}
+            />
+          </h4>
+          <p className="text-xs text-gray-500 line-clamp-1">
+            <RealtimeTranslator
+              text={currentAnnouncement.translations?.[currentLanguage]?.content || currentAnnouncement.content}
+              targetLang={currentLanguage as any}
+            />
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`space-y-3 ${className}`}>
       {visibleAnnouncements.length > 1 && (
@@ -157,14 +179,13 @@ export default function AnnouncementBanner({ roomId, className = '' }: Announcem
             <button
               key={index}
               onClick={() => setCurrentAnnouncementIndex(index)}
-              className={`w-2 h-2 rounded-full transition-colors ${
-                index === currentAnnouncementIndex ? 'bg-current opacity-100' : 'bg-current opacity-30'
-              }`}
+              className={`w-2 h-2 rounded-full transition-colors ${index === currentAnnouncementIndex ? 'bg-current opacity-100' : 'bg-current opacity-30'
+                }`}
             />
           ))}
         </div>
       )}
-      
+
       <div
         key={currentAnnouncement.id}
         className={`border-l-4 border rounded-lg p-4 transition-all duration-500 ${getTypeColor(currentAnnouncement.type)}`}

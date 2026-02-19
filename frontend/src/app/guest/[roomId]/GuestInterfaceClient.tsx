@@ -386,39 +386,42 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative" style={{ background: theme.backgroundColor || '#f9fafb' }}>
+    <div className="min-h-screen flex flex-col relative text-white font-sans overflow-x-hidden">
+      {/* Background Image with Overlay */}
+      <div className="fixed inset-0 z-0">
+        <img
+          src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600&q=80"
+          alt="Hotel Background"
+          className="w-full h-full object-cover scale-105 blur-[2px]"
+        />
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
+      </div>
 
-      {/* Scrollable Content Area */}
-      <div className="flex-1 pb-24">
-        {/* Header */}
-        <div className="px-6 pt-6 pb-2 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold" style={{ color: theme.textColor }}>
-              {hotelName || safeGetTranslation('room.welcome', 'Hoş Geldiniz')}
+      {/* Main Content */}
+      <div className="relative z-10 flex-1 flex flex-col p-6 max-w-lg mx-auto w-full">
+        {/* Top Header */}
+        <div className="flex justify-between items-start mb-8">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-bold tracking-tight">
+              {safeGetTranslation('welcome_guest', 'Hoşgeldiniz')}, {displayGuestName ? formatGuestNameOnly(displayGuestName) : 'Misafir'}!
             </h1>
-            {displayGuestName && (
-              <p className="text-sm opacity-80" style={{ color: theme.textColor }}>
-                {safeGetTranslation('welcome_guest', 'Hoş geldiniz')}, {formatGuestNameOnly(displayGuestName)}
-              </p>
-            )}
+            <p className="text-lg opacity-90 font-medium">
+              {safeGetTranslation('how_can_we_help', 'Lütfen size nasıl yardımcı olabiliriz?')}
+            </p>
           </div>
 
           <div className="relative language-selector">
             <button
               onClick={() => setShowLanguageSelector(!showLanguageSelector)}
-              className="flex items-center space-x-2 px-3 py-2 rounded-full shadow-sm transition-colors"
-              style={{ background: theme.cardBackground, border: `1px solid ${theme.borderColor}` }}
+              className="px-3 py-1.5 rounded-full dark-glass flex items-center gap-2 border border-white/20 transition-all active:scale-95"
             >
-              <Globe className="w-4 h-4" style={{ color: theme.textColor }} />
-              <span className="text-sm font-medium" style={{ color: theme.textColor }}>
-                {getCurrentLanguage().flag}
-              </span>
-              <ChevronDown className="w-4 h-4" style={{ color: theme.textColor }} />
+              <Globe className="w-4 h-4 text-white" />
+              <span className="text-sm font-bold uppercase">{currentLanguage}</span>
             </button>
 
             {/* Language Dropdown */}
             {showLanguageSelector && (
-              <div className="absolute right-0 top-full mt-2 w-48 rounded-xl shadow-xl z-50 overflow-hidden" style={{ background: theme.cardBackground, border: `1px solid ${theme.borderColor}` }}>
+              <div className="absolute right-0 top-full mt-2 w-48 rounded-2xl shadow-2xl z-50 overflow-hidden glass-card border border-white/30">
                 {supportedLanguages.map((lang) => (
                   <button
                     key={lang.code}
@@ -430,10 +433,10 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
                       const newUrl = `/${lang.code}/guest/${roomNumber}${paramsString ? `?${paramsString}` : ''}`;
                       window.history.pushState(null, '', newUrl);
                     }}
-                    className={`w-full px-4 py-3 text-left transition-colors flex items-center space-x-3 hover:bg-black/5`}
+                    className={`w-full px-4 py-3 text-left transition-colors flex items-center space-x-3 hover:bg-white/20 ${currentLanguage === lang.code ? 'bg-white/10' : ''}`}
                   >
                     <span className="text-lg">{lang.flag}</span>
-                    <span className="font-medium text-sm" style={{ color: theme.textColor }}>{lang.name}</span>
+                    <span className="font-semibold text-sm text-gray-800">{lang.name}</span>
                   </button>
                 ))}
               </div>
@@ -441,139 +444,187 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
           </div>
         </div>
 
-        {/* Hero Slideshow */}
-        <div className="px-4 mt-4">
-          <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden shadow-lg">
-            {activityList.map((item, idx) => (
-              <div
-                key={idx}
-                className="absolute inset-0 transition-opacity duration-1000 ease-in-out"
-                style={{ opacity: idx === slideIndex ? 1 : 0 }}
-              >
-                <img
-                  src={item.imageUrl}
-                  alt={item.title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                <div className="absolute bottom-4 left-4 text-white">
-                  <p className="font-medium text-lg">{item.title}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Announcement Banner */}
-        <div className="px-4 mt-6">
-          <AnnouncementBanner roomId={roomId} />
+        <div className="mb-6">
+          <div className="glass-card rounded-2xl p-4 flex items-center justify-between shadow-xl border border-white/40">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                <FaBell className="text-orange-500 text-lg animate-bounce" />
+              </div>
+              <div className="flex-1 overflow-hidden">
+                <AnnouncementBanner roomId={roomId} minimal={true} />
+              </div>
+            </div>
+            <div className="text-gray-400">
+              <ChevronDown className="w-5 h-5 -rotate-90" />
+            </div>
+          </div>
         </div>
 
-        {/* Service Grid */}
-        <div className="px-4 mt-6">
-          <h2 className="text-lg font-semibold mb-4 px-1" style={{ color: theme.textColor }}>
-            {safeGetTranslation('services', 'Hizmetler')}
-          </h2>
-          <div className="grid grid-cols-2 gap-4">
-            {/* Oda Servisi */}
-            <button
-              onClick={() => {
-                const roomNumber = roomId.replace('room-', '');
-                localStorage.setItem('currentRoomId', roomId);
-                const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
-                params.set('roomId', roomNumber);
-                router.push(`/qr-menu?${params.toString()}`);
-              }}
-              className="aspect-square rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition-all active:scale-95 group"
-              style={{ background: theme.cardBackground }}
-            >
-              <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform" style={{ background: `${theme.primaryColor}15` }}>
-                <Utensils className="w-6 h-6" style={{ color: theme.primaryColor }} />
-              </div>
-              <span className="font-medium text-sm" style={{ color: theme.textColor }}>
-                {safeGetTranslation('room.room_service', 'Oda Servisi')}
-              </span>
-            </button>
+        {/* Action Grid (2x2) */}
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          {/* Oda Servisi */}
+          <button
+            onClick={() => {
+              const roomNumber = roomId.replace('room-', '');
+              localStorage.setItem('currentRoomId', roomId);
+              const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
+              params.set('roomId', roomNumber);
+              router.push(`/qr-menu?${params.toString()}`);
+            }}
+            className="glass-card aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-lg border border-white/50"
+          >
+            <div className="w-full flex-1 flex items-center justify-center p-2">
+              <img
+                src="https://img.icons8.com/3d-fluency/188/cloche.png"
+                alt="Room Service"
+                className="w-full h-full object-contain drop-shadow-2xl"
+              />
+            </div>
+            <span className="font-bold text-gray-800 text-lg">
+              {safeGetTranslation('room.room_service', 'Oda Servisi')}
+            </span>
+          </button>
 
-            {/* Bilgi & Wifi -> Spa/Info styling */}
-            <button
-              onClick={() => router.push('/info')}
-              className="aspect-square rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition-all active:scale-95 group"
-              style={{ background: theme.cardBackground }}
-            >
-              <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform" style={{ background: `${theme.accentColor}15` }}>
-                <Wifi className="w-6 h-6" style={{ color: theme.accentColor }} />
-              </div>
-              <span className="font-medium text-sm" style={{ color: theme.textColor }}>
-                {safeGetTranslation('room.wifi', 'Bilgi & Wifi')}
-              </span>
-            </button>
+          {/* Özel Talepler */}
+          <button
+            onClick={() => {
+              const roomNumber = roomId.replace('room-', '');
+              router.push(`/${currentLanguage}/guest/${roomNumber}/cleaning`);
+            }}
+            className="glass-card aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-lg border border-white/50"
+          >
+            <div className="w-full flex-1 flex items-center justify-center p-2">
+              <img
+                src="https://img.icons8.com/3d-fluency/188/spray-bottle.png"
+                alt="Special Requests"
+                className="w-full h-full object-contain drop-shadow-2xl"
+              />
+            </div>
+            <span className="font-bold text-gray-800 text-lg">
+              {safeGetTranslation('room.housekeeping', 'Özel Talepler')}
+            </span>
+          </button>
 
-            {/* Oda Temizliği -> Controls styling */}
-            <button
-              onClick={() => {
-                const roomNumber = roomId.replace('room-', '');
-                router.push(`/${currentLanguage}/guest/${roomNumber}/cleaning`);
-              }}
-              className="aspect-square rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition-all active:scale-95 group"
-              style={{ background: theme.cardBackground }}
-            >
-              <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform" style={{ background: `${theme.secondaryColor}15` }}>
-                <Sparkles className="w-6 h-6" style={{ color: theme.secondaryColor }} />
-              </div>
-              <span className="font-medium text-sm" style={{ color: theme.textColor }}>
-                {safeGetTranslation('room.housekeeping', 'Oda Temizliği')}
-              </span>
-            </button>
+          {/* Otel Aktiviteleri */}
+          <button
+            onClick={() => router.push('/info')}
+            className="glass-card aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-lg border border-white/50"
+          >
+            <div className="w-full flex-1 flex items-center justify-center p-2">
+              <img
+                src="https://img.icons8.com/3d-fluency/188/spa.png"
+                alt="Hotel Activities"
+                className="w-full h-full object-contain drop-shadow-2xl"
+              />
+            </div>
+            <span className="font-bold text-gray-800 text-lg">
+              {safeGetTranslation('hotel_activities', 'Otel Aktiviteleri')}
+            </span>
+          </button>
 
-            {/* Konsiyerj */}
-            <button
-              onClick={() => {
-                const roomNumber = roomId.replace('room-', '');
-                const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
-                params.set('roomId', roomNumber);
-                router.push(`/concierge?${params.toString()}`);
-              }}
-              className="aspect-square rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition-all active:scale-95 group"
-              style={{ background: theme.cardBackground }}
-            >
-              <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform" style={{ background: `${theme.primaryColor}15` }}>
-                <Headset className="w-6 h-6" style={{ color: theme.primaryColor }} />
+          {/* Şehir Turları */}
+          <button
+            onClick={() => {
+              const roomNumber = roomId.replace('room-', '');
+              const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
+              params.set('roomId', roomNumber);
+              router.push(`/concierge?${params.toString()}`);
+            }}
+            className="glass-card aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-lg border border-white/50"
+          >
+            <div className="w-full flex-1 flex items-center justify-center p-2">
+              <img
+                src="https://img.icons8.com/3d-fluency/188/bus.png"
+                alt="City Tours"
+                className="w-full h-full object-contain drop-shadow-2xl"
+              />
+            </div>
+            <span className="font-bold text-gray-800 text-lg">
+              {safeGetTranslation('city_tours', 'Şehir Turları')}
+            </span>
+          </button>
+        </div>
+
+        {/* Secondary Grid (Horizontal) */}
+        <div className="grid grid-cols-1 gap-3 mb-10">
+          <button
+            onClick={() => router.push('/info')}
+            className="glass-card rounded-[1.5rem] p-4 flex items-center transition-all active:scale-95 shadow-md border border-white/50"
+          >
+            <div className="w-12 h-12 flex items-center justify-center mr-4">
+              <img
+                src="https://img.icons8.com/3d-fluency/94/clipboard.png"
+                alt="Info"
+                className="w-10 h-10"
+              />
+            </div>
+            <span className="font-bold text-gray-800 text-xl flex-1 text-left">
+              {safeGetTranslation('room.wifi', 'Bilgi')}
+            </span>
+            <ChevronDown className="w-6 h-6 text-gray-400 -rotate-90" />
+          </button>
+
+          <button
+            onClick={() => setShowSurvey(true)}
+            className="glass-card rounded-[1.5rem] p-4 flex items-center transition-all active:scale-95 shadow-md border border-white/50"
+          >
+            <div className="w-12 h-12 flex items-center justify-center mr-4 font-bold">
+              <img
+                src="https://img.icons8.com/3d-fluency/94/star--v1.png"
+                alt="Feedback"
+                className="w-10 h-10"
+              />
+            </div>
+            <span className="font-bold text-gray-800 text-xl flex-1 text-left">
+              {safeGetTranslation('survey.title', 'Şikayet / Yorum')}
+            </span>
+            <div className="flex flex-col items-end">
+              <div className="flex -space-x-1 mb-1">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className={`w-3.5 h-3.5 rounded-full ${i <= 3 ? 'bg-yellow-400' : 'bg-gray-300'}`} />
+                ))}
               </div>
-              <span className="font-medium text-sm" style={{ color: theme.textColor }}>
-                {safeGetTranslation('room.concierge', 'Konsiyerj')}
-              </span>
-            </button>
+              <div className="w-5 h-5 rounded-full bg-orange-400 flex items-center justify-center">
+                <span className="text-white text-[10px] font-bold">!</span>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        {/* Live Support Floating Area */}
+        <div className="mt-auto flex flex-col items-center">
+          <div className="relative mb-4 group cursor-pointer active:scale-95 transition-transform" onClick={() => addNotification('info', 'Canlı Destek', 'Personelimize bağlanıyorsunuz...')}>
+            <div className="bg-gray-800/90 backdrop-blur-md text-white px-8 py-2.5 rounded-full font-bold shadow-2xl flex items-center gap-3 border border-white/20">
+              {safeGetTranslation('live_support', 'Canlı Destek')}
+            </div>
+            <div className="absolute -right-14 -top-14">
+              <img
+                src="https://img.icons8.com/3d-fluency/188/robot-2.png"
+                alt="Bot"
+                className="w-24 h-24 drop-shadow-2xl animate-pulse"
+              />
+            </div>
+          </div>
+
+          {/* Logo */}
+          <div className="mt-4 opacity-80 flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+            <span className="font-black text-2xl tracking-[0.2em] italic">ROOM<span className="text-blue-400">X</span>QR</span>
+            <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
           </div>
         </div>
       </div>
 
-      {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t px-6 py-2 flex justify-between items-center z-50 safe-area-bottom" style={{ borderColor: theme.borderColor, backgroundColor: theme.cardBackground + 'EE' }}>
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="flex flex-col items-center p-2 rounded-lg"
-        >
-          <Home className="w-6 h-6 mb-1" style={{ color: theme.primaryColor }} />
-          <span className="text-[10px] font-medium" style={{ color: theme.textColor }}>{safeGetTranslation('home', 'Ana Sayfa')}</span>
-        </button>
-
-        <button
-          className="flex flex-col items-center p-2 rounded-lg opacity-50"
-        >
-          <LayoutGrid className="w-6 h-6 mb-1" style={{ color: theme.textColor }} />
-          <span className="text-[10px] font-medium" style={{ color: theme.textColor }}>{safeGetTranslation('services', 'Hizmetler')}</span>
-        </button>
-
-        <button
-          onClick={() => setShowSurvey(true)}
-          className="flex flex-col items-center p-2 rounded-lg"
-        >
-          <Settings className="w-6 h-6 mb-1" style={{ color: theme.textColor }} />
-          <span className="text-[10px] font-medium" style={{ color: theme.textColor }}>{safeGetTranslation('settings', 'Ayarlar')}</span>
-        </button>
-      </div>
-
+      {/* Styles for the specific look */}
+      <style jsx>{`
+        .glass-card :global(img) {
+          transition: transform 0.3s ease;
+        }
+        .glass-card:hover :global(img) {
+          transform: translateY(-5px) scale(1.05);
+        }
+      `}</style>
     </div>
   );
 }
