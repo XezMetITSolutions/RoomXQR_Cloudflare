@@ -476,7 +476,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
           >
             <div className="w-full flex-1 flex items-center justify-center p-2">
               <img
-                src="https://img.icons8.com/3d-fluency/188/cloche.png"
+                src="/icons/1.png"
                 alt="Room Service"
                 className="w-full h-full object-contain drop-shadow-2xl"
               />
@@ -496,7 +496,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
           >
             <div className="w-full flex-1 flex items-center justify-center p-2">
               <img
-                src="https://img.icons8.com/3d-fluency/188/spray-bottle.png"
+                src="/icons/2.png"
                 alt="Special Requests"
                 className="w-full h-full object-contain drop-shadow-2xl"
               />
@@ -513,7 +513,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
           >
             <div className="w-full flex-1 flex items-center justify-center p-2">
               <img
-                src="https://img.icons8.com/3d-fluency/188/spa.png"
+                src="/icons/3.png"
                 alt="Hotel Activities"
                 className="w-full h-full object-contain drop-shadow-2xl"
               />
@@ -535,7 +535,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
           >
             <div className="w-full flex-1 flex items-center justify-center p-2">
               <img
-                src="https://img.icons8.com/3d-fluency/188/bus.png"
+                src="/icons/4.png"
                 alt="City Tours"
                 className="w-full h-full object-contain drop-shadow-2xl"
               />
