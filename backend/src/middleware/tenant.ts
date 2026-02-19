@@ -29,6 +29,10 @@ export async function tenantMiddleware(req: Request, res: Response, next: NextFu
       tenantSlug = 'system-admin'
     }
 
+    if (tenantSlug === 'grandhotel.roomxqr.com') {
+      tenantSlug = 'grandhotel';
+    }
+
     console.log('🔍 Tenant middleware:', {
       tenantSlug,
       method: req.method,
