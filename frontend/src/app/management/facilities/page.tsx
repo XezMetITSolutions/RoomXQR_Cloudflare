@@ -61,6 +61,7 @@ export default function FacilitiesPage() {
     const getTenantSlug = (): string => {
         if (typeof window === 'undefined') return 'demo';
         const hostname = window.location.hostname;
+        if (hostname.includes('grandhotel')) return 'grandhotel';
         const subdomain = hostname.split('.')[0];
         if (subdomain && subdomain !== 'www' && subdomain !== 'roomxqr' && subdomain !== 'roomxqr-backend') {
             return subdomain;

@@ -7,7 +7,15 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.
 export async function GET(request: Request) {
     try {
         const url = new URL(request.url);
-        const tenantSlug = request.headers.get('x-tenant') || 'demo';
+        let tenantSlug = request.headers.get('x-tenant') || 'demo';
+
+        // Hostname kontrolü (frontend tarafında yapıldı ama backend requestinde header yoksa buradan da yakalayalım)
+        const host = request.headers.get('host') || '';
+        if (host.includes('grandhotel') && tenantSlug === 'demo') {
+            tenantSlug = 'grandhotel';
+        }
+
+        console.log(`[Proxy] Fetching facilities for tenant: ${tenantSlug}`);
 
         const backendResponse = await fetch(`${BACKEND_URL}/api/facilities`, {
             headers: {
