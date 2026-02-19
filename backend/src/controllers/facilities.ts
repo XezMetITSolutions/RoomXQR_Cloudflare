@@ -16,10 +16,10 @@ export const getFacilities = async (req: Request, res: Response) => {
             orderBy: { createdAt: 'desc' }
         });
 
-        res.json(facilities);
+        return res.json(facilities);
     } catch (error) {
         console.error('Error fetching facilities:', error);
-        res.status(500).json({ error: 'Failed to fetch facilities' });
+        return res.status(500).json({ error: 'Failed to fetch facilities' });
     }
 };
 
@@ -59,10 +59,10 @@ export const createFacility = async (req: Request, res: Response) => {
             }
         });
 
-        res.status(201).json(facility);
+        return res.status(201).json(facility);
     } catch (error) {
         console.error('Error creating facility:', error);
-        res.status(500).json({ error: 'Failed to create facility' });
+        return res.status(500).json({ error: 'Failed to create facility' });
     }
 };
 
@@ -91,10 +91,10 @@ export const updateFacility = async (req: Request, res: Response) => {
             }
         });
 
-        res.json(facility);
+        return res.json(facility);
     } catch (error) {
         console.error('Error updating facility:', error);
-        res.status(500).json({ error: 'Failed to update facility' });
+        return res.status(500).json({ error: 'Failed to update facility' });
     }
 };
 
@@ -110,9 +110,9 @@ export const deleteFacility = async (req: Request, res: Response) => {
             where: { id, tenantId }
         });
 
-        res.status(204).end();
+        return res.status(204).end();
     } catch (error) {
         console.error('Error deleting facility:', error);
-        res.status(500).json({ error: 'Failed to delete facility' });
+        return res.status(500).json({ error: 'Failed to delete facility' });
     }
 };

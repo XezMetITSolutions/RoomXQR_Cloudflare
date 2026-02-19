@@ -87,9 +87,7 @@ export default function FacilitiesPage() {
         }
     }, []);
 
-    useEffect(() => {
-        loadFacilities();
-    }, [loadFacilities]);
+
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -192,6 +190,22 @@ export default function FacilitiesPage() {
         f.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (f.description?.toLowerCase().includes(searchTerm.toLowerCase()))
     );
+
+
+    const [isHydrated, setIsHydrated] = useState(false);
+
+    useEffect(() => {
+        setIsHydrated(true);
+        loadFacilities();
+    }, [loadFacilities]);
+
+    if (!isHydrated) {
+        return (
+            <div className="flex justify-center items-center py-24">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
