@@ -529,20 +529,20 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
             </span>
           </button>
 
-          {/* Otel Aktiviteleri */}
+          {/* Otel Olanakları */}
           <button
-            onClick={() => router.push('/info')}
+            onClick={() => router.push(`/guest/${roomId}/facilities`)}
             className="glass-card aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-lg border border-white/50"
           >
             <div className="w-full flex-1 flex items-center justify-center p-2">
               <img
                 src="/icons/3.png"
-                alt="Hotel Activities"
+                alt="Hotel Facilities"
                 className="w-full h-full object-contain drop-shadow-2xl"
               />
             </div>
             <span className="font-bold text-gray-800 text-lg">
-              {safeGetTranslation('hotel_activities', 'Otel Aktiviteleri')}
+              {safeGetTranslation('sidebar.facilities', 'Otel Olanakları')}
             </span>
           </button>
 

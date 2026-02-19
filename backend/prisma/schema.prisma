@@ -33,6 +33,7 @@ model Tenant {
   analytics   AnalyticsEvent[]
   campaigns   Campaign[]
   devices     DeviceStatus[]
+  facilities  HotelFacility[]
 
   @@map("tenants")
 }
@@ -80,6 +81,7 @@ model Hotel {
   analytics   AnalyticsEvent[]
   campaigns   Campaign[]
   devices     DeviceStatus[]
+  facilities  HotelFacility[]
 
   @@map("hotels")
 }
@@ -392,6 +394,30 @@ model DeviceStatus {
   updatedAt   DateTime @updatedAt
 
   @@map("device_statuses")
+}
+
+model HotelFacility {
+  id              String   @id @default(cuid())
+  name            String
+  description     String?  @db.Text
+  image           String?
+  location        String?  // e.g. "Floor -1", "Next to Lobby"
+  openingHours    String?  // e.g. "09:00 - 22:00"
+  reservationInfo String?  // e.g. "Requires booking 2 hours in advance"
+  contactInfo     String?  // e.g. "Phone: 1005"
+  isActive        Boolean  @default(true)
+  translations    Json?    // e.g. { en: { name: "Spa", description: "..." }, ru: {...} }
+  
+  // Relations
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  hotelId         String
+  hotel           Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("hotel_facilities")
 }
 
 // --- ENUMS ---

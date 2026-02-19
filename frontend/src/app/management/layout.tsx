@@ -66,6 +66,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: getTranslation('sidebar.room_management'), href: '/management/room-management', icon: BedDouble, key: 'oda-yonetimi', color: 'text-amber-600' },
     { name: getTranslation('sidebar.qr_generator'), href: '/management/qr-code', icon: QrCode, key: 'qr-kod', color: 'text-emerald-600' },
     { name: getTranslation('sidebar.menu_management'), href: '/management/menu', icon: Menu, key: 'menu', color: 'text-purple-600' },
+    { name: getTranslation('sidebar.facilities'), href: '/management/facilities', icon: Grid, key: 'facilities', color: 'text-rose-600' },
     { name: getTranslation('sidebar.announcements'), href: '/management/announcements', icon: Megaphone, key: 'announcements', color: 'text-orange-600' },
     { name: getTranslation('sidebar.hotel_info'), href: '/management/hotel-info', icon: Info, key: 'hotel-info', color: 'text-cyan-600' },
     { name: getTranslation('sidebar.users'), href: '/management/users', icon: Users, key: 'users', color: 'text-green-600' },

@@ -14,6 +14,7 @@ import { authMiddleware, requirePermission, generateToken } from './middleware/a
 import { adminAuthMiddleware, createSuperAdmin } from './middleware/adminAuth'
 import { login, getCurrentUser } from './controllers/auth'
 import { getUsers, createUser, updateUser, updateUserPermissions, deleteUser } from './controllers/users'
+import { getFacilities, createFacility, updateFacility, deleteFacility } from './controllers/facilities'
 import bcrypt from 'bcryptjs'
 import fs from 'fs'
 import path from 'path'
@@ -2599,6 +2600,12 @@ app.put('/api/orders/:id', tenantMiddleware, async (req: Request, res: Response)
     return;
   }
 })
+
+// --- FACILITIES API ---
+app.get('/api/facilities', tenantMiddleware, getFacilities)
+app.post('/api/facilities', tenantMiddleware, authMiddleware, createFacility)
+app.put('/api/facilities/:id', tenantMiddleware, authMiddleware, updateFacility)
+app.delete('/api/facilities/:id', tenantMiddleware, authMiddleware, deleteFacility)
 
 app.post('/api/menu', tenantMiddleware, authMiddleware, async (req: Request, res: Response) => {
   let step = 'init';
