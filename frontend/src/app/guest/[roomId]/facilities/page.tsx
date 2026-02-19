@@ -113,67 +113,87 @@ export default function GuestFacilitiesPage() {
                             )}
                             <div className="p-6">
                                 <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                                    <SimpleTranslator text={facility.name} targetLang={currentLanguage as any} />
+                                    {facility.translations?.[currentLanguage]?.name || (
+                                        <SimpleTranslator text={facility.name} targetLang={currentLanguage as any} />
+                                    )}
                                 </h2>
 
-                                {facility.description && (
+                                {(facility.description || facility.translations?.[currentLanguage]?.description) && (
                                     <p className="text-gray-600 mb-6 leading-relaxed">
-                                        <SimpleTranslator text={facility.description} targetLang={currentLanguage as any} />
+                                        {facility.translations?.[currentLanguage]?.description || (
+                                            <SimpleTranslator text={facility.description || ''} targetLang={currentLanguage as any} />
+                                        )}
                                     </p>
                                 )}
 
                                 <div className="grid grid-cols-1 gap-4">
-                                    {facility.location && (
+                                    {(facility.location || facility.translations?.[currentLanguage]?.location) && (
                                         <div className="flex items-center space-x-3 bg-gray-50 p-4 rounded-2xl">
                                             <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center shrink-0">
                                                 <FaMapMarkerAlt />
                                             </div>
                                             <div>
-                                                <p className="text-xs text-gray-500 font-medium">Konum</p>
+                                                <p className="text-xs text-gray-500 font-medium">
+                                                    <SimpleTranslator text="Konum" targetLang={currentLanguage as any} />
+                                                </p>
                                                 <p className="text-sm font-semibold text-gray-900">
-                                                    <SimpleTranslator text={facility.location} targetLang={currentLanguage as any} />
+                                                    {facility.translations?.[currentLanguage]?.location || (
+                                                        <SimpleTranslator text={facility.location || ''} targetLang={currentLanguage as any} />
+                                                    )}
                                                 </p>
                                             </div>
                                         </div>
                                     )}
 
-                                    {facility.openingHours && (
+                                    {(facility.openingHours || facility.translations?.[currentLanguage]?.openingHours) && (
                                         <div className="flex items-center space-x-3 bg-gray-50 p-4 rounded-2xl">
                                             <div className="w-10 h-10 bg-green-100 text-green-600 rounded-xl flex items-center justify-center shrink-0">
                                                 <FaClock />
                                             </div>
                                             <div>
-                                                <p className="text-xs text-gray-500 font-medium">Çalışma Saatleri</p>
+                                                <p className="text-xs text-gray-500 font-medium">
+                                                    <SimpleTranslator text="Çalışma Saatleri" targetLang={currentLanguage as any} />
+                                                </p>
                                                 <p className="text-sm font-semibold text-gray-900">
-                                                    <SimpleTranslator text={facility.openingHours} targetLang={currentLanguage as any} />
+                                                    {facility.translations?.[currentLanguage]?.openingHours || (
+                                                        <SimpleTranslator text={facility.openingHours || ''} targetLang={currentLanguage as any} />
+                                                    )}
                                                 </p>
                                             </div>
                                         </div>
                                     )}
 
-                                    {facility.reservationInfo && (
+                                    {(facility.reservationInfo || facility.translations?.[currentLanguage]?.reservationInfo) && (
                                         <div className="flex items-center space-x-3 bg-gray-50 p-4 rounded-2xl">
                                             <div className="w-10 h-10 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center shrink-0">
                                                 <FaCalendarAlt />
                                             </div>
                                             <div>
-                                                <p className="text-xs text-gray-500 font-medium">Rezervasyon</p>
+                                                <p className="text-xs text-gray-500 font-medium">
+                                                    <SimpleTranslator text="Rezervasyon" targetLang={currentLanguage as any} />
+                                                </p>
                                                 <p className="text-sm font-semibold text-gray-900">
-                                                    <SimpleTranslator text={facility.reservationInfo} targetLang={currentLanguage as any} />
+                                                    {facility.translations?.[currentLanguage]?.reservationInfo || (
+                                                        <SimpleTranslator text={facility.reservationInfo || ''} targetLang={currentLanguage as any} />
+                                                    )}
                                                 </p>
                                             </div>
                                         </div>
                                     )}
 
-                                    {facility.contactInfo && (
+                                    {(facility.contactInfo || facility.translations?.[currentLanguage]?.contactInfo) && (
                                         <div className="flex items-center space-x-3 bg-gray-50 p-4 rounded-2xl">
                                             <div className="w-10 h-10 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center shrink-0">
                                                 <FaPhone />
                                             </div>
                                             <div>
-                                                <p className="text-xs text-gray-500 font-medium">İletişim</p>
+                                                <p className="text-xs text-gray-500 font-medium">
+                                                    <SimpleTranslator text="İletişim" targetLang={currentLanguage as any} />
+                                                </p>
                                                 <p className="text-sm font-semibold text-gray-900">
-                                                    <SimpleTranslator text={facility.contactInfo} targetLang={currentLanguage as any} />
+                                                    {facility.translations?.[currentLanguage]?.contactInfo || (
+                                                        <SimpleTranslator text={facility.contactInfo || ''} targetLang={currentLanguage as any} />
+                                                    )}
                                                 </p>
                                             </div>
                                         </div>
