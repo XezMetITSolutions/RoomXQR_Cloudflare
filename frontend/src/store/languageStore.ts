@@ -120,8 +120,21 @@ export const translations: Record<string, Translations> = {
     'notifications.survey_title': 'Değerlendirme',
     'notifications.survey_thank_you': 'Yorumunuz için teşekkür ederiz! Geri bildiriminiz bizim için çok değerli.',
     'notifications.general_request_title': 'Genel Talep',
+    'notifications.connecting_support': 'Personelimize bağlanıyorsunuz...',
+
+    'survey.select_rating': 'Puan seçin',
+    'survey.basic': 'Temel',
+    'survey.medium': 'Orta',
+    'survey.good': 'İyi',
+    'survey.very_good': 'Çok İyi',
+    'survey.excellent': 'Mükemmel',
+    'survey.not_selected': 'Seçilmedi',
+    'room.label': 'Oda',
 
     // Genel
+    'notifications.request_sent': 'Talebiniz başarıyla iletildi.',
+    'errors.error': 'Hata',
+    'errors.request_failed': 'İstek gönderilemedi.',
     'general.loading': 'Yükleniyor...',
     'general.error': 'Bir hata oluştu',
     'general.success': 'Başarılı',
@@ -135,15 +148,23 @@ export const translations: Record<string, Translations> = {
     'general.no_category_products': 'Bu kategoride ürün bulunmuyor.',
 
     // Oda Arayüzü
+    'room.info': 'Bilgiler',
     'room.welcome': 'Hoş Geldiniz',
+    'welcome_guest': 'Hoş Geldiniz',
+    'how_can_we_help': 'Lütfen size nasıl yardımcı olabiliriz?',
+    'hotel_activities': 'Otel Aktiviteleri',
+    'city_tours': 'Şehir Turları',
+    'live_support': 'Canlı Destek',
     'room.services': 'Hizmetler',
     'room.room_service': 'Oda Servisi',
     'room.housekeeping': 'Temizlik',
     'room.maintenance': 'Bakım',
     'room.concierge': 'Konsiyerj',
     'room.wifi': 'WiFi',
+    'room.wifi_subtitle': 'Ağ ve Otel Bilgileri',
     'room.menu': 'Menü',
     'room.survey': 'Anket',
+    'survey.subtitle_guest': 'Değerlendirme ve Geri Bildirim',
     'room.social_media': 'Sosyal Medya',
     'room.follow_us': 'Bizi Takip Edin',
     'room.quick_select': 'Hızlı seçim',
@@ -873,6 +894,9 @@ export const translations: Record<string, Translations> = {
     'cart.add_products': 'Select items from the menu to add to cart',
 
     // General
+    'notifications.request_sent': 'Your request has been sent successfully.',
+    'errors.error': 'Error',
+    'errors.request_failed': 'Request could not be sent.',
     'general.loading': 'Loading...',
     'general.error': 'An error occurred',
     'general.success': 'Success',
@@ -886,15 +910,23 @@ export const translations: Record<string, Translations> = {
     'general.no_category_products': 'No products available in this category.',
 
     // Room Interface
+    'room.info': 'Information',
     'room.welcome': 'Welcome',
+    'welcome_guest': 'Welcome',
+    'how_can_we_help': 'How can we help you?',
+    'hotel_activities': 'Hotel Activities',
+    'city_tours': 'City Tours',
+    'live_support': 'Live Support',
     'room.services': 'Services',
     'room.room_service': 'Room Service',
     'room.housekeeping': 'Housekeeping',
     'room.maintenance': 'Maintenance',
     'room.concierge': 'Concierge',
     'room.wifi': 'WiFi',
+    'room.wifi_subtitle': 'Network & Hotel Info',
     'room.menu': 'Menu',
     'room.survey': 'Survey',
+    'survey.subtitle_guest': 'Rate & Feedback',
     'room.social_media': 'Social Media',
     'room.follow_us': 'Follow Us',
     'room.quick_select': 'Quick Select',
@@ -1327,6 +1359,7 @@ export const translations: Record<string, Translations> = {
     'settings.saving': 'Saving...',
 
     'notifications.general_request_title': 'General Request',
+    'notifications.connecting_support': 'Connecting to our staff...',
 
     // Survey/Evaluation
     'survey.title': 'Rate Us',
@@ -1340,6 +1373,14 @@ export const translations: Record<string, Translations> = {
     'survey.google_review': 'Review on Google',
     'survey.thank_you': 'Thank You!',
     'survey.submitted': 'Your evaluation has been submitted successfully.',
+    'survey.select_rating': 'Select rating',
+    'survey.basic': 'Basic',
+    'survey.medium': 'Medium',
+    'survey.good': 'Good',
+    'survey.very_good': 'Very Good',
+    'survey.excellent': 'Excellent',
+    'survey.not_selected': 'Not selected',
+    'room.label': 'Room',
 
     // Notifications
     'notifications.housekeeping_title': 'Housekeeping Request',
@@ -1581,6 +1622,9 @@ export const translations: Record<string, Translations> = {
     'cart.add_products': 'Wählen Sie Artikel aus dem Menü, um sie hinzuzufügen',
 
     // General
+    'notifications.request_sent': 'Ihre Anfrage wurde erfolgreich gesendet.',
+    'errors.error': 'Fehler',
+    'errors.request_failed': 'Anfrage konnte nicht gesendet werden.',
     'general.loading': 'Laden...',
     'general.error': 'Ein Fehler ist aufgetreten',
     'general.success': 'Erfolg',
@@ -1594,15 +1638,23 @@ export const translations: Record<string, Translations> = {
     'general.no_category_products': 'Keine Produkte in dieser Kategorie verfügbar.',
 
     // Room Interface
+    'room.info': 'Informationen',
     'room.welcome': 'Willkommen',
+    'welcome_guest': 'Willkommen',
+    'how_can_we_help': 'Wie können wir Ihnen helfen?',
+    'hotel_activities': 'Hotelaktivitäten',
+    'city_tours': 'Stadttouren',
+    'live_support': 'Live-Support',
     'room.services': 'Dienstleistungen',
     'room.room_service': 'Zimmerservice',
     'room.housekeeping': 'Reinigung',
     'room.maintenance': 'Wartung',
     'room.concierge': 'Concierge',
     'room.wifi': 'WiFi',
+    'room.wifi_subtitle': 'Netzwerk- und Hotelinfo',
     'room.menu': 'Menü',
     'room.survey': 'Umfrage',
+    'survey.subtitle_guest': 'Bewertung & Feedback',
     'room.social_media': 'Soziale Medien',
     'room.follow_us': 'Folgen Sie uns',
     'room.quick_select': 'Schnellauswahl',
@@ -2130,6 +2182,14 @@ export const translations: Record<string, Translations> = {
     'survey.google_review': 'Auf Google bewerten',
     'survey.thank_you': 'Danke!',
     'survey.submitted': 'Ihre Bewertung wurde erfolgreich gesendet.',
+    'survey.select_rating': 'Bewertung wählen',
+    'survey.basic': 'Basis',
+    'survey.medium': 'Mittel',
+    'survey.good': 'Gut',
+    'survey.very_good': 'Sehr gut',
+    'survey.excellent': 'Hervorragend',
+    'survey.not_selected': 'Nicht ausgewählt',
+    'room.label': 'Zimmer',
 
     // Notifications
     'notifications.housekeeping_title': 'Reinigungsanfrage',
@@ -2144,6 +2204,7 @@ export const translations: Record<string, Translations> = {
     'notifications.survey_title': 'Bewertung',
     'notifications.survey_thank_you': 'Danke für Ihren Kommentar! Ihr Feedback ist uns sehr wichtig.',
     'notifications.general_request_title': 'Allgemeine Anfrage',
+    'notifications.connecting_support': 'Sie werden mit unserem Personal verbunden...',
 
     // Premium Landing Page
     'metaTitle': 'RoomXQR - Digitale Transformation für Hotels',
@@ -2857,6 +2918,9 @@ export const translations: Record<string, Translations> = {
     'cart.add_products': 'Выберите блюда из меню для добавления в корзину',
 
     // Общее
+    'notifications.request_sent': 'Ваш запрос успешно отправлен.',
+    'errors.error': 'Ошибка',
+    'errors.request_failed': 'Не удалось отправить запрос.',
     'general.loading': 'Загрузка...',
     'general.error': 'Произошла ошибка',
     'general.success': 'Успешно',
@@ -2870,15 +2934,23 @@ export const translations: Record<string, Translations> = {
     'general.no_category_products': 'В этой категории нет товаров.',
 
     // Интерфейс Номера
+    'room.info': 'Информация',
     'room.welcome': 'Добро пожаловать',
+    'welcome_guest': 'Добро пожаловать',
+    'how_can_we_help': 'Чем мы можем помочь?',
+    'hotel_activities': 'Отельные мероприятия',
+    'city_tours': 'Городские туры',
+    'live_support': 'Живая поддержка',
     'room.services': 'Услуги',
     'room.room_service': 'Обслуживание в номере',
     'room.housekeeping': 'Уборка',
     'room.maintenance': 'Техническое обслуживание',
     'room.concierge': 'Консьерж',
     'room.wifi': 'WiFi',
+    'room.wifi_subtitle': 'Сеть и информация об отеле',
     'room.menu': 'Меню',
     'room.survey': 'Опрос',
+    'survey.subtitle_guest': 'Оценка и отзывы',
     'room.social_media': 'Социальные сети',
     'room.follow_us': 'Подписывайтесь на нас',
     'room.quick_select': 'Быстрый выбор',
@@ -2920,6 +2992,14 @@ export const translations: Record<string, Translations> = {
     'survey.google_review': 'Оценить в Google',
     'survey.thank_you': 'Спасибо!',
     'survey.submitted': 'Ваша оценка успешно отправлена.',
+    'survey.select_rating': 'Выберите оценку',
+    'survey.basic': 'Базовый',
+    'survey.medium': 'Средний',
+    'survey.good': 'Хороший',
+    'survey.very_good': 'Очень хороший',
+    'survey.excellent': 'Отлично',
+    'survey.not_selected': 'Не выбрано',
+    'room.label': 'Номер',
 
     // Уведомления
     'notifications.housekeeping_title': 'Запрос на уборку',
@@ -2934,6 +3014,7 @@ export const translations: Record<string, Translations> = {
     'notifications.survey_title': 'Оценка',
     'notifications.survey_thank_you': 'Спасибо за ваш комментарий! Ваш отзыв очень ценен для нас.',
     'notifications.general_request_title': 'Общий запрос',
+    'notifications.connecting_support': 'Соединение с нашим персоналом...',
   },
 
   ar: {
@@ -3462,7 +3543,9 @@ export const useLanguageStore = create<LanguageStore>()(
         const loaded = loadedTranslations?.[currentLanguage]?.[key];
         if (loaded !== undefined && loaded !== null) return loaded;
         const langTranslations = translations[currentLanguage];
-        return langTranslations?.[key] || key;
+        const val = langTranslations?.[key];
+        if (val !== undefined && val !== null) return val;
+        return null; // Return null to allow fallbacks in UI components
       },
 
       getCurrentLanguage: () => {

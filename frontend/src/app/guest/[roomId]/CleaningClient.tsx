@@ -148,7 +148,7 @@ export default function CleaningClient({ roomId, initialLang }: CleaningClientPr
                     </button>
 
                     <button
-                        onClick={() => sendRequest('housekeeping', 'DO NOT DISTURB / RAHATSIZ ETMEYİN', true)}
+                        onClick={() => sendRequest('housekeeping', safeGetTranslation('cleaning.dnd', 'DO NOT DISTURB'), true)}
                         className="flex flex-col items-center justify-center p-6 rounded-xl shadow-md hover:scale-105 transition active:scale-95"
                         style={{ background: '#FECACA' }} // Light red for DND
                     >

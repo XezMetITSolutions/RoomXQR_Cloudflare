@@ -107,13 +107,11 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
   const [bgIndex, setBgIndex] = useState(0);
 
   const hotelBackgrounds = [
-    "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600&q=80",
-    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1600&q=80",
-    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=1600&q=80",
-    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1600&q=80",
-    "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=1600&q=80",
-    "https://images.unsplash.com/photo-1535827841776-24afc1e255ac?w=1600&q=80",
-    "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=1600&q=80"
+    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1080&h=1920&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1080&h=1920&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=1080&h=1920&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1080&h=1920&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1080&h=1920&fit=crop&q=80"
   ];
 
   // Background rotation effect
@@ -169,7 +167,9 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
   // Güvenli çeviri fonksiyonu
   const safeGetTranslation = (key: string, fallback: string = '') => {
     try {
-      return getTranslation ? getTranslation(key) : fallback;
+      if (!getTranslation) return fallback;
+      const val = getTranslation(key);
+      return val || fallback;
     } catch (error) {
       return fallback;
     }
@@ -417,7 +417,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
               }`}
           />
         ))}
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]" />
       </div>
 
       {/* Main Content */}
@@ -577,17 +577,17 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
           >
             <div className="w-12 h-12 flex items-center justify-center mr-4">
               <img
-                src="https://img.icons8.com/3d-fluency/94/wi-fi.png"
-                alt="Wifi"
+                src="https://img.icons8.com/3d-fluency/94/info.png"
+                alt="Info"
                 className="w-10 h-10"
               />
             </div>
             <div className="flex flex-col flex-1 text-left">
               <span className="font-bold text-gray-800 text-xl leading-tight">
-                {safeGetTranslation('room.wifi', 'WiFi / Bilgi')}
+                {safeGetTranslation('room.info', 'Bilgiler')}
               </span>
               <span className="text-xs text-gray-500 font-medium opacity-80">
-                Network & Hotel Info
+                {safeGetTranslation('room.wifi_subtitle', 'Network & Hotel Info')}
               </span>
             </div>
             <ChevronDown className="w-6 h-6 text-gray-400 -rotate-90" />
@@ -604,9 +604,14 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
                 className="w-10 h-10"
               />
             </div>
-            <span className="font-bold text-gray-800 text-xl flex-1 text-left">
-              {safeGetTranslation('survey.title', 'Şikayet / Yorum')}
-            </span>
+            <div className="flex flex-col flex-1 text-left">
+              <span className="font-bold text-gray-800 text-xl leading-tight">
+                {safeGetTranslation('survey.title', 'Şikayet / Yorum')}
+              </span>
+              <span className="text-xs text-gray-500 font-medium opacity-80">
+                {safeGetTranslation('survey.subtitle_guest', 'Rate & Feedback')}
+              </span>
+            </div>
             <div className="flex flex-col items-end">
               <div className="flex -space-x-1 mb-1">
                 {[1, 2, 3, 4].map((i) => (
@@ -619,32 +624,8 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
             </div>
           </button>
         </div>
-
-        {/* Live Support Floating Area */}
-        <div className="mt-auto flex flex-col items-center">
-          <div className="relative mb-4 group cursor-pointer active:scale-95 transition-transform" onClick={() => addNotification('info', 'Canlı Destek', 'Personelimize bağlanıyorsunuz...')}>
-            <div className="bg-gray-800/90 backdrop-blur-md text-white px-8 py-2.5 rounded-full font-bold shadow-2xl flex items-center gap-3 border border-white/20">
-              {safeGetTranslation('live_support', 'Canlı Destek')}
-            </div>
-            <div className="absolute -right-14 -top-14">
-              <img
-                src="https://img.icons8.com/3d-fluency/188/robot-2.png"
-                alt="Bot"
-                className="w-24 h-24 drop-shadow-2xl animate-pulse"
-              />
-            </div>
-          </div>
-
-          {/* Logo */}
-          <div className="mt-4 opacity-80 flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
-            <span className="font-black text-2xl tracking-[0.2em] italic">ROOM<span className="text-blue-400">X</span>QR</span>
-            <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
-          </div>
-        </div>
       </div>
 
-      {/* Styles for the specific look */}
       <style jsx>{`
         .glass-card :global(img) {
           transition: transform 0.3s ease;
@@ -676,7 +657,9 @@ function SurveyModal({ roomId, onClose, onSurveySent }: { roomId: string; onClos
 
   const safeGetTranslation = (key: string, fallback: string = '') => {
     try {
-      return getTranslation ? getTranslation(key) : fallback;
+      if (!getTranslation) return fallback;
+      const val = getTranslation(key);
+      return val || fallback;
     } catch (error) {
       return fallback;
     }
@@ -750,16 +733,16 @@ function SurveyModal({ roomId, onClose, onSurveySent }: { roomId: string; onClos
                 onChange={(e) => handleRating('cleanliness', parseFloat(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="">Puan seçin</option>
-                <option value="1.0">1.0 ⭐ (Temel)</option>
-                <option value="1.5">1.5 ⭐ (Temel+)</option>
-                <option value="2.0">2.0 ⭐⭐ (Orta)</option>
-                <option value="2.5">2.5 ⭐⭐ (Orta+)</option>
-                <option value="3.0">3.0 ⭐⭐⭐ (İyi)</option>
-                <option value="3.5">3.5 ⭐⭐⭐ (İyi+)</option>
-                <option value="4.0">4.0 ⭐⭐⭐⭐ (Çok İyi)</option>
-                <option value="4.5">4.5 ⭐⭐⭐⭐ (Çok İyi+)</option>
-                <option value="5.0">5.0 ⭐⭐⭐⭐⭐ (Mükemmel)</option>
+                <option value="">{safeGetTranslation('survey.select_rating', 'Puan seçin')}</option>
+                <option value="1.0">1.0 ⭐ ({safeGetTranslation('survey.basic', 'Temel')})</option>
+                <option value="1.5">1.5 ⭐ ({safeGetTranslation('survey.basic', 'Temel')}+)</option>
+                <option value="2.0">2.0 ⭐⭐ ({safeGetTranslation('survey.medium', 'Orta')})</option>
+                <option value="2.5">2.5 ⭐⭐ ({safeGetTranslation('survey.medium', 'Orta')}+)</option>
+                <option value="3.0">3.0 ⭐⭐⭐ ({safeGetTranslation('survey.good', 'İyi')})</option>
+                <option value="3.5">3.5 ⭐⭐⭐ ({safeGetTranslation('survey.good', 'İyi')}+)</option>
+                <option value="4.0">4.0 ⭐⭐⭐⭐ ({safeGetTranslation('survey.very_good', 'Çok İyi')})</option>
+                <option value="4.5">4.5 ⭐⭐⭐⭐ ({safeGetTranslation('survey.very_good', 'Çok İyi')}+)</option>
+                <option value="5.0">5.0 ⭐⭐⭐⭐⭐ ({safeGetTranslation('survey.excellent', 'Mükemmel')})</option>
               </select>
             </div>
           </div>
@@ -787,16 +770,16 @@ function SurveyModal({ roomId, onClose, onSurveySent }: { roomId: string; onClos
                 onChange={(e) => handleRating('service', parseFloat(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="">Puan seçin</option>
-                <option value="1.0">1.0 ⭐ (Temel)</option>
-                <option value="1.5">1.5 ⭐ (Temel+)</option>
-                <option value="2.0">2.0 ⭐⭐ (Orta)</option>
-                <option value="2.5">2.5 ⭐⭐ (Orta+)</option>
-                <option value="3.0">3.0 ⭐⭐⭐ (İyi)</option>
-                <option value="3.5">3.5 ⭐⭐⭐ (İyi+)</option>
-                <option value="4.0">4.0 ⭐⭐⭐⭐ (Çok İyi)</option>
-                <option value="4.5">4.5 ⭐⭐⭐⭐ (Çok İyi+)</option>
-                <option value="5.0">5.0 ⭐⭐⭐⭐⭐ (Mükemmel)</option>
+                <option value="">{safeGetTranslation('survey.select_rating', 'Puan seçin')}</option>
+                <option value="1.0">1.0 ⭐ ({safeGetTranslation('survey.basic', 'Temel')})</option>
+                <option value="1.5">1.5 ⭐ ({safeGetTranslation('survey.basic', 'Temel')}+)</option>
+                <option value="2.0">2.0 ⭐⭐ ({safeGetTranslation('survey.medium', 'Orta')})</option>
+                <option value="2.5">2.5 ⭐⭐ ({safeGetTranslation('survey.medium', 'Orta')}+)</option>
+                <option value="3.0">3.0 ⭐⭐⭐ ({safeGetTranslation('survey.good', 'İyi')})</option>
+                <option value="3.5">3.5 ⭐⭐⭐ ({safeGetTranslation('survey.good', 'İyi')}+)</option>
+                <option value="4.0">4.0 ⭐⭐⭐⭐ ({safeGetTranslation('survey.very_good', 'Çok İyi')})</option>
+                <option value="4.5">4.5 ⭐⭐⭐⭐ ({safeGetTranslation('survey.very_good', 'Çok İyi')}+)</option>
+                <option value="5.0">5.0 ⭐⭐⭐⭐⭐ ({safeGetTranslation('survey.excellent', 'Mükemmel')})</option>
               </select>
             </div>
           </div>
@@ -824,16 +807,16 @@ function SurveyModal({ roomId, onClose, onSurveySent }: { roomId: string; onClos
                 onChange={(e) => handleRating('staff', parseFloat(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="">Puan seçin</option>
-                <option value="1.0">1.0 ⭐ (Temel)</option>
-                <option value="1.5">1.5 ⭐ (Temel+)</option>
-                <option value="2.0">2.0 ⭐⭐ (Orta)</option>
-                <option value="2.5">2.5 ⭐⭐ (Orta+)</option>
-                <option value="3.0">3.0 ⭐⭐⭐ (İyi)</option>
-                <option value="3.5">3.5 ⭐⭐⭐ (İyi+)</option>
-                <option value="4.0">4.0 ⭐⭐⭐⭐ (Çok İyi)</option>
-                <option value="4.5">4.5 ⭐⭐⭐⭐ (Çok İyi+)</option>
-                <option value="5.0">5.0 ⭐⭐⭐⭐⭐ (Mükemmel)</option>
+                <option value="">{safeGetTranslation('survey.select_rating', 'Puan seçin')}</option>
+                <option value="1.0">1.0 ⭐ ({safeGetTranslation('survey.basic', 'Temel')})</option>
+                <option value="1.5">1.5 ⭐ ({safeGetTranslation('survey.basic', 'Temel')}+)</option>
+                <option value="2.0">2.0 ⭐⭐ ({safeGetTranslation('survey.medium', 'Orta')})</option>
+                <option value="2.5">2.5 ⭐⭐ ({safeGetTranslation('survey.medium', 'Orta')}+)</option>
+                <option value="3.0">3.0 ⭐⭐⭐ ({safeGetTranslation('survey.good', 'İyi')})</option>
+                <option value="3.5">3.5 ⭐⭐⭐ ({safeGetTranslation('survey.good', 'İyi')}+)</option>
+                <option value="4.0">4.0 ⭐⭐⭐⭐ ({safeGetTranslation('survey.very_good', 'Çok İyi')})</option>
+                <option value="4.5">4.5 ⭐⭐⭐⭐ ({safeGetTranslation('survey.very_good', 'Çok İyi')}+)</option>
+                <option value="5.0">5.0 ⭐⭐⭐⭐⭐ ({safeGetTranslation('survey.excellent', 'Mükemmel')})</option>
               </select>
             </div>
           </div>
@@ -914,9 +897,9 @@ function SurveyModal({ roomId, onClose, onSurveySent }: { roomId: string; onClos
                   <FaInstagram className="text-xl" />
                 </a>
               )}
-              {getLink('google') && (
+              {getLink('googleMaps') && (
                 <a
-                  href={getLink('google')}
+                  href={getLink('googleMaps')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-3 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
