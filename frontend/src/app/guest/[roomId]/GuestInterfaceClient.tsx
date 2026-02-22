@@ -521,13 +521,13 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
             >
               <div className="w-full flex-1 flex items-center justify-center p-2">
                 <img
-                  src="/icons/4.png"
+                  src="https://img.icons8.com/3d-fluency/94/bell-service.png"
                   alt="City Tours"
                   className="w-full h-full object-contain drop-shadow-2xl"
                 />
               </div>
               <span className="font-bold text-gray-800 text-lg">
-                {safeGetTranslation('city_tours', 'Konsiyerj')}
+                {safeGetTranslation('room.concierge', 'Konsiyerj')}
               </span>
             </button>
 
