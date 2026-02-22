@@ -405,20 +405,9 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative text-white font-sans overflow-x-hidden">
-      {/* Background Image with Overlay */}
-      <div className="fixed inset-0 z-0 overflow-hidden">
-        {hotelBackgrounds.map((src, idx) => (
-          <img
-            key={src}
-            src={src}
-            alt="Hotel Background"
-            className={`absolute inset-0 w-full h-full object-cover scale-105 blur-[2px] transition-opacity duration-[3000ms] ease-in-out ${idx === bgIndex ? 'opacity-100' : 'opacity-0'
-              }`}
-          />
-        ))}
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]" />
-      </div>
+    <div className="min-h-screen flex flex-col relative text-gray-900 font-sans overflow-x-hidden">
+      {/* Background with shades of white */}
+      <div className="fixed inset-0 z-0 bg-gradient-to-b from-white via-gray-50 to-gray-100" />
 
       {/* Main Content */}
       <div className="relative z-10 flex-1 flex flex-col p-6 max-w-lg mx-auto w-full">
@@ -436,15 +425,15 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
           <div className="relative language-selector">
             <button
               onClick={() => setShowLanguageSelector(!showLanguageSelector)}
-              className="px-3 py-1.5 rounded-full dark-glass flex items-center gap-2 border border-white/20 transition-all active:scale-95"
+              className="px-3 py-1.5 rounded-full bg-transparent flex items-center gap-2 border border-gray-200 shadow-sm transition-all active:scale-95"
             >
-              <Globe className="w-4 h-4 text-white" />
-              <span className="text-sm font-bold uppercase">{currentLanguage}</span>
+              <Globe className="w-4 h-4 text-gray-800" />
+              <span className="text-sm font-bold uppercase text-gray-800">{currentLanguage}</span>
             </button>
 
             {/* Language Dropdown */}
             {showLanguageSelector && (
-              <div className="absolute right-0 top-full mt-2 w-48 rounded-2xl shadow-2xl z-50 overflow-hidden glass-card border border-white/30">
+              <div className="absolute right-0 top-full mt-2 w-48 rounded-2xl shadow-xl z-50 overflow-hidden bg-white border border-gray-100">
                 {supportedLanguages.map((lang) => (
                   <button
                     key={lang.code}
@@ -456,7 +445,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
                       const newUrl = `/${lang.code}/guest/${roomNumber}${paramsString ? `?${paramsString}` : ''}`;
                       window.history.pushState(null, '', newUrl);
                     }}
-                    className={`w-full px-4 py-3 text-left transition-colors flex items-center space-x-3 hover:bg-white/20 ${currentLanguage === lang.code ? 'bg-white/10' : ''}`}
+                    className={`w-full px-4 py-3 text-left transition-colors flex items-center space-x-3 hover:bg-gray-50 ${currentLanguage === lang.code ? 'bg-gray-50' : ''}`}
                   >
                     <span className="text-lg">{lang.flag}</span>
                     <span className="font-semibold text-sm text-gray-800">{lang.name}</span>
@@ -469,7 +458,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
 
         {/* Announcement Banner */}
         <div className="mb-6">
-          <div className="glass-card rounded-2xl p-4 flex items-center justify-between shadow-xl border border-white/40">
+          <div className="bg-transparent rounded-2xl p-4 flex items-center justify-between shadow-sm border border-gray-200">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
                 <FaBell className="text-orange-500 text-lg animate-bounce" />
@@ -495,7 +484,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
               params.set('roomId', roomNumber);
               router.push(`/qr-menu?${params.toString()}`);
             }}
-            className="glass-card aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-lg border border-white/50"
+            className="bg-transparent aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-sm border border-gray-200"
           >
             <div className="w-full flex-1 flex items-center justify-center p-2">
               <img
@@ -515,7 +504,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
               const roomNumber = roomId.replace('room-', '');
               router.push(`/${currentLanguage}/guest/${roomNumber}/cleaning`);
             }}
-            className="glass-card aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-lg border border-white/50"
+            className="bg-transparent aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-sm border border-gray-200"
           >
             <div className="w-full flex-1 flex items-center justify-center p-2">
               <img
@@ -532,7 +521,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
           {/* Otel Olanakları */}
           <button
             onClick={() => router.push(`/guest/${roomId}/facilities`)}
-            className="glass-card aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-lg border border-white/50"
+            className="bg-transparent aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-sm border border-gray-200"
           >
             <div className="w-full flex-1 flex items-center justify-center p-2">
               <img
@@ -554,7 +543,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
               params.set('roomId', roomNumber);
               router.push(`/concierge?${params.toString()}`);
             }}
-            className="glass-card aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-lg border border-white/50"
+            className="bg-transparent aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-sm border border-gray-200"
           >
             <div className="w-full flex-1 flex items-center justify-center p-2">
               <img
@@ -573,7 +562,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
         <div className="grid grid-cols-1 gap-3 mb-10">
           <button
             onClick={() => router.push('/info')}
-            className="glass-card rounded-[1.5rem] p-4 flex items-center transition-all active:scale-95 shadow-md border border-white/50"
+            className="bg-transparent rounded-[1.5rem] p-4 flex items-center transition-all active:scale-95 shadow-sm border border-gray-200"
           >
             <div className="w-12 h-12 flex items-center justify-center mr-4">
               <img
@@ -595,7 +584,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
 
           <button
             onClick={() => setShowSurvey(true)}
-            className="glass-card rounded-[1.5rem] p-4 flex items-center transition-all active:scale-95 shadow-md border border-white/50"
+            className="bg-transparent rounded-[1.5rem] p-4 flex items-center transition-all active:scale-95 shadow-sm border border-gray-200"
           >
             <div className="w-12 h-12 flex items-center justify-center mr-4 font-bold">
               <img
@@ -627,10 +616,10 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
       </div>
 
       <style jsx>{`
-        .glass-card :global(img) {
+        button :global(img) {
           transition: transform 0.3s ease;
         }
-        .glass-card:hover :global(img) {
+        button:hover :global(img) {
           transform: translateY(-5px) scale(1.05);
         }
       `}</style>
