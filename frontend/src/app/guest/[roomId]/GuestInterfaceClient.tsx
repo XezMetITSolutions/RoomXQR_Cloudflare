@@ -317,7 +317,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
       const timer = setTimeout(() => {
         const welcomeMessage = formatWelcomeMessage(hotelName);
 
-        addNotification('info', welcomeMessage, 'Resepsiyon ekibimiz 7/24 hizmetinizdedir. İsteklerinizi buradan gönderebilirsiniz.', false, true, 5000);
+        addNotification('info', welcomeMessage, safeGetTranslation('welcome.subtitle', 'Our reception team is at your service 24/7. You can send your requests from here.'), false, true, 5000);
 
         // Bu oda için hoş geldiniz bildirimi gösterildi olarak işaretle
         localStorage.setItem(welcomeKey, 'true');
@@ -752,10 +752,10 @@ function SurveyModal({ roomId, onClose, onSurveySent }: { roomId: string; onClos
                 <option value="1.5">1.5 ⭐ ({safeGetTranslation('survey.basic', 'Temel')}+)</option>
                 <option value="2.0">2.0 ⭐⭐ ({safeGetTranslation('survey.medium', 'Orta')})</option>
                 <option value="2.5">2.5 ⭐⭐ ({safeGetTranslation('survey.medium', 'Orta')}+)</option>
-                <option value="3.0">3.0 ⭐⭐⭐ ({safeGetTranslation('survey.good', 'İyi')})</option>
-                <option value="3.5">3.5 ⭐⭐⭐ ({safeGetTranslation('survey.good', 'İyi')}+)</option>
-                <option value="4.0">4.0 ⭐⭐⭐⭐ ({safeGetTranslation('survey.very_good', 'Çok İyi')})</option>
-                <option value="4.5">4.5 ⭐⭐⭐⭐ ({safeGetTranslation('survey.very_good', 'Çok İyi')}+)</option>
+                <option value="3.0">3.0 ⭐⭐⭐ ({safeGetTranslation('survey.good', 'Good')})</option>
+                <option value="3.5">3.5 ⭐⭐⭐ ({safeGetTranslation('survey.good', 'Good')}+)</option>
+                <option value="4.0">4.0 ⭐⭐⭐⭐ ({safeGetTranslation('survey.very_good', 'Very Good')})</option>
+                <option value="4.5">4.5 ⭐⭐⭐⭐ ({safeGetTranslation('survey.very_good', 'Very Good')}+)</option>
                 <option value="5.0">5.0 ⭐⭐⭐⭐⭐ ({safeGetTranslation('survey.excellent', 'Mükemmel')})</option>
               </select>
             </div>
@@ -789,10 +789,10 @@ function SurveyModal({ roomId, onClose, onSurveySent }: { roomId: string; onClos
                 <option value="1.5">1.5 ⭐ ({safeGetTranslation('survey.basic', 'Temel')}+)</option>
                 <option value="2.0">2.0 ⭐⭐ ({safeGetTranslation('survey.medium', 'Orta')})</option>
                 <option value="2.5">2.5 ⭐⭐ ({safeGetTranslation('survey.medium', 'Orta')}+)</option>
-                <option value="3.0">3.0 ⭐⭐⭐ ({safeGetTranslation('survey.good', 'İyi')})</option>
-                <option value="3.5">3.5 ⭐⭐⭐ ({safeGetTranslation('survey.good', 'İyi')}+)</option>
-                <option value="4.0">4.0 ⭐⭐⭐⭐ ({safeGetTranslation('survey.very_good', 'Çok İyi')})</option>
-                <option value="4.5">4.5 ⭐⭐⭐⭐ ({safeGetTranslation('survey.very_good', 'Çok İyi')}+)</option>
+                <option value="3.0">3.0 ⭐⭐⭐ ({safeGetTranslation('survey.good', 'Good')})</option>
+                <option value="3.5">3.5 ⭐⭐⭐ ({safeGetTranslation('survey.good', 'Good')}+)</option>
+                <option value="4.0">4.0 ⭐⭐⭐⭐ ({safeGetTranslation('survey.very_good', 'Very Good')})</option>
+                <option value="4.5">4.5 ⭐⭐⭐⭐ ({safeGetTranslation('survey.very_good', 'Very Good')}+)</option>
                 <option value="5.0">5.0 ⭐⭐⭐⭐⭐ ({safeGetTranslation('survey.excellent', 'Mükemmel')})</option>
               </select>
             </div>
@@ -826,10 +826,10 @@ function SurveyModal({ roomId, onClose, onSurveySent }: { roomId: string; onClos
                 <option value="1.5">1.5 ⭐ ({safeGetTranslation('survey.basic', 'Temel')}+)</option>
                 <option value="2.0">2.0 ⭐⭐ ({safeGetTranslation('survey.medium', 'Orta')})</option>
                 <option value="2.5">2.5 ⭐⭐ ({safeGetTranslation('survey.medium', 'Orta')}+)</option>
-                <option value="3.0">3.0 ⭐⭐⭐ ({safeGetTranslation('survey.good', 'İyi')})</option>
-                <option value="3.5">3.5 ⭐⭐⭐ ({safeGetTranslation('survey.good', 'İyi')}+)</option>
-                <option value="4.0">4.0 ⭐⭐⭐⭐ ({safeGetTranslation('survey.very_good', 'Çok İyi')})</option>
-                <option value="4.5">4.5 ⭐⭐⭐⭐ ({safeGetTranslation('survey.very_good', 'Çok İyi')}+)</option>
+                <option value="3.0">3.0 ⭐⭐⭐ ({safeGetTranslation('survey.good', 'Good')})</option>
+                <option value="3.5">3.5 ⭐⭐⭐ ({safeGetTranslation('survey.good', 'Good')}+)</option>
+                <option value="4.0">4.0 ⭐⭐⭐⭐ ({safeGetTranslation('survey.very_good', 'Very Good')})</option>
+                <option value="4.5">4.5 ⭐⭐⭐⭐ ({safeGetTranslation('survey.very_good', 'Very Good')}+)</option>
                 <option value="5.0">5.0 ⭐⭐⭐⭐⭐ ({safeGetTranslation('survey.excellent', 'Mükemmel')})</option>
               </select>
             </div>
@@ -863,11 +863,11 @@ function SurveyModal({ roomId, onClose, onSurveySent }: { roomId: string; onClos
                 <option value="1.5">1.5 ⭐ (Temel+)</option>
                 <option value="2.0">2.0 ⭐⭐ (Orta)</option>
                 <option value="2.5">2.5 ⭐⭐ (Orta+)</option>
-                <option value="3.0">3.0 ⭐⭐⭐ (İyi)</option>
-                <option value="3.5">3.5 ⭐⭐⭐ (İyi+)</option>
-                <option value="4.0">4.0 ⭐⭐⭐⭐ (Çok İyi)</option>
-                <option value="4.5">4.5 ⭐⭐⭐⭐ (Çok İyi+)</option>
-                <option value="5.0">5.0 ⭐⭐⭐⭐⭐ (Mükemmel)</option>
+                <option value="3.0">3.0 ⭐⭐⭐ (Good)</option>
+                <option value="3.5">3.5 ⭐⭐⭐ (Good+)</option>
+                <option value="4.0">4.0 ⭐⭐⭐⭐ (Very Good)</option>
+                <option value="4.5">4.5 ⭐⭐⭐⭐ (Very Good+)</option>
+                <option value="5.0">5.0 ⭐⭐⭐⭐⭐ (Excellent)</option>
               </select>
             </div>
           </div>
@@ -875,7 +875,7 @@ function SurveyModal({ roomId, onClose, onSurveySent }: { roomId: string; onClos
           {/* Yorum */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {safeGetTranslation('survey.comment', 'Eklemek istedikleriniz (İsteğe bağlı)')}
+              {safeGetTranslation('survey.comment', 'Comments (Optional)')}
             </label>
             <textarea
               value={comment}

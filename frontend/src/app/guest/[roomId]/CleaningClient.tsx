@@ -142,8 +142,8 @@ export default function CleaningClient({ roomId, initialLang }: CleaningClientPr
             console.error('Error sending request:', error);
             addNotification(
                 'warning',
-                safeGetTranslation('errors.error', 'Hata'),
-                safeGetTranslation('errors.request_failed', 'İstek gönderilemedi.')
+                safeGetTranslation('errors.error', 'Error'),
+                safeGetTranslation('errors.request_failed', 'Request failed.')
             );
         } finally {
             setSending(null);
@@ -193,7 +193,7 @@ export default function CleaningClient({ roomId, initialLang }: CleaningClientPr
                         whileHover={{ y: -2 }}
                         whileTap={{ scale: 0.98 }}
                         disabled={!!sending}
-                        onClick={() => sendRequest('housekeeping', safeGetTranslation('cleaning.request_cleaning', 'Oda Temizliği İsteniyor'))}
+                        onClick={() => sendRequest('housekeeping', safeGetTranslation('cleaning.request_cleaning', 'Cleaning Requested'))}
                         className="bg-white p-5 rounded-3xl shadow-xl shadow-blue-500/5 border border-blue-50 flex flex-col items-center justify-center transition-all disabled:opacity-50"
                     >
                         <div className="w-14 h-14 rounded-2xl bg-blue-500 flex items-center justify-center mb-3 shadow-lg shadow-blue-500/30">
@@ -204,7 +204,7 @@ export default function CleaningClient({ roomId, initialLang }: CleaningClientPr
                             )}
                         </div>
                         <span className="font-bold text-gray-800 text-sm">
-                            {safeGetTranslation('cleaning.clean_my_room', 'Odamı Temizle')}
+                            {safeGetTranslation('cleaning.clean_my_room', 'Clean My Room')}
                         </span>
                     </motion.button>
 
@@ -235,7 +235,7 @@ export default function CleaningClient({ roomId, initialLang }: CleaningClientPr
                         className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-[1.75rem] font-bold text-sm transition-all ${activeTab === 'housekeeping' ? 'bg-white shadow-xl text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
                     >
                         <Sparkles className="w-4 h-4" />
-                        {safeGetTranslation('room.housekeeping', 'İstekler')}
+                        {safeGetTranslation('room.housekeeping', 'Housekeeping')}
                     </button>
                     <button
                         onClick={() => { setActiveTab('maintenance'); setSelectedItem(""); }}
@@ -370,14 +370,14 @@ export default function CleaningClient({ roomId, initialLang }: CleaningClientPr
                                 <MessageSquare className="w-5 h-5 text-blue-500" />
                             </div>
                             <h2 className="text-lg font-black text-gray-800">
-                                {safeGetTranslation('room.request_details', 'Özel İstek')}
+                                {safeGetTranslation('room.request_details', 'Special Request')}
                             </h2>
                         </div>
 
                         <textarea
                             value={note}
                             onChange={(e) => setNote(e.target.value)}
-                            placeholder={safeGetTranslation('concierge.custom_placeholder', 'Eklemek istediğiniz notu buraya yazın...')}
+                            placeholder={safeGetTranslation('concierge.custom_placeholder', 'Write your note here...')}
                             className="w-full p-5 rounded-3xl bg-gray-50 border border-gray-100 text-sm mb-4 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-300 transition-all min-h-[120px] text-gray-700"
                         />
 
@@ -396,7 +396,7 @@ export default function CleaningClient({ roomId, initialLang }: CleaningClientPr
                             ) : (
                                 <>
                                     <CheckCircle className="w-5 h-5" />
-                                    {safeGetTranslation('room.send_request', 'Talebi İlet')}
+                                    {safeGetTranslation('room.send_request', 'Send Request')}
                                 </>
                             )}
                         </motion.button>

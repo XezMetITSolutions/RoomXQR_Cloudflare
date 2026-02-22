@@ -3,6 +3,7 @@
 import { Inter } from 'next/font/google'
 import './globals.css'
 import ClientProviders from '@/components/ClientProviders'
+import { useLanguageStore } from '@/store/languageStore'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -11,8 +12,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const { currentLanguage } = useLanguageStore();
   return (
-    <html lang="tr">
+    <html lang={currentLanguage}>
       <head>
         <title>RoomXQR - QR Kodlu Otel Yönetim Sistemi</title>
         <meta name="description" content="Otelinizde dijital dönüşüm: QR ile anında hizmet, AI destekli menü ve %40 gelir artışı" />
