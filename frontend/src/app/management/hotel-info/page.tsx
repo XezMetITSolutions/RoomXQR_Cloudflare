@@ -64,7 +64,7 @@ export default function HotelInfoPage() {
     try {
       setIsLoading(true);
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
-      
+
       // URL'den tenant slug'ını al
       let tenantSlug = 'demo';
       if (typeof window !== 'undefined') {
@@ -109,7 +109,7 @@ export default function HotelInfoPage() {
       setIsSaving(true);
       setSaveMessage(null);
       const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
-      
+
       // URL'den tenant slug'ını al
       let tenantSlug = 'demo';
       if (typeof window !== 'undefined') {
@@ -121,9 +121,9 @@ export default function HotelInfoPage() {
       }
 
       const token = localStorage.getItem('auth_token');
-      
+
       console.log('Saving hotel info:', JSON.stringify(hotelInfo, null, 2));
-      
+
       const payload = { ...hotelInfo };
       if (!payload.activityImages || payload.activityImages.length === 0) {
         payload.activityImages = DEFAULT_ACTIVITY_IMAGES;
@@ -381,7 +381,7 @@ export default function HotelInfoPage() {
         </div>
       </div>
 
-      {/* Otel Olanakları */}
+      {/* Olanaklar */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">

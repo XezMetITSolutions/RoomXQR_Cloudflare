@@ -31,7 +31,7 @@ const localDictionary: Dictionary = {
   'Bar': { en: 'Bar', ru: 'Бар', ar: 'البار', de: 'Bar' },
   'Spa & Wellness': { en: 'Spa & Wellness', ru: 'Спа и велнес', ar: 'السبا والعافية', de: 'Spa & Wellness' },
 
-  'Otel Olanakları': { en: 'Hotel Amenities', ru: 'Удобства отеля', ar: 'مرافق الفندق', de: 'Hotel-Ausstattung' },
+  'Olanaklar': { en: 'Hotel Amenities', ru: 'Удобства отеля', ar: 'مرافق الفندق', de: 'Hotel-Ausstattung' },
   'Temel Olanaklar': { en: 'Basic Amenities', ru: 'Основные удобства', ar: 'المرافق الأساسية', de: 'Grundausstattung' },
   'Ücretsiz WiFi': { en: 'Free WiFi', ru: 'Бесплатный WiFi', ar: 'واي فاي مجاني', de: 'Kostenloses WiFi' },
   'Otopark': { en: 'Parking', ru: 'Парковка', ar: 'موقف السيارات', de: 'Parkplatz' },

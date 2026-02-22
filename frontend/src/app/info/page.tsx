@@ -1,13 +1,13 @@
 'use client';
 import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  FaWifi, 
-  FaClock, 
-  FaSwimmingPool, 
-  FaChild, 
-  FaUtensils, 
-  FaParking, 
+import {
+  FaWifi,
+  FaClock,
+  FaSwimmingPool,
+  FaChild,
+  FaUtensils,
+  FaParking,
   FaConciergeBell,
   FaArrowLeft,
   FaPhone,
@@ -129,182 +129,182 @@ export default function BilgiPage() {
   const sections = useMemo(() => {
     if (!isHydrated) return []; // Hydration tamamlanana kadar boş array döndür
     return [
-    {
-      id: 'wifi',
-      icon: FaWifi,
-      title: 'WiFi & İnternet',
-      color: 'bg-blue-50 border-blue-200',
-      iconColor: 'text-blue-600',
-      content: (
-        <div className="space-y-4">
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <h4 className="font-semibold text-gray-900 mb-2">
+      {
+        id: 'wifi',
+        icon: FaWifi,
+        title: 'WiFi & İnternet',
+        color: 'bg-blue-50 border-blue-200',
+        iconColor: 'text-blue-600',
+        content: (
+          <div className="space-y-4">
+            <div className="bg-white rounded-xl p-4 shadow-sm">
+              <h4 className="font-semibold text-gray-900 mb-2">
+                <SimpleTranslator
+                  text="WiFi Bilgileri"
+                  targetLang={currentLanguage as any}
+                />
+              </h4>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <SimpleTranslator
+                    text="Ağ Adı:"
+                    targetLang={currentLanguage as any}
+                    className="text-gray-600"
+                  />
+                  <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">
+                    {hotelInfo?.wifi?.networkName || '-'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <SimpleTranslator
+                    text="Şifre:"
+                    targetLang={currentLanguage as any}
+                    className="text-gray-600"
+                  />
+                  <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">
+                    {hotelInfo?.wifi?.password || '-'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <SimpleTranslator
+                    text="Hız:"
+                    targetLang={currentLanguage as any}
+                    className="text-gray-600"
+                  />
+                  <span className="text-green-600 font-medium">
+                    {hotelInfo?.wifi?.speed || '-'}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-xl p-4 shadow-sm">
               <SimpleTranslator
-                text="WiFi Bilgileri"
+                text="İnternet Kullanımı"
                 targetLang={currentLanguage as any}
+                className="font-semibold text-gray-900 mb-2"
               />
-            </h4>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <SimpleTranslator
-                  text="Ağ Adı:"
-                  targetLang={currentLanguage as any}
-                  className="text-gray-600"
-                />
-                <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">
-                  {hotelInfo?.wifi?.networkName || '-'}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <SimpleTranslator
-                  text="Şifre:"
-                  targetLang={currentLanguage as any}
-                  className="text-gray-600"
-                />
-                <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">
-                  {hotelInfo?.wifi?.password || '-'}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <SimpleTranslator
-                  text="Hız:"
-                  targetLang={currentLanguage as any}
-                  className="text-gray-600"
-                />
-                <span className="text-green-600 font-medium">
-                  {hotelInfo?.wifi?.speed || '-'}
-                </span>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>• <SimpleTranslator text="Sınırsız internet erişimi" targetLang={currentLanguage as any} /></li>
+                <li>• <SimpleTranslator text="Tüm odalar WiFi kapsamında" targetLang={currentLanguage as any} /></li>
+                <li>• <SimpleTranslator text="Lobi ve ortak alanlarda ücretsiz WiFi" targetLang={currentLanguage as any} /></li>
+                <li>• <SimpleTranslator text="Teknik destek:" targetLang={currentLanguage as any} /> {hotelInfo?.wifi?.supportPhone || '-'}</li>
+              </ul>
+            </div>
+          </div>
+        )
+      },
+      {
+        id: 'hours',
+        icon: FaClock,
+        title: 'Çalışma Saatleri',
+        color: 'bg-green-50 border-green-200',
+        iconColor: 'text-green-600',
+        content: (
+          <div className="space-y-4">
+            <div className="bg-white rounded-xl p-4 shadow-sm">
+              <SimpleTranslator
+                text="Otel Hizmetleri"
+                targetLang={currentLanguage as any}
+                className="font-semibold text-gray-900 mb-3"
+              />
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <SimpleTranslator
+                    text="Resepsiyon"
+                    targetLang={currentLanguage as any}
+                    className="text-gray-600"
+                  />
+                  <span className="font-medium">{hotelInfo?.hours?.reception || '-'}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <SimpleTranslator
+                    text="Restoran"
+                    targetLang={currentLanguage as any}
+                    className="text-gray-600"
+                  />
+                  <span className="font-medium">{hotelInfo?.hours?.restaurant || '-'}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <SimpleTranslator
+                    text="Bar"
+                    targetLang={currentLanguage as any}
+                    className="text-gray-600"
+                  />
+                  <span className="font-medium">{hotelInfo?.hours?.bar || '-'}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <SimpleTranslator
+                    text="Spa & Wellness"
+                    targetLang={currentLanguage as any}
+                    className="text-gray-600"
+                  />
+                  <span className="font-medium">{hotelInfo?.hours?.spa || '-'}</span>
+                </div>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <SimpleTranslator
-              text="İnternet Kullanımı"
-              targetLang={currentLanguage as any}
-              className="font-semibold text-gray-900 mb-2"
-            />
-            <ul className="text-sm text-gray-600 space-y-1">
-              <li>• <SimpleTranslator text="Sınırsız internet erişimi" targetLang={currentLanguage as any} /></li>
-              <li>• <SimpleTranslator text="Tüm odalar WiFi kapsamında" targetLang={currentLanguage as any} /></li>
-              <li>• <SimpleTranslator text="Lobi ve ortak alanlarda ücretsiz WiFi" targetLang={currentLanguage as any} /></li>
-              <li>• <SimpleTranslator text="Teknik destek:" targetLang={currentLanguage as any} /> {hotelInfo?.wifi?.supportPhone || '-'}</li>
-            </ul>
-          </div>
-        </div>
-      )
-    },
-    {
-      id: 'hours',
-      icon: FaClock,
-      title: 'Çalışma Saatleri',
-      color: 'bg-green-50 border-green-200',
-      iconColor: 'text-green-600',
-      content: (
-        <div className="space-y-4">
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <SimpleTranslator
-              text="Otel Hizmetleri"
-              targetLang={currentLanguage as any}
-              className="font-semibold text-gray-900 mb-3"
-            />
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <SimpleTranslator
-                  text="Resepsiyon"
-                  targetLang={currentLanguage as any}
-                  className="text-gray-600"
-                />
-                <span className="font-medium">{hotelInfo?.hours?.reception || '-'}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <SimpleTranslator
-                  text="Restoran"
-                  targetLang={currentLanguage as any}
-                  className="text-gray-600"
-                />
-                <span className="font-medium">{hotelInfo?.hours?.restaurant || '-'}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <SimpleTranslator
-                  text="Bar"
-                  targetLang={currentLanguage as any}
-                  className="text-gray-600"
-                />
-                <span className="font-medium">{hotelInfo?.hours?.bar || '-'}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <SimpleTranslator
-                  text="Spa & Wellness"
-                  targetLang={currentLanguage as any}
-                  className="text-gray-600"
-                />
-                <span className="font-medium">{hotelInfo?.hours?.spa || '-'}</span>
-              </div>
+        )
+      },
+      {
+        id: 'amenities',
+        icon: FaSwimmingPool,
+        title: 'Olanaklar',
+        color: 'bg-purple-50 border-purple-200',
+        iconColor: 'text-purple-600',
+        content: (
+          <div className="space-y-4">
+            <div className="bg-white rounded-xl p-4 shadow-sm">
+              <SimpleTranslator
+                text="Temel Olanaklar"
+                targetLang={currentLanguage as any}
+                className="font-semibold text-gray-900 mb-3"
+              />
+              <ul className="text-sm text-gray-600 space-y-1">
+                {hotelInfo?.amenities && hotelInfo.amenities.length > 0 ? (
+                  hotelInfo.amenities.map((amenity, index) => (
+                    <li key={index}>• <SimpleTranslator text={amenity} targetLang={currentLanguage as any} /></li>
+                  ))
+                ) : (
+                  <>
+                    <li>• <SimpleTranslator text="Ücretsiz WiFi" targetLang={currentLanguage as any} /></li>
+                    <li>• <SimpleTranslator text="Otopark" targetLang={currentLanguage as any} /></li>
+                    <li>• <SimpleTranslator text="Fitness Center" targetLang={currentLanguage as any} /></li>
+                    <li>• <SimpleTranslator text="Yüzme Havuzu" targetLang={currentLanguage as any} /></li>
+                    <li>• <SimpleTranslator text="Spa & Wellness" targetLang={currentLanguage as any} /></li>
+                    <li>• <SimpleTranslator text="Çocuk Oyun Alanı" targetLang={currentLanguage as any} /></li>
+                  </>
+                )}
+              </ul>
             </div>
           </div>
-        </div>
-      )
-    },
-    {
-      id: 'amenities',
-      icon: FaSwimmingPool,
-      title: 'Otel Olanakları',
-      color: 'bg-purple-50 border-purple-200',
-      iconColor: 'text-purple-600',
-      content: (
-        <div className="space-y-4">
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <SimpleTranslator
-              text="Temel Olanaklar"
-              targetLang={currentLanguage as any}
-              className="font-semibold text-gray-900 mb-3"
-            />
-            <ul className="text-sm text-gray-600 space-y-1">
-              {hotelInfo?.amenities && hotelInfo.amenities.length > 0 ? (
-                hotelInfo.amenities.map((amenity, index) => (
-                  <li key={index}>• <SimpleTranslator text={amenity} targetLang={currentLanguage as any} /></li>
-                ))
-              ) : (
-                <>
-                  <li>• <SimpleTranslator text="Ücretsiz WiFi" targetLang={currentLanguage as any} /></li>
-                  <li>• <SimpleTranslator text="Otopark" targetLang={currentLanguage as any} /></li>
-                  <li>• <SimpleTranslator text="Fitness Center" targetLang={currentLanguage as any} /></li>
-                  <li>• <SimpleTranslator text="Yüzme Havuzu" targetLang={currentLanguage as any} /></li>
-                  <li>• <SimpleTranslator text="Spa & Wellness" targetLang={currentLanguage as any} /></li>
-                  <li>• <SimpleTranslator text="Çocuk Oyun Alanı" targetLang={currentLanguage as any} /></li>
-                </>
-              )}
-            </ul>
+        )
+      },
+      {
+        id: 'dining',
+        icon: FaUtensils,
+        title: 'Yemek & İçecek',
+        color: 'bg-orange-50 border-orange-200',
+        iconColor: 'text-orange-600',
+        content: (
+          <div className="space-y-4">
+            <div className="bg-white rounded-xl p-4 shadow-sm">
+              <SimpleTranslator
+                text="Restoran Hizmetleri"
+                targetLang={currentLanguage as any}
+                className="font-semibold text-gray-900 mb-3"
+              />
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>• <SimpleTranslator text="Kahvaltı Buffet" targetLang={currentLanguage as any} /> ({hotelInfo?.dining?.breakfast || '-'})</li>
+                <li>• <SimpleTranslator text="Öğle Yemeği" targetLang={currentLanguage as any} /> ({hotelInfo?.dining?.lunch || '-'})</li>
+                <li>• <SimpleTranslator text="Akşam Yemeği" targetLang={currentLanguage as any} /> ({hotelInfo?.dining?.dinner || '-'})</li>
+                <li>• <SimpleTranslator text="Room Service" targetLang={currentLanguage as any} /> ({hotelInfo?.dining?.roomService || '-'})</li>
+                <li>• <SimpleTranslator text="Havlu değişimi" targetLang={currentLanguage as any} /> ({hotelInfo?.dining?.towelChange || '-'})</li>
+                <li>• <SimpleTranslator text="Teknik destek" targetLang={currentLanguage as any} /> ({hotelInfo?.dining?.techSupport || '-'})</li>
+              </ul>
+            </div>
           </div>
-        </div>
-      )
-    },
-    {
-      id: 'dining',
-      icon: FaUtensils,
-      title: 'Yemek & İçecek',
-      color: 'bg-orange-50 border-orange-200',
-      iconColor: 'text-orange-600',
-      content: (
-        <div className="space-y-4">
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <SimpleTranslator
-              text="Restoran Hizmetleri"
-              targetLang={currentLanguage as any}
-              className="font-semibold text-gray-900 mb-3"
-            />
-            <ul className="text-sm text-gray-600 space-y-1">
-              <li>• <SimpleTranslator text="Kahvaltı Buffet" targetLang={currentLanguage as any} /> ({hotelInfo?.dining?.breakfast || '-'})</li>
-              <li>• <SimpleTranslator text="Öğle Yemeği" targetLang={currentLanguage as any} /> ({hotelInfo?.dining?.lunch || '-'})</li>
-              <li>• <SimpleTranslator text="Akşam Yemeği" targetLang={currentLanguage as any} /> ({hotelInfo?.dining?.dinner || '-'})</li>
-              <li>• <SimpleTranslator text="Room Service" targetLang={currentLanguage as any} /> ({hotelInfo?.dining?.roomService || '-'})</li>
-              <li>• <SimpleTranslator text="Havlu değişimi" targetLang={currentLanguage as any} /> ({hotelInfo?.dining?.towelChange || '-'})</li>
-              <li>• <SimpleTranslator text="Teknik destek" targetLang={currentLanguage as any} /> ({hotelInfo?.dining?.techSupport || '-'})</li>
-            </ul>
-          </div>
-        </div>
-      )
-    }
+        )
+      }
     ];
   }, [currentLanguage, isHydrated, hotelInfo]);
 
@@ -354,9 +354,8 @@ export default function BilgiPage() {
                 return (
                   <div
                     key={section.id}
-                    className={`border-2 rounded-2xl transition-all duration-200 ${section.color} ${
-                      expandedSection === section.id ? 'shadow-lg' : 'shadow-sm hover:shadow-md'
-                    }`}
+                    className={`border-2 rounded-2xl transition-all duration-200 ${section.color} ${expandedSection === section.id ? 'shadow-lg' : 'shadow-sm hover:shadow-md'
+                      }`}
                   >
                     <button
                       onClick={() => toggleSection(section.id)}
@@ -381,15 +380,14 @@ export default function BilgiPage() {
                           </p>
                         </div>
                       </div>
-                      <div className={`transform transition-transform duration-200 ml-2 ${
-                        expandedSection === section.id ? 'rotate-180' : ''
-                      }`}>
+                      <div className={`transform transition-transform duration-200 ml-2 ${expandedSection === section.id ? 'rotate-180' : ''
+                        }`}>
                         <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                         </svg>
                       </div>
                     </button>
-                    
+
                     {expandedSection === section.id && (
                       <div className="px-4 sm:px-6 pb-4 sm:pb-6">
                         {section.content}
@@ -414,7 +412,7 @@ export default function BilgiPage() {
                   targetLang={currentLanguage as any}
                 />
               </p>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 {/* Resepsiyon */}
                 <div className="bg-red-50 border-2 border-red-200 rounded-xl p-3 sm:p-4">

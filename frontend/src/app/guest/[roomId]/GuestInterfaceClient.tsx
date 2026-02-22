@@ -518,7 +518,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
             </span>
           </button>
 
-          {/* Otel Olanakları */}
+          {/* Olanaklar */}
           <button
             onClick={() => router.push(`/guest/${roomId}/facilities`)}
             className="bg-transparent aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-sm border border-gray-200"
@@ -531,11 +531,11 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
               />
             </div>
             <span className="font-bold text-gray-800 text-lg">
-              {safeGetTranslation('sidebar.facilities', 'Otel Olanakları')}
+              {safeGetTranslation('sidebar.facilities', 'Olanaklar')}
             </span>
           </button>
 
-          {/* Şehir Turları */}
+          {/* Konsiyerj */}
           <button
             onClick={() => {
               const roomNumber = roomId.replace('room-', '');
@@ -553,7 +553,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
               />
             </div>
             <span className="font-bold text-gray-800 text-lg">
-              {safeGetTranslation('city_tours', 'Şehir Turları')}
+              {safeGetTranslation('city_tours', 'Konsiyerj')}
             </span>
           </button>
         </div>

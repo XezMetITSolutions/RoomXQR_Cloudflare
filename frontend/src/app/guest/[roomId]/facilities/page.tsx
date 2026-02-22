@@ -84,7 +84,7 @@ export default function GuestFacilitiesPage() {
                         <FaArrowLeft />
                     </button>
                     <h1 className="text-xl font-bold text-gray-900">
-                        <SimpleTranslator text="Otel Olanakları" targetLang={currentLanguage as any} />
+                        <SimpleTranslator text="Olanaklar" targetLang={currentLanguage as any} />
                     </h1>
                     <div className="w-10"></div>
                 </div>
