@@ -1155,7 +1155,10 @@ function MenuCard({ name, description, price, preparationTime, rating, image, al
   return (
     <div className="rounded-3xl shadow-lg flex flex-col overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300" style={{ background: theme.cardBackground, border: `1px solid ${theme.borderColor}` }}>
       {/* Görsel - Responsive ve optimize edilmiş */}
-      <div className="relative w-full h-48 sm:h-56 md:h-52 lg:h-56">
+      <div
+        className="relative w-full h-48 sm:h-56 md:h-52 lg:h-56 cursor-pointer"
+        onClick={onAdd}
+      >
         {image ? (
           <NextImage
             src={image}
@@ -1173,12 +1176,22 @@ function MenuCard({ name, description, price, preparationTime, rating, image, al
       </div>
       <div className="flex-1 flex flex-col p-6">
         <div className="flex justify-between items-start mb-3">
-          <h3 className="font-bold text-xl leading-tight flex-1" style={{ color: theme.textColor }}>{name}</h3>
+          <h3
+            className="font-bold text-xl leading-tight flex-1 cursor-pointer hover:opacity-80 transition-opacity"
+            style={{ color: theme.textColor }}
+            onClick={onAdd}
+          >
+            {name}
+          </h3>
           <div className="text-2xl font-extrabold ml-3" style={{ color: theme.primaryColor }}>{price}₺</div>
         </div>
 
         <div className="mb-3">
-          <p className="text-sm leading-relaxed" style={{ color: theme.textColor }}>
+          <p
+            className="text-sm leading-relaxed cursor-pointer hover:opacity-80 transition-opacity"
+            style={{ color: theme.textColor }}
+            onClick={onAdd}
+          >
             {showDetails ? description : (isLongDescription ? description.substring(0, 80) + '...' : description)}
           </p>
           {isLongDescription && (
