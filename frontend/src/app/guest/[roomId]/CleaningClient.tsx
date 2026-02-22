@@ -2,16 +2,19 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-    FaBroom,
-    FaBellSlash,
-    FaArrowLeft,
-    FaBed,
-    FaTooth,
-    FaShoePrints,
-    FaSoap,
-    FaWater,
-    FaCheckCircle
-} from "react-icons/fa";
+    Sparkles,
+    BellOff,
+    ArrowLeft,
+    Bath,
+    Footprints,
+    Bed,
+    Droplet,
+    GlassWater,
+    CheckCircle,
+    MessageSquare,
+    Plus,
+    Trash2
+} from "lucide-react";
 import { ApiService } from '@/services/api';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { useLanguageStore } from '@/store/languageStore';
@@ -37,15 +40,12 @@ export default function CleaningClient({ roomId, initialLang }: CleaningClientPr
 
     // Quick selection items for cleaning
     const quickItems = [
-        { name: "Havlu", nameKey: "quick.towel", emoji: "🛁", color: "text-blue-600" },
-        { name: "Terlik", nameKey: "quick.slippers", emoji: "🥿", color: "text-green-600" },
-        { name: "Diş Macunu", nameKey: "quick.toothpaste", emoji: "🦷", color: "text-purple-600" },
-        { name: "Yastık", nameKey: "quick.pillow", emoji: "🛏️", color: "text-pink-600" },
-        { name: "Battaniye", nameKey: "quick.blanket", emoji: "🛌", color: "text-indigo-600" },
-        { name: "Şampuan", nameKey: "quick.shampoo", emoji: "🧴", color: "text-orange-600" },
-        { name: "Sabun", nameKey: "quick.soap", emoji: "🧼", color: "text-teal-600" },
-        { name: "Su", nameKey: "quick.water", emoji: "💧", color: "text-cyan-600" },
-        { name: "Tuvalet Kağıdı", nameKey: "quick.toilet_paper", emoji: "🧻", color: "text-gray-600" }
+        { name: "Havlu", nameKey: "quick.towel", icon: Bath, color: "text-blue-600" },
+        { name: "Terlik", nameKey: "quick.slippers", icon: Footprints, color: "text-green-600" },
+        { name: "Yastık", nameKey: "quick.pillow", icon: Bed, color: "text-pink-600" },
+        { name: "Battaniye", nameKey: "quick.blanket", icon: Bed, color: "text-indigo-600" },
+        { name: "Şampuan", nameKey: "quick.shampoo", icon: Droplet, color: "text-orange-600" },
+        { name: "Su", nameKey: "quick.water", icon: GlassWater, color: "text-cyan-600" }
     ];
 
     const [selectedItem, setSelectedItem] = useState("");
@@ -120,9 +120,9 @@ export default function CleaningClient({ roomId, initialLang }: CleaningClientPr
                 <button
                     onClick={() => router.back()}
                     className="p-2 rounded-full shadow-sm hover:bg-opacity-80 transition"
-                    style={{ background: theme.cardBackground, color: theme.textColor }}
+                    style={{ background: theme.cardBackground, color: theme.textColor, border: `1px solid ${theme.borderColor}` }}
                 >
-                    <FaArrowLeft />
+                    <ArrowLeft className="w-5 h-5" />
                 </button>
                 <h1 className="text-xl font-bold" style={{ color: theme.textColor }}>
                     {safeGetTranslation('cleaning.title', 'Oda Temizliği & İstekler')}
@@ -137,10 +137,10 @@ export default function CleaningClient({ roomId, initialLang }: CleaningClientPr
                     <button
                         onClick={() => sendRequest('housekeeping', safeGetTranslation('cleaning.request_cleaning', 'Oda Temizliği İsteniyor'))}
                         className="flex flex-col items-center justify-center p-6 rounded-xl shadow-md hover:scale-105 transition active:scale-95"
-                        style={{ background: `${theme.secondaryColor}20` }}
+                        style={{ background: `${theme.secondaryColor}20`, border: `1px solid ${theme.secondaryColor}40` }}
                     >
                         <div className="p-4 rounded-full mb-3" style={{ background: theme.secondaryColor }}>
-                            <FaBroom className="text-3xl text-white" />
+                            <Sparkles className="text-3xl text-white" />
                         </div>
                         <span className="font-semibold text-center" style={{ color: theme.textColor }}>
                             {safeGetTranslation('cleaning.clean_my_room', 'Odamı Temizle')}
@@ -150,10 +150,10 @@ export default function CleaningClient({ roomId, initialLang }: CleaningClientPr
                     <button
                         onClick={() => sendRequest('housekeeping', safeGetTranslation('cleaning.dnd', 'DO NOT DISTURB'), true)}
                         className="flex flex-col items-center justify-center p-6 rounded-xl shadow-md hover:scale-105 transition active:scale-95"
-                        style={{ background: '#FECACA' }} // Light red for DND
+                        style={{ background: '#FECACA30', border: '1px solid #FECACA' }} // Light red for DND
                     >
                         <div className="p-4 rounded-full mb-3 bg-red-500">
-                            <FaBellSlash className="text-3xl text-white" />
+                            <BellOff className="text-3xl text-white" />
                         </div>
                         <span className="font-semibold text-center text-red-900">
                             {safeGetTranslation('cleaning.dnd', 'Rahatsız Etmeyin')}
@@ -181,7 +181,7 @@ export default function CleaningClient({ roomId, initialLang }: CleaningClientPr
                                     background: selectedItemKey === item.nameKey ? `${theme.primaryColor}10` : 'transparent'
                                 }}
                             >
-                                <span className="text-2xl mb-1">{item.emoji}</span>
+                                <item.icon className={`w-8 h-8 mb-2 ${item.color}`} />
                                 <span className="text-xs text-center font-medium" style={{ color: theme.textColor }}>
                                     {safeGetTranslation(item.nameKey, item.name)}
                                 </span>
@@ -228,13 +228,53 @@ export default function CleaningClient({ roomId, initialLang }: CleaningClientPr
 
                             <button
                                 onClick={handleQuickItemSubmit}
-                                className="w-full py-3 rounded-xl font-bold text-white shadow-md hover:opacity-90 transition flex items-center justify-center gap-2"
+                                className="w-full py-4 rounded-xl font-bold text-white shadow-lg hover:opacity-90 transition flex items-center justify-center gap-2"
                                 style={{ background: theme.primaryColor }}
                             >
-                                <FaCheckCircle />
+                                <CheckCircle className="w-5 h-5" />
                                 {safeGetTranslation('cleaning.order_now', 'Hemen İste')}
                             </button>
                         </div>
+                    )}
+                </div>
+
+                {/* Always Visible Note / Other Request Section */}
+                <div className="rounded-xl shadow-sm p-5 mb-10" style={{ background: theme.cardBackground }}>
+                    <div className="flex items-center gap-2 mb-4">
+                        <MessageSquare className="w-5 h-5" style={{ color: theme.primaryColor }} />
+                        <h2 className="text-lg font-semibold" style={{ color: theme.textColor }}>
+                            {safeGetTranslation('room.request_details', 'Özel İstek veya Not')}
+                        </h2>
+                    </div>
+
+                    <textarea
+                        value={selectedItem ? "" : note}
+                        disabled={!!selectedItem}
+                        onChange={(e) => setNote(e.target.value)}
+                        placeholder={safeGetTranslation('concierge.custom_placeholder', 'Eklemek istediğiniz notu veya özel isteğinizi buraya yazın...')}
+                        className="w-full p-4 rounded-xl text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-opacity-50 min-h-[120px]"
+                        style={{
+                            background: theme.backgroundColor,
+                            color: theme.textColor,
+                            border: `1px solid ${theme.borderColor}`,
+                            borderColor: theme.borderColor,
+                            opacity: selectedItem ? 0.5 : 1
+                        }}
+                    />
+
+                    {!selectedItem && (
+                        <button
+                            onClick={() => {
+                                if (!note.trim()) return;
+                                sendRequest('housekeeping', note);
+                            }}
+                            disabled={!note.trim()}
+                            className="w-full py-4 rounded-xl font-bold text-white shadow-lg hover:opacity-90 transition flex items-center justify-center gap-2 disabled:opacity-50"
+                            style={{ background: theme.primaryColor }}
+                        >
+                            <CheckCircle className="w-5 h-5" />
+                            {safeGetTranslation('room.send_request', 'Talebi İlet')}
+                        </button>
                     )}
                 </div>
 
