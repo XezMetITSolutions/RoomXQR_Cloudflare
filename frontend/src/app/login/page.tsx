@@ -31,7 +31,13 @@ export default function LoginPage() {
   }, [getSupportedLanguages]);
 
   useEffect(() => {
-    // localStorage'da varsa otomatik doldur
+    // Demo hesabı için otomatik doldurma
+    if (typeof window !== 'undefined' && window.location.hostname.includes('grandhotel')) {
+      setEmail('office@grandhotel.com');
+      setPassword('123456');
+    }
+
+    // localStorage'da varsa otomatik doldur (demo hesabını ezer)
     const rememberedEmail = localStorage.getItem('remembered_email');
     if (rememberedEmail) {
       setEmail(rememberedEmail);
@@ -187,8 +193,8 @@ export default function LoginPage() {
                     setShowLanguageSelector(false);
                   }}
                   className={`w-full px-4 py-3 text-left transition-colors flex items-center space-x-3 ${currentLanguage === lang.code
-                      ? 'bg-hotel-gold bg-opacity-10'
-                      : 'hover:bg-gray-50'
+                    ? 'bg-hotel-gold bg-opacity-10'
+                    : 'hover:bg-gray-50'
                     }`}
                 >
                   <span className="text-lg">{lang.flag}</span>
