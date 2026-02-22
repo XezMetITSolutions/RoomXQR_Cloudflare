@@ -22,49 +22,108 @@ interface AnnouncementBannerProps {
 }
 
 export default function AnnouncementBanner({ roomId, className = '', minimal = false }: AnnouncementBannerProps) {
-  const { getAnnouncementsByRoom, getActiveAnnouncements } = useAnnouncementStore();
   const { currentLanguage } = useLanguageStore();
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [dismissedAnnouncements, setDismissedAnnouncements] = useState<string[]>([]);
   const [currentAnnouncementIndex, setCurrentAnnouncementIndex] = useState(0);
   const [autoRotate, setAutoRotate] = useState(true);
 
+  const loadAnnouncements = async () => {
+    try {
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
+
+      // URL'den tenant slug'ını al
+      let tenantSlug = 'demo';
+      if (typeof window !== 'undefined') {
+        const hostname = window.location.hostname;
+        const subdomain = hostname.split('.')[0];
+        if (subdomain && subdomain !== 'www' && subdomain !== 'roomxqr' && subdomain !== 'roomxqr-backend') {
+          tenantSlug = subdomain;
+        }
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/announcements`, {
+        headers: {
+          'x-tenant': tenantSlug
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const announcementsData = Array.isArray(data) ? data : [];
+
+        const formattedAnnouncements = announcementsData
+          .map((a: any) => {
+            const metadata = (a.metadata as any) || {};
+            const category = metadata.category || 'general';
+            const isActive = metadata.isActive === undefined || metadata.isActive === null ? true : metadata.isActive;
+
+            if (isActive === false) return null;
+
+            const now = new Date().toISOString().split('T')[0];
+            const startDate = metadata.startDate || (a.createdAt ? new Date(a.createdAt).toISOString().split('T')[0] : null);
+            const endDate = metadata.endDate;
+
+            if (startDate && startDate > now) return null;
+            if (endDate && endDate < now) return null;
+
+            // Target room kontrolü (Eğer duyurunun belirli hedef odaları varsa, o odada değilssek gösterme)
+            const targetRooms = metadata.targetRooms || [];
+            if (roomId && targetRooms.length > 0 && !targetRooms.includes(roomId)) {
+              return null;
+            }
+
+            let translations = {};
+            try {
+              const translationsData = metadata.translations || a.translations;
+              if (translationsData) {
+                if (typeof translationsData === 'string') {
+                  translations = JSON.parse(translationsData);
+                } else if (typeof translationsData === 'object') {
+                  translations = translationsData;
+                }
+              }
+            } catch (parseError) {
+              console.warn(`Announcement translation parse error for ${a.id}:`, parseError);
+            }
+
+            return {
+              id: a.id,
+              title: a.title || 'Duyuru',
+              content: a.message || '',
+              type: (metadata.announcementType || 'info'),
+              category: category,
+              isActive: true,
+              startDate: startDate,
+              endDate: endDate || undefined,
+              linkUrl: metadata.linkUrl || undefined,
+              linkText: metadata.linkText || undefined,
+              icon: metadata.icon || undefined,
+              translations: translations
+            };
+          })
+          .filter((a: any) => a !== null);
+
+        // Menü duyurularını filtrele
+        const filtered = formattedAnnouncements.filter(announcement =>
+          !dismissedAnnouncements.includes(announcement.id) &&
+          announcement.category !== 'menu'
+        );
+
+        setAnnouncements(filtered);
+      }
+    } catch (error) {
+      console.error('Duyurular yüklenirken hata:', error);
+    }
+  };
+
   useEffect(() => {
-    const loadAnnouncements = () => {
-      const activeAnnouncements = roomId
-        ? getAnnouncementsByRoom(roomId)
-        : getActiveAnnouncements();
-
-      // Oda QR sayfasında menü kategorisindeki duyuruları filtrele (sadece menü duyuruları QR menüde görünsün)
-      const filtered = activeAnnouncements.filter(announcement =>
-        !dismissedAnnouncements.includes(announcement.id) &&
-        announcement.category !== 'menu'
-      );
-
-      setAnnouncements(filtered);
-    };
-
     loadAnnouncements();
 
     // Her 30 saniyede bir güncelle
     const interval = setInterval(loadAnnouncements, 30000);
     return () => clearInterval(interval);
-  }, [roomId, getAnnouncementsByRoom, getActiveAnnouncements, dismissedAnnouncements]);
-
-  // Dil değiştiğinde duyuruları yeniden yükle (re-render için)
-  useEffect(() => {
-    const activeAnnouncements = roomId
-      ? getAnnouncementsByRoom(roomId)
-      : getActiveAnnouncements();
-
-    // Oda QR sayfasında menü kategorisindeki duyuruları filtrele (sadece menü duyuruları QR menüde görünsün)
-    const filtered = activeAnnouncements.filter(announcement =>
-      !dismissedAnnouncements.includes(announcement.id) &&
-      announcement.category !== 'menu'
-    );
-
-    setAnnouncements(filtered);
-  }, [currentLanguage, roomId, getAnnouncementsByRoom, getActiveAnnouncements, dismissedAnnouncements]);
+  }, [roomId, currentLanguage, dismissedAnnouncements]);
 
   // Otomatik duyuru rotasyonu
   useEffect(() => {
