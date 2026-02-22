@@ -208,6 +208,17 @@ export const translations: Record<string, Translations> = {
     'quick.water': 'Su',
     'quick.toilet_paper': 'Tuvalet Kağıdı',
 
+    // Maintenance / Teknik Arıza
+    'maintenance.title': 'Teknik Arıza / Sorun Bildir',
+    'maintenance.heater': 'Klima/Isıtıcı çalışmıyor',
+    'maintenance.tv': 'Televizyon çalışmıyor',
+    'maintenance.minibar': 'Minibar soğutmuyor',
+    'maintenance.light': 'Işık/Lamba yanmıyor',
+    'maintenance.water': 'Sıcak su akmıyor',
+    'maintenance.wifi': 'WiFi bağlantı sorunu',
+    'maintenance.safe': 'Kasa açılmıyor',
+    'maintenance.drain': 'Lavabo/Gider tıkalı',
+
     // Login
     'login.title': 'İşletme Paneline Giriş',
     'login.subtitle': 'Hesabınızla giriş yapın',
@@ -971,6 +982,17 @@ export const translations: Record<string, Translations> = {
     'quick.water': 'Water',
     'quick.toilet_paper': 'Toilet Paper',
 
+    // Maintenance / Technical Issues
+    'maintenance.title': 'Report Technical Issue',
+    'maintenance.heater': 'AC/Heater not working',
+    'maintenance.tv': 'TV not working',
+    'maintenance.minibar': 'Minibar not cooling',
+    'maintenance.light': 'Light/Lamp not working',
+    'maintenance.water': 'No hot water',
+    'maintenance.wifi': 'WiFi connection issue',
+    'maintenance.safe': 'Safe box won\'t open',
+    'maintenance.drain': 'Sink/Drain clogged',
+
     // Login
     'login.title': 'Business Panel Login',
     'login.subtitle': 'Sign in to your account',
@@ -1685,6 +1707,17 @@ export const translations: Record<string, Translations> = {
     'quick.soap': 'Seife',
     'quick.water': 'Wasser',
     'quick.toilet_paper': 'Toilettenpapier',
+
+    // Maintenance / Technisches Problem
+    'maintenance.title': 'Technisches Problem melden',
+    'maintenance.heater': 'Klimaanlage/Heizung funktioniert nicht',
+    'maintenance.tv': 'Fernseher funktioniert nicht',
+    'maintenance.minibar': 'Minibar kühlt nicht',
+    'maintenance.light': 'Licht/Lampe funktioniert nicht',
+    'maintenance.water': 'Kein warmes Wasser',
+    'maintenance.wifi': 'WiFi-Verbindungsproblem',
+    'maintenance.safe': 'Safe lässt sich nicht öffnen',
+    'maintenance.drain': 'Abfluss verstopft',
 
     // Login
     'login.title': 'Business Panel Login',

@@ -13,7 +13,16 @@ import {
     CheckCircle,
     MessageSquare,
     Plus,
-    Trash2
+    Trash2,
+    Wrench,
+    Tv,
+    PlugZap,
+    ThermometerSnowflake,
+    Wifi,
+    Lock,
+    Waves,
+    Lightbulb,
+    Wind
 } from "lucide-react";
 import { ApiService } from '@/services/api';
 import { useNotifications } from '@/contexts/NotificationContext';
@@ -48,10 +57,23 @@ export default function CleaningClient({ roomId, initialLang }: CleaningClientPr
         { name: "Su", nameKey: "quick.water", icon: GlassWater, color: "text-cyan-600" }
     ];
 
+    const maintenanceItems = [
+        { name: "Klima/Isıtıcı", nameKey: "maintenance.heater", icon: ThermometerSnowflake, color: "text-orange-500" },
+        { name: "Televizyon", nameKey: "maintenance.tv", icon: Tv, color: "text-blue-500" },
+        { name: "Minibar", nameKey: "maintenance.minibar", icon: Wind, color: "text-cyan-500" },
+        { name: "Işık/Lamba", nameKey: "maintenance.light", icon: Lightbulb, color: "text-yellow-500" },
+        { name: "Sıcak Su", nameKey: "maintenance.water", icon: Bath, color: "text-blue-400" },
+        { name: "WiFi Sorunu", nameKey: "maintenance.wifi", icon: Wifi, color: "text-indigo-500" },
+        { name: "Kasa", nameKey: "maintenance.safe", icon: Lock, color: "text-gray-500" },
+        { name: "Gider/Lavabo", nameKey: "maintenance.drain", icon: Waves, color: "text-blue-600" },
+        { name: "Priz/Elektrik", nameKey: "maintenance.plug", icon: PlugZap, color: "text-red-500" }
+    ];
+
     const [selectedItem, setSelectedItem] = useState("");
     const [selectedItemKey, setSelectedItemKey] = useState("");
     const [amount, setAmount] = useState(1);
     const [note, setNote] = useState("");
+    const [activeTab, setActiveTab] = useState<'housekeeping' | 'maintenance'>('housekeeping');
 
     const safeGetTranslation = (key: string, fallback: string = '') => {
         try {
@@ -108,8 +130,10 @@ export default function CleaningClient({ roomId, initialLang }: CleaningClientPr
 
     const handleQuickItemSubmit = () => {
         if (!selectedItem) return;
-        const desc = `${amount} x ${selectedItemKey || selectedItem} ${note ? `(${note})` : ''}`;
-        sendRequest('housekeeping', desc);
+        const desc = activeTab === 'housekeeping'
+            ? `${amount} x ${selectedItemKey || selectedItem} ${note ? `(${note})` : ''}`
+            : `${selectedItemKey || selectedItem} ${note ? `(${note})` : ''}`;
+        sendRequest(activeTab === 'housekeeping' ? 'housekeeping' : 'general', desc);
     };
 
     return (
@@ -161,16 +185,38 @@ export default function CleaningClient({ roomId, initialLang }: CleaningClientPr
                     </button>
                 </div>
 
+                {/* Tab Selection */}
+                <div className="flex p-1 rounded-xl bg-gray-100 shadow-inner">
+                    <button
+                        onClick={() => { setActiveTab('housekeeping'); setSelectedItem(""); }}
+                        className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-bold transition-all ${activeTab === 'housekeeping' ? 'bg-white shadow-sm' : 'text-gray-500'}`}
+                        style={{ color: activeTab === 'housekeeping' ? theme.primaryColor : undefined }}
+                    >
+                        <Sparkles className="w-4 h-4" />
+                        {safeGetTranslation('room.housekeeping', 'İstekler')}
+                    </button>
+                    <button
+                        onClick={() => { setActiveTab('maintenance'); setSelectedItem(""); }}
+                        className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-bold transition-all ${activeTab === 'maintenance' ? 'bg-white shadow-sm' : 'text-gray-500'}`}
+                        style={{ color: activeTab === 'maintenance' ? theme.primaryColor : undefined }}
+                    >
+                        <Wrench className="w-4 h-4" />
+                        {safeGetTranslation('room.maintenance', 'Teknik')}
+                    </button>
+                </div>
+
                 {/* Quick Selection Section */}
                 <div className="rounded-xl shadow-sm p-5" style={{ background: theme.cardBackground }}>
                     <h2 className="text-lg font-semibold mb-4" style={{ color: theme.textColor }}>
-                        {safeGetTranslation('cleaning.need_something', 'Bir şeye ihtiyacınız mı var?')}
+                        {activeTab === 'housekeeping'
+                            ? safeGetTranslation('cleaning.need_something', 'Bir şeye ihtiyacınız mı var?')
+                            : safeGetTranslation('maintenance.title', 'Bir sorun mu var?')}
                     </h2>
 
                     <div className="grid grid-cols-3 sm:grid-cols-3 gap-3 mb-6">
-                        {quickItems.map((item) => (
+                        {(activeTab === 'housekeeping' ? quickItems : maintenanceItems).map((item) => (
                             <button
-                                key={item.name}
+                                key={item.nameKey}
                                 onClick={() => handleQuickSelect(safeGetTranslation(item.nameKey, item.name), item.nameKey)}
                                 className={`flex flex-col items-center p-3 rounded-lg transition-all border ${selectedItemKey === item.nameKey
                                     ? 'ring-2 ring-opacity-50'
@@ -192,26 +238,34 @@ export default function CleaningClient({ roomId, initialLang }: CleaningClientPr
                     {/* Amount and Send Section */}
                     {selectedItem && (
                         <div className="animate-fade-in">
-                            <div className="flex items-center justify-between mb-4 p-3 rounded-lg" style={{ background: theme.backgroundColor }}>
-                                <span className="font-medium" style={{ color: theme.textColor }}>{selectedItem}</span>
-                                <div className="flex items-center gap-3">
-                                    <button
-                                        onClick={() => setAmount(Math.max(1, amount - 1))}
-                                        className="w-8 h-8 flex items-center justify-center rounded-full font-bold transition"
-                                        style={{ background: theme.borderColor, color: theme.textColor }}
-                                    >
-                                        -
-                                    </button>
-                                    <span className="text-lg font-bold w-4 text-center" style={{ color: theme.textColor }}>{amount}</span>
-                                    <button
-                                        onClick={() => setAmount(Math.min(10, amount + 1))}
-                                        className="w-8 h-8 flex items-center justify-center rounded-full font-bold transition"
-                                        style={{ background: theme.borderColor, color: theme.textColor }}
-                                    >
-                                        +
-                                    </button>
+                            {activeTab === 'housekeeping' && (
+                                <div className="flex items-center justify-between mb-4 p-3 rounded-lg" style={{ background: theme.backgroundColor }}>
+                                    <span className="font-medium" style={{ color: theme.textColor }}>{selectedItem}</span>
+                                    <div className="flex items-center gap-3">
+                                        <button
+                                            onClick={() => setAmount(Math.max(1, amount - 1))}
+                                            className="w-8 h-8 flex items-center justify-center rounded-full font-bold transition"
+                                            style={{ background: theme.borderColor, color: theme.textColor }}
+                                        >
+                                            -
+                                        </button>
+                                        <span className="text-lg font-bold w-4 text-center" style={{ color: theme.textColor }}>{amount}</span>
+                                        <button
+                                            onClick={() => setAmount(Math.min(10, amount + 1))}
+                                            className="w-8 h-8 flex items-center justify-center rounded-full font-bold transition"
+                                            style={{ background: theme.borderColor, color: theme.textColor }}
+                                        >
+                                            +
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
+
+                            {activeTab === 'maintenance' && (
+                                <div className="mb-4 p-3 rounded-lg text-center" style={{ background: theme.backgroundColor }}>
+                                    <span className="font-bold text-lg" style={{ color: theme.textColor }}>{selectedItem}</span>
+                                </div>
+                            )}
 
                             <textarea
                                 value={note}
