@@ -405,30 +405,36 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative text-gray-900 font-sans overflow-x-hidden">
-      {/* Background with shades of white */}
-      <div className="fixed inset-0 z-0 bg-gradient-to-b from-white via-gray-50 to-gray-100" />
+    <div className="min-h-screen flex flex-col font-sans overflow-x-hidden" style={{ background: '#F9FAFB' }}>
+      {/* Premium Header */}
+      <div className="relative h-64 sm:h-72 overflow-hidden w-full">
+        {hotelBackgrounds.map((bg, index) => (
+          <div
+            key={bg}
+            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${index === bgIndex ? 'opacity-100' : 'opacity-0'
+              }`}
+            style={{ backgroundImage: `url("${bg}")` }}
+          />
+        ))}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-transparent" />
 
-      {/* Main Content */}
-      <div className="relative z-10 flex-1 flex flex-col p-6 max-w-lg mx-auto w-full">
-        {/* Top Header */}
-        <div className="flex justify-between items-start mb-8">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight">
+        <div className="relative z-10 max-w-md mx-auto px-6 pt-8 flex justify-between items-start w-full">
+          <div className="mt-4 sm:mt-8 space-y-1">
+            <h1 className="text-3xl font-bold text-white tracking-tight drop-shadow-md">
               {safeGetTranslation('welcome_guest', 'Hoşgeldiniz')}, {displayGuestName ? formatGuestNameOnly(displayGuestName) : 'Misafir'}!
             </h1>
-            <p className="text-lg opacity-90 font-medium">
+            <p className="text-white/90 text-sm mt-1 font-medium drop-shadow-md">
               {safeGetTranslation('how_can_we_help', 'Lütfen size nasıl yardımcı olabiliriz?')}
             </p>
           </div>
 
-          <div className="relative language-selector">
+          <div className="relative language-selector mt-4 sm:mt-8">
             <button
               onClick={() => setShowLanguageSelector(!showLanguageSelector)}
-              className="px-3 py-1.5 rounded-full bg-transparent flex items-center gap-2 border border-gray-200 shadow-sm transition-all active:scale-95"
+              className="px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/30 shadow-lg transition-all active:scale-95 flex items-center gap-2"
             >
-              <Globe className="w-4 h-4 text-gray-800" />
-              <span className="text-sm font-bold uppercase text-gray-800">{currentLanguage}</span>
+              <Globe className="w-4 h-4" />
+              <span className="text-sm font-bold uppercase">{currentLanguage}</span>
             </button>
 
             {/* Language Dropdown */}
@@ -455,188 +461,194 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
             )}
           </div>
         </div>
+      </div>
 
-        {/* Announcement Banner */}
-        <div className="mb-6">
-          <div className="bg-transparent rounded-2xl p-4 flex items-center justify-between shadow-sm border border-gray-200">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
-                <FaBell className="text-orange-500 text-lg animate-bounce" />
+      {/* Main Content */}
+      <div className="flex-1 -mt-8 relative z-20 bg-gray-50 rounded-t-[2.5rem] px-6 pt-8 pb-12 shadow-2xl w-full">
+        <div className="max-w-md mx-auto w-full">
+
+          {/* Announcement Banner */}
+          <div className="mb-6">
+            <div className="bg-transparent rounded-2xl p-4 flex items-center justify-between shadow-sm border border-gray-200">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                  <FaBell className="text-orange-500 text-lg animate-bounce" />
+                </div>
+                <div className="flex-1 overflow-hidden">
+                  <AnnouncementBanner roomId={roomId} minimal={true} />
+                </div>
               </div>
-              <div className="flex-1 overflow-hidden">
-                <AnnouncementBanner roomId={roomId} minimal={true} />
+              <div className="text-gray-400">
+                <ChevronDown className="w-5 h-5 -rotate-90" />
               </div>
-            </div>
-            <div className="text-gray-400">
-              <ChevronDown className="w-5 h-5 -rotate-90" />
             </div>
           </div>
-        </div>
 
-        {/* Action Grid (2x2) */}
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          {/* Oda Servisi */}
-          <button
-            onClick={() => {
-              const roomNumber = roomId.replace('room-', '');
-              localStorage.setItem('currentRoomId', roomId);
-              const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
-              params.set('roomId', roomNumber);
-              router.push(`/qr-menu?${params.toString()}`);
-            }}
-            className="bg-transparent aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-sm border border-gray-200"
-          >
-            <div className="w-full flex-1 flex items-center justify-center p-2">
-              <img
-                src="/icons/1.png"
-                alt="Room Service"
-                className="w-full h-full object-contain drop-shadow-2xl"
-              />
-            </div>
-            <span className="font-bold text-gray-800 text-lg">
-              {safeGetTranslation('room.room_service', 'Oda Servisi')}
-            </span>
-          </button>
-
-          {/* Özel Talepler */}
-          <button
-            onClick={() => {
-              const roomNumber = roomId.replace('room-', '');
-              router.push(`/${currentLanguage}/guest/${roomNumber}/cleaning`);
-            }}
-            className="bg-transparent aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-sm border border-gray-200"
-          >
-            <div className="w-full flex-1 flex items-center justify-center p-2">
-              <img
-                src="/icons/2.png"
-                alt="Special Requests"
-                className="w-full h-full object-contain drop-shadow-2xl"
-              />
-            </div>
-            <span className="font-bold text-gray-800 text-lg">
-              {safeGetTranslation('cleaning.title', 'Guest Services')}
-            </span>
-          </button>
-
-          {/* Olanaklar */}
-          <button
-            onClick={() => router.push(`/guest/${roomId}/facilities`)}
-            className="bg-transparent aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-sm border border-gray-200"
-          >
-            <div className="w-full flex-1 flex items-center justify-center p-2">
-              <img
-                src="/icons/3.png"
-                alt="Hotel Facilities"
-                className="w-full h-full object-contain drop-shadow-2xl"
-              />
-            </div>
-            <span className="font-bold text-gray-800 text-lg">
-              {safeGetTranslation('sidebar.facilities', 'Olanaklar')}
-            </span>
-          </button>
-
-          {/* Konsiyerj */}
-          <button
-            onClick={() => {
-              const roomNumber = roomId.replace('room-', '');
-              const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
-              params.set('roomId', roomNumber);
-              router.push(`/concierge?${params.toString()}`);
-            }}
-            className="bg-transparent aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-sm border border-gray-200"
-          >
-            <div className="w-full flex-1 flex items-center justify-center p-2">
-              <img
-                src="/icons/4.png"
-                alt="City Tours"
-                className="w-full h-full object-contain drop-shadow-2xl"
-              />
-            </div>
-            <span className="font-bold text-gray-800 text-lg">
-              {safeGetTranslation('city_tours', 'Konsiyerj')}
-            </span>
-          </button>
-        </div>
-
-        {/* Secondary Grid (Horizontal) */}
-        <div className="grid grid-cols-1 gap-3 mb-10">
-          <button
-            onClick={() => router.push('/info')}
-            className="bg-transparent rounded-[1.5rem] p-4 flex items-center transition-all active:scale-95 shadow-sm border border-gray-200"
-          >
-            <div className="w-12 h-12 flex items-center justify-center mr-4">
-              <img
-                src="https://img.icons8.com/3d-fluency/94/info.png"
-                alt="Info"
-                className="w-10 h-10"
-              />
-            </div>
-            <div className="flex flex-col flex-1 text-left">
-              <span className="font-bold text-gray-800 text-xl leading-tight">
-                {safeGetTranslation('room.info', 'Bilgiler')}
-              </span>
-              <span className="text-xs text-gray-500 font-medium opacity-80">
-                {safeGetTranslation('room.wifi_subtitle', 'Network & Hotel Info')}
-              </span>
-            </div>
-            <ChevronDown className="w-6 h-6 text-gray-400 -rotate-90" />
-          </button>
-
-          <button
-            onClick={() => {
-              const roomNumber = roomId.replace('room-', '');
-              router.push(`/${currentLanguage}/guest/${roomNumber}/cleaning?tab=maintenance`);
-            }}
-            className="bg-transparent rounded-[1.5rem] p-4 flex items-center transition-all active:scale-95 shadow-sm border border-gray-200"
-          >
-            <div className="w-12 h-12 flex items-center justify-center mr-4">
-              <img
-                src="https://img.icons8.com/3d-fluency/94/wrench.png"
-                alt="Maintenance"
-                className="w-10 h-10"
-              />
-            </div>
-            <div className="flex flex-col flex-1 text-left">
-              <span className="font-bold text-gray-800 text-xl leading-tight">
-                {safeGetTranslation('room.maintenance', 'Teknik Sorun')}
-              </span>
-              <span className="text-xs text-gray-500 font-medium opacity-80">
-                {safeGetTranslation('maintenance.title', 'Report a technical problem')}
-              </span>
-            </div>
-            <ChevronDown className="w-6 h-6 text-gray-400 -rotate-90" />
-          </button>
-
-          <button
-            onClick={() => setShowSurvey(true)}
-            className="bg-transparent rounded-[1.5rem] p-4 flex items-center transition-all active:scale-95 shadow-sm border border-gray-200"
-          >
-            <div className="w-12 h-12 flex items-center justify-center mr-4 font-bold">
-              <img
-                src="https://img.icons8.com/3d-fluency/94/star--v1.png"
-                alt="Feedback"
-                className="w-10 h-10"
-              />
-            </div>
-            <div className="flex flex-col flex-1 text-left">
-              <span className="font-bold text-gray-800 text-xl leading-tight">
-                {safeGetTranslation('survey.title', 'Şikayet / Yorum')}
-              </span>
-              <span className="text-xs text-gray-500 font-medium opacity-80">
-                {safeGetTranslation('survey.subtitle_guest', 'Rate & Feedback')}
-              </span>
-            </div>
-            <div className="flex flex-col items-end">
-              <div className="flex -space-x-1 mb-1">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className={`w-3.5 h-3.5 rounded-full ${i <= 3 ? 'bg-yellow-400' : 'bg-gray-300'}`} />
-                ))}
+          {/* Action Grid (2x2) */}
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            {/* Oda Servisi */}
+            <button
+              onClick={() => {
+                const roomNumber = roomId.replace('room-', '');
+                localStorage.setItem('currentRoomId', roomId);
+                const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
+                params.set('roomId', roomNumber);
+                router.push(`/qr-menu?${params.toString()}`);
+              }}
+              className="bg-transparent aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-sm border border-gray-200"
+            >
+              <div className="w-full flex-1 flex items-center justify-center p-2">
+                <img
+                  src="/icons/1.png"
+                  alt="Room Service"
+                  className="w-full h-full object-contain drop-shadow-2xl"
+                />
               </div>
-              <div className="w-5 h-5 rounded-full bg-orange-400 flex items-center justify-center">
-                <span className="text-white text-[10px] font-bold">!</span>
+              <span className="font-bold text-gray-800 text-lg">
+                {safeGetTranslation('room.room_service', 'Oda Servisi')}
+              </span>
+            </button>
+
+            {/* Özel Talepler */}
+            <button
+              onClick={() => {
+                const roomNumber = roomId.replace('room-', '');
+                router.push(`/${currentLanguage}/guest/${roomNumber}/cleaning`);
+              }}
+              className="bg-transparent aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-sm border border-gray-200"
+            >
+              <div className="w-full flex-1 flex items-center justify-center p-2">
+                <img
+                  src="/icons/2.png"
+                  alt="Special Requests"
+                  className="w-full h-full object-contain drop-shadow-2xl"
+                />
               </div>
-            </div>
-          </button>
+              <span className="font-bold text-gray-800 text-lg">
+                {safeGetTranslation('cleaning.title', 'Guest Services')}
+              </span>
+            </button>
+
+            {/* Olanaklar */}
+            <button
+              onClick={() => router.push(`/guest/${roomId}/facilities`)}
+              className="bg-transparent aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-sm border border-gray-200"
+            >
+              <div className="w-full flex-1 flex items-center justify-center p-2">
+                <img
+                  src="/icons/3.png"
+                  alt="Hotel Facilities"
+                  className="w-full h-full object-contain drop-shadow-2xl"
+                />
+              </div>
+              <span className="font-bold text-gray-800 text-lg">
+                {safeGetTranslation('sidebar.facilities', 'Olanaklar')}
+              </span>
+            </button>
+
+            {/* Konsiyerj */}
+            <button
+              onClick={() => {
+                const roomNumber = roomId.replace('room-', '');
+                const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
+                params.set('roomId', roomNumber);
+                router.push(`/concierge?${params.toString()}`);
+              }}
+              className="bg-transparent aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-sm border border-gray-200"
+            >
+              <div className="w-full flex-1 flex items-center justify-center p-2">
+                <img
+                  src="/icons/4.png"
+                  alt="City Tours"
+                  className="w-full h-full object-contain drop-shadow-2xl"
+                />
+              </div>
+              <span className="font-bold text-gray-800 text-lg">
+                {safeGetTranslation('city_tours', 'Konsiyerj')}
+              </span>
+            </button>
+          </div>
+
+          {/* Secondary Grid (Horizontal) */}
+          <div className="grid grid-cols-1 gap-3 mb-10">
+            <button
+              onClick={() => router.push('/info')}
+              className="bg-transparent rounded-[1.5rem] p-4 flex items-center transition-all active:scale-95 shadow-sm border border-gray-200"
+            >
+              <div className="w-12 h-12 flex items-center justify-center mr-4">
+                <img
+                  src="https://img.icons8.com/3d-fluency/94/info.png"
+                  alt="Info"
+                  className="w-10 h-10"
+                />
+              </div>
+              <div className="flex flex-col flex-1 text-left">
+                <span className="font-bold text-gray-800 text-xl leading-tight">
+                  {safeGetTranslation('room.info', 'Bilgiler')}
+                </span>
+                <span className="text-xs text-gray-500 font-medium opacity-80">
+                  {safeGetTranslation('room.wifi_subtitle', 'Network & Hotel Info')}
+                </span>
+              </div>
+              <ChevronDown className="w-6 h-6 text-gray-400 -rotate-90" />
+            </button>
+
+            <button
+              onClick={() => {
+                const roomNumber = roomId.replace('room-', '');
+                router.push(`/${currentLanguage}/guest/${roomNumber}/cleaning?tab=maintenance`);
+              }}
+              className="bg-transparent rounded-[1.5rem] p-4 flex items-center transition-all active:scale-95 shadow-sm border border-gray-200"
+            >
+              <div className="w-12 h-12 flex items-center justify-center mr-4">
+                <img
+                  src="https://img.icons8.com/3d-fluency/94/wrench.png"
+                  alt="Maintenance"
+                  className="w-10 h-10"
+                />
+              </div>
+              <div className="flex flex-col flex-1 text-left">
+                <span className="font-bold text-gray-800 text-xl leading-tight">
+                  {safeGetTranslation('room.maintenance', 'Teknik Sorun')}
+                </span>
+                <span className="text-xs text-gray-500 font-medium opacity-80">
+                  {safeGetTranslation('maintenance.title', 'Report a technical problem')}
+                </span>
+              </div>
+              <ChevronDown className="w-6 h-6 text-gray-400 -rotate-90" />
+            </button>
+
+            <button
+              onClick={() => setShowSurvey(true)}
+              className="bg-transparent rounded-[1.5rem] p-4 flex items-center transition-all active:scale-95 shadow-sm border border-gray-200"
+            >
+              <div className="w-12 h-12 flex items-center justify-center mr-4 font-bold">
+                <img
+                  src="https://img.icons8.com/3d-fluency/94/star--v1.png"
+                  alt="Feedback"
+                  className="w-10 h-10"
+                />
+              </div>
+              <div className="flex flex-col flex-1 text-left">
+                <span className="font-bold text-gray-800 text-xl leading-tight">
+                  {safeGetTranslation('survey.title', 'Şikayet / Yorum')}
+                </span>
+                <span className="text-xs text-gray-500 font-medium opacity-80">
+                  {safeGetTranslation('survey.subtitle_guest', 'Rate & Feedback')}
+                </span>
+              </div>
+              <div className="flex flex-col items-end">
+                <div className="flex -space-x-1 mb-1">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className={`w-3.5 h-3.5 rounded-full ${i <= 3 ? 'bg-yellow-400' : 'bg-gray-300'}`} />
+                  ))}
+                </div>
+                <div className="w-5 h-5 rounded-full bg-orange-400 flex items-center justify-center">
+                  <span className="text-white text-[10px] font-bold">!</span>
+                </div>
+              </div>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -648,7 +660,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
           transform: translateY(-5px) scale(1.05);
         }
       `}</style>
-    </div>
+    </div >
   );
 }
 
