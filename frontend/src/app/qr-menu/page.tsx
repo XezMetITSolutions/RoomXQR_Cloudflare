@@ -511,10 +511,23 @@ export default function QRMenuPage() {
 
   // Aktif kategorileri bul (ürün bulunan kategoriler)
   const activeCategories = useMemo(() => {
+    // Menüde aktif (görünür) ürünü olan kategorileri topla
+    const activeCategoryNames = new Set<string>();
+    menuData.forEach(item => {
+      if (item.category && item.category.trim() && item.available) {
+        activeCategoryNames.add(item.category.trim());
+      }
+    });
+
     // Backend'den gelen kategorileri kullan
     if (dynamicCategories.length > 0) {
+      // Sadece en az bir aktif ürüne sahip olan kategorileri dahil et
+      const filteredCategories = dynamicCategories.filter(cat =>
+        activeCategoryNames.has(cat.name.trim())
+      );
+
       // Kategorileri çevirilerle birlikte göster
-      const translatedCategories = dynamicCategories.map(cat => {
+      const translatedCategories = filteredCategories.map(cat => {
         const currentLang = currentLanguage || 'tr';
         let displayName = cat.name;
 
@@ -546,7 +559,7 @@ export default function QRMenuPage() {
     categoriesWithProducts.add('all'); // "Tümü" her zaman göster
 
     menuData.forEach(item => {
-      if (item.category && item.category.trim()) {
+      if (item.category && item.category.trim() && item.available) {
         categoriesWithProducts.add(item.category.trim());
       }
     });
