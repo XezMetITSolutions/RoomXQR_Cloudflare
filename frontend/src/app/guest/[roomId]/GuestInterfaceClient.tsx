@@ -509,43 +509,6 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
               </span>
             </button>
 
-            {/* Özel Talepler */}
-            <button
-              onClick={() => {
-                const roomNumber = roomId.replace('room-', '');
-                router.push(`/${currentLanguage}/guest/${roomNumber}/cleaning`);
-              }}
-              className="bg-transparent aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-sm border border-gray-200"
-            >
-              <div className="w-full flex-1 flex items-center justify-center p-2">
-                <img
-                  src="/icons/2.png"
-                  alt="Special Requests"
-                  className="w-full h-full object-contain drop-shadow-2xl"
-                />
-              </div>
-              <span className="font-bold text-gray-800 text-lg">
-                {safeGetTranslation('cleaning.title', 'Guest Services')}
-              </span>
-            </button>
-
-            {/* Olanaklar */}
-            <button
-              onClick={() => router.push(`/guest/${roomId}/facilities`)}
-              className="bg-transparent aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-sm border border-gray-200"
-            >
-              <div className="w-full flex-1 flex items-center justify-center p-2">
-                <img
-                  src="/icons/3.png"
-                  alt="Hotel Facilities"
-                  className="w-full h-full object-contain drop-shadow-2xl"
-                />
-              </div>
-              <span className="font-bold text-gray-800 text-lg">
-                {safeGetTranslation('sidebar.facilities', 'Olanaklar')}
-              </span>
-            </button>
-
             {/* Konsiyerj */}
             <button
               onClick={() => {
@@ -565,6 +528,43 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
               </div>
               <span className="font-bold text-gray-800 text-lg">
                 {safeGetTranslation('city_tours', 'Konsiyerj')}
+              </span>
+            </button>
+
+            {/* Olanaklar */}
+            <button
+              onClick={() => router.push(`/guest/${roomId}/facilities`)}
+              className="bg-transparent aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-sm border border-gray-200"
+            >
+              <div className="w-full flex-1 flex items-center justify-center p-2">
+                <img
+                  src="/icons/3.png"
+                  alt="Hotel Facilities"
+                  className="w-full h-full object-contain drop-shadow-2xl"
+                />
+              </div>
+              <span className="font-bold text-gray-800 text-lg text-center leading-tight">
+                {safeGetTranslation('sidebar.facilities', 'Otel Olanakları')}
+              </span>
+            </button>
+
+            {/* Özel Talepler */}
+            <button
+              onClick={() => {
+                const roomNumber = roomId.replace('room-', '');
+                router.push(`/${currentLanguage}/guest/${roomNumber}/cleaning`);
+              }}
+              className="bg-transparent aspect-square rounded-[2.5rem] p-5 flex flex-col items-center justify-between transition-all active:scale-95 shadow-sm border border-gray-200"
+            >
+              <div className="w-full flex-1 flex items-center justify-center p-2">
+                <img
+                  src="/icons/2.png"
+                  alt="Special Requests"
+                  className="w-full h-full object-contain drop-shadow-2xl"
+                />
+              </div>
+              <span className="font-bold text-gray-800 text-lg text-center leading-tight">
+                {safeGetTranslation('cleaning.title', 'Hizmetler ve Talepler')}
               </span>
             </button>
           </div>

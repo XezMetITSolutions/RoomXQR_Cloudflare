@@ -283,7 +283,7 @@ export const translations: Record<string, Translations> = {
     'sidebar.dashboard': 'Dashboard',
     'sidebar.qr_generator': 'QR Kod Oluşturucu',
     'sidebar.menu_management': 'Menü Yönetimi',
-    'sidebar.facilities': 'Olanaklar',
+    'sidebar.facilities': 'Otel Olanakları',
     'sidebar.announcements': 'Duyurular',
     'sidebar.hotel_info': 'Otel Bilgileri',
     'sidebar.users': 'Kullanıcılar',
