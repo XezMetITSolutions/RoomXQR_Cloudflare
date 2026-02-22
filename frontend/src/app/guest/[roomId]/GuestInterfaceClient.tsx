@@ -543,9 +543,10 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
                   className="w-full h-full object-contain drop-shadow-2xl"
                 />
               </div>
-              <span className="font-bold text-gray-800 text-lg text-center leading-tight">
-                {safeGetTranslation('sidebar.facilities', 'Otel Olanakları')}
-              </span>
+              <span
+                className="font-bold text-gray-800 text-lg text-center leading-tight"
+                dangerouslySetInnerHTML={{ __html: safeGetTranslation('sidebar.facilities', 'Otel Olanakları') }}
+              />
             </button>
 
             {/* Özel Talepler */}
