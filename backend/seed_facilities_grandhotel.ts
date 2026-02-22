@@ -176,7 +176,7 @@ async function main() {
         {
             name: 'Kids Club',
             description: 'Uzman eğitmenlerimiz gözetiminde, çocuklarınızın eğitici aktiviteler ve oyunlarla eğlenceli vakit geçirebilecekleri güvenli çocuk kulübü.',
-            image: 'https://images.unsplash.com/photo-1545625076-1e64560a6237?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80',
+            image: 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80',
             location: 'Kat 2',
             openingHours: '09:00 - 18:00',
             reservationInfo: '3-12 yaş arası çocuklar için uygundur.',
