@@ -390,10 +390,9 @@ export class ApiService {
     }
   }
 
-  // WebSocket bağlantısı (gerçek zamanlı güncellemeler için)
   static connectWebSocket(roomId: string, onMessage: (data: any) => void): WebSocket | null {
     try {
-      const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'wss://api.roomxr.com';
+      const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'wss://roomxqr.onrender.com';
       const ws = new WebSocket(`${wsUrl}/ws?roomId=${roomId}`);
 
       ws.onopen = () => console.log('WebSocket connected');

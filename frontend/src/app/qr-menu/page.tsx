@@ -301,7 +301,7 @@ export default function QRMenuPage() {
   useEffect(() => {
     const loadAnnouncements = async () => {
       try {
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr-backend.onrender.com';
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://roomxqr.onrender.com';
 
         // URL'den tenant slug'ını al
         let tenantSlug = 'demo';
