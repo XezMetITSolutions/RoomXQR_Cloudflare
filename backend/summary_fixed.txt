@@ -1,0 +1,8 @@
+﻿Listing all tenants...
+Tenants Summary:
+- System Admin (slug: system-admin, id: cmlf1krbl0000aa4l66neypa8)
+  Menu Items: 0
+  Hotels: 1
+- Grand Hotel & Spa Resort (slug: grandhotel, id: cmlj93fuw0000fw4ldipx34qf)
+  Menu Items: 0
+  Hotels: 2

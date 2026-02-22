@@ -1,0 +1,90 @@
+{
+  "id": "cmlj93fuw0000fw4ldipx34qf",
+  "name": "Grand Hotel & Spa Resort",
+  "slug": "grandhotel",
+  "domain": null,
+  "isActive": true,
+  "settings": {
+    "theme": {
+      "accentColor": "#c5a028",
+      "primaryColor": "#1a1a1a",
+      "secondaryColor": "#d4af37"
+    },
+    "currency": "TRY",
+    "languages": [
+      "tr",
+      "en",
+      "de",
+      "ru"
+    ]
+  },
+  "createdAt": "2026-02-12T09:22:53.576Z",
+  "updatedAt": "2026-02-17T22:28:02.474Z",
+  "hotels": [
+    {
+      "id": "cmlj93fv30002fw4l44jtefeh",
+      "name": "Grandhotel Istanbul",
+      "address": "Gümüşsuyu Mah. İnönü Cad. No:8, Beyoğlu, İstanbul",
+      "phone": "+90 212 334 44 44",
+      "email": "istanbul@grandhotel.com",
+      "website": "https://grandhotel.roomxqr.com",
+      "logo": "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?q=80&w=500",
+      "settings": {
+        "wifi": {
+          "speed": "100 Mbps",
+          "password": "welcome-2026",
+          "networkName": "Grandhotel_Istanbul_Guest",
+          "supportPhone": "+90 212 555 1010"
+        },
+        "hours": {
+          "bar": "12:00 - 02:00",
+          "spa": "09:00 - 21:00",
+          "reception": "7/24 Açık",
+          "restaurant": "07:00 - 23:00"
+        },
+        "dining": {
+          "lunch": "12:30 - 14:30",
+          "dinner": "19:00 - 22:30",
+          "breakfast": "07:00 - 10:30",
+          "roomService": "7/24 Mevcut",
+          "techSupport": "09:00 - 18:00",
+          "towelChange": "Günde Bir Kez"
+        },
+        "contacts": {
+          "security": "911",
+          "concierge": "112",
+          "reception": "0"
+        },
+        "amenities": [
+          "Ücretsiz Wi-Fi",
+          "Spa ve Wellness Merkezi",
+          "Kapalı Yüzme Havuzu",
+          "7/24 Oda Servisi",
+          "Vale Park Hizmeti",
+          "Fitness Merkezi",
+          "Türk Hamamı",
+          "Havalimanı Transferi"
+        ],
+        "description": "İstanbul'un kalbinde tarihi atmosferi ve modern lüksü bir araya getiren Grandhotel Istanbul, misafirlerine Boğaz manzaralı eşsiz bir konaklama sunar."
+      },
+      "isActive": true,
+      "createdAt": "2026-02-12T09:22:53.583Z",
+      "updatedAt": "2026-02-12T10:20:34.316Z",
+      "tenantId": "cmlj93fuw0000fw4ldipx34qf"
+    },
+    {
+      "id": "grand-hotel-primary",
+      "name": "Grand Hotel & Spa Resort Istanbul",
+      "address": "Cıragan Caddesi No:12, Besiktas, Istanbul",
+      "phone": "+90 212 333 4455",
+      "email": "info@grandhotelistanbul.com",
+      "website": "https://grandhotelistanbul.com",
+      "logo": null,
+      "settings": null,
+      "isActive": true,
+      "createdAt": "2026-02-17T22:27:00.178Z",
+      "updatedAt": "2026-02-17T22:28:02.547Z",
+      "tenantId": "cmlj93fuw0000fw4ldipx34qf"
+    }
+  ]
+}
