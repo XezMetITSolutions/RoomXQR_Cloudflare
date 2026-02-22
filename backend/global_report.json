@@ -1,0 +1,149 @@
+[
+  {
+    "id": "cmly3rzqr0001c32wdm625q9j",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "Izgara Somon",
+    "imageType": "URL",
+    "imagePreview": "https://images.unsplash.com/photo-1467003909585-2f"
+  },
+  {
+    "id": "cmly3rzx30005c32wehs9x5cg",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "Classic Cheeseburger",
+    "imageType": "URL",
+    "imagePreview": "https://images.unsplash.com/photo-1568901346375-23"
+  },
+  {
+    "id": "cmly3s0ba000fc32w0g9ytak1",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "El yapımı Limonata",
+    "imageType": "URL",
+    "imagePreview": "https://images.unsplash.com/photo-1513558161293-cd"
+  },
+  {
+    "id": "cmly3s0l5000lc32wp7zpu90g",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "Coca-Cola (330ml)",
+    "imageType": "URL",
+    "imagePreview": "https://images.unsplash.com/photo-1622483767028-3f"
+  },
+  {
+    "id": "cmly3s04n000bc32w6ariwf5x",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "Çikolatalı Sufle",
+    "imageType": "BASE64",
+    "imagePreview": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD"
+  },
+  {
+    "id": "cmly3rzux0003c32w525y3ljz",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "Fettuccine Alfredo",
+    "imageType": "BASE64",
+    "imagePreview": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAgEASABIAAD"
+  },
+  {
+    "id": "cmly3s00u0009c32w3dsgttmq",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "Meyve Tabağı",
+    "imageType": "BASE64",
+    "imagePreview": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD"
+  },
+  {
+    "id": "cmly3rzzb0007c32wb5s3fe9a",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "Peynir Tabağı",
+    "imageType": "BASE64",
+    "imagePreview": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD"
+  },
+  {
+    "id": "cmly3s0oy000rc32w2f79s6w5",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "Demleme Türk Çayı",
+    "imageType": "URL",
+    "imagePreview": "https://images.unsplash.com/photo-1576092768241-de"
+  },
+  {
+    "id": "cmly3s0md000nc32wife56vt6",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "Kızarmış Patates",
+    "imageType": "URL",
+    "imagePreview": "https://images.unsplash.com/photo-1630384060421-cb"
+  },
+  {
+    "id": "cmly3s0nc000pc32wt7jf85zr",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "Mercimek Köftesi",
+    "imageType": "BASE64",
+    "imagePreview": "data:image/webp;base64,UklGRtTCAABXRUJQVlA4IMjCAAB"
+  },
+  {
+    "id": "cmly3i3gz0003c3u8txilxei6",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "Grand Club Sandwich",
+    "imageType": "URL",
+    "imagePreview": "https://images.unsplash.com/photo-1567234669003-dc"
+  },
+  {
+    "id": "cmly3i3ji0007c3u8vk79va9m",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "Izgara Dana Bonfile",
+    "imageType": "BASE64",
+    "imagePreview": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD"
+  },
+  {
+    "id": "cmly3s0jf000jc32w2miajk90",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "Maden Suyu (200ml)",
+    "imageType": "BASE64",
+    "imagePreview": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD"
+  },
+  {
+    "id": "cmly3i3dz0001c3u82fhtdbh5",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "Geleneksel Türk Kahvaltısı",
+    "imageType": "URL",
+    "imagePreview": "https://images.unsplash.com/photo-1541014741259-de"
+  },
+  {
+    "id": "cmly3i3i20005c3u8woaqqdrr",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "Süzme Mercimek Çorbası",
+    "imageType": "URL",
+    "imagePreview": "https://images.unsplash.com/photo-1547592166-23ac4"
+  },
+  {
+    "id": "cmly3i3om000bc3u8774hvse1",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "Sezar Salata",
+    "imageType": "URL",
+    "imagePreview": "https://images.unsplash.com/photo-1550304943-4f24f"
+  },
+  {
+    "id": "cmly3i42r000dc3u80qvv0g1t",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "Tiramisu",
+    "imageType": "URL",
+    "imagePreview": "https://images.unsplash.com/photo-1571877227200-a0"
+  },
+  {
+    "id": "cmly3i4q7000hc3u8ebm8xwz2",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "Türk Kahvesi",
+    "imageType": "URL",
+    "imagePreview": "https://images.unsplash.com/photo-1514432324607-a0"
+  },
+  {
+    "id": "cmly3i496000fc3u8z83z08tx",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "Taze Sıkılmış Portakal Suyu",
+    "imageType": "URL",
+    "imagePreview": "https://images.unsplash.com/photo-1613478223719-2a"
+  },
+  {
+    "id": "cmly3i3me0009c3u8ba5l5mfq",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf",
+    "name": "Pizza Margherita",
+    "imageType": "BASE64",
+    "imagePreview": "data:image/webp;base64,UklGRiRVAwBXRUJQVlA4WAoAAAA"
+  }
+]

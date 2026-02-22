@@ -218,6 +218,12 @@ export const translations: Record<string, Translations> = {
     'maintenance.wifi': 'WiFi bağlantı sorunu',
     'maintenance.safe': 'Kasa açılmıyor',
     'maintenance.drain': 'Lavabo/Gider tıkalı',
+    'maintenance.plug': 'Priz/Elektrik sorunu',
+    'maintenance.remote': 'Kumanda çalışmıyor',
+    'maintenance.shower': 'Duş/Musluk sorunu',
+    'maintenance.toilet': 'Tuvalet/Klozet sorunu',
+    'maintenance.door': 'Kapı/Kilit sorunu',
+    'maintenance.furniture': 'Mobilya/Yatak sorunu',
 
     // Login
     'login.title': 'İşletme Paneline Giriş',
@@ -992,6 +998,12 @@ export const translations: Record<string, Translations> = {
     'maintenance.wifi': 'WiFi connection issue',
     'maintenance.safe': 'Safe box won\'t open',
     'maintenance.drain': 'Sink/Drain clogged',
+    'maintenance.plug': 'Power outlet/Electric issue',
+    'maintenance.remote': 'Remote control issue',
+    'maintenance.shower': 'Shower/Faucet issue',
+    'maintenance.toilet': 'Toilet issue',
+    'maintenance.door': 'Door/Lock issue',
+    'maintenance.furniture': 'Furniture issue',
 
     // Login
     'login.title': 'Business Panel Login',
@@ -1718,6 +1730,12 @@ export const translations: Record<string, Translations> = {
     'maintenance.wifi': 'WiFi-Verbindungsproblem',
     'maintenance.safe': 'Safe lässt sich nicht öffnen',
     'maintenance.drain': 'Abfluss verstopft',
+    'maintenance.plug': 'Steckdose/Stromproblem',
+    'maintenance.remote': 'Fernbedienung defekt',
+    'maintenance.shower': 'Dusche/Wasserhahn Problem',
+    'maintenance.toilet': 'Toilettenproblem',
+    'maintenance.door': 'Tür/Schloss Problem',
+    'maintenance.furniture': 'Möbel/Bett Problem',
 
     // Login
     'login.title': 'Business Panel Login',
@@ -3005,6 +3023,23 @@ export const translations: Record<string, Translations> = {
     'cleaning.need_something': 'Нужно что-нибудь?',
     'cleaning.add_note': 'Добавить заметку (необязательно)...',
     'cleaning.order_now': 'Заказать сейчас',
+
+    // Maintenance / Технические проблемы
+    'maintenance.title': 'Сообщить о технической проблеме',
+    'maintenance.heater': 'Кондиционер/Обогреватель не работает',
+    'maintenance.tv': 'Телевизор не работает',
+    'maintenance.remote': 'Пульт не работает',
+    'maintenance.minibar': 'Мини-бар не охлаждает',
+    'maintenance.light': 'Свет/Лампа не горит',
+    'maintenance.shower': 'Проблема с душем/краном',
+    'maintenance.water': 'Нет горячей воды',
+    'maintenance.wifi': 'Проблема с WiFi',
+    'maintenance.safe': 'Сейф не открывается',
+    'maintenance.drain': 'Раковина/Слив засорен',
+    'maintenance.toilet': 'Проблема с туалетом',
+    'maintenance.door': 'Проблема с дверью/замком',
+    'maintenance.plug': 'Проблема с розеткой/электричеством',
+    'maintenance.furniture': 'Проблема с мебелью/кроватью',
 
     // Быстрый выбор
     'quick.towel': 'Полотенце',

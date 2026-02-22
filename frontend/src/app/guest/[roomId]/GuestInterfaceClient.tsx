@@ -583,6 +583,31 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
           </button>
 
           <button
+            onClick={() => {
+              const roomNumber = roomId.replace('room-', '');
+              router.push(`/${currentLanguage}/guest/${roomNumber}/cleaning?tab=maintenance`);
+            }}
+            className="bg-transparent rounded-[1.5rem] p-4 flex items-center transition-all active:scale-95 shadow-sm border border-gray-200"
+          >
+            <div className="w-12 h-12 flex items-center justify-center mr-4">
+              <img
+                src="https://img.icons8.com/3d-fluency/94/wrench.png"
+                alt="Maintenance"
+                className="w-10 h-10"
+              />
+            </div>
+            <div className="flex flex-col flex-1 text-left">
+              <span className="font-bold text-gray-800 text-xl leading-tight">
+                {safeGetTranslation('room.maintenance', 'Teknik Sorun')}
+              </span>
+              <span className="text-xs text-gray-500 font-medium opacity-80">
+                {safeGetTranslation('maintenance.title', 'Report a technical problem')}
+              </span>
+            </div>
+            <ChevronDown className="w-6 h-6 text-gray-400 -rotate-90" />
+          </button>
+
+          <button
             onClick={() => setShowSurvey(true)}
             className="bg-transparent rounded-[1.5rem] p-4 flex items-center transition-all active:scale-95 shadow-sm border border-gray-200"
           >

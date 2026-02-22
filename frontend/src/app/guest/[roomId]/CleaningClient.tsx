@@ -60,20 +60,30 @@ export default function CleaningClient({ roomId, initialLang }: CleaningClientPr
     const maintenanceItems = [
         { name: "Klima/Isıtıcı", nameKey: "maintenance.heater", icon: ThermometerSnowflake, color: "text-orange-500" },
         { name: "Televizyon", nameKey: "maintenance.tv", icon: Tv, color: "text-blue-500" },
+        { name: "Kumanda", nameKey: "maintenance.remote", icon: Tv, color: "text-gray-500" },
         { name: "Minibar", nameKey: "maintenance.minibar", icon: Wind, color: "text-cyan-500" },
         { name: "Işık/Lamba", nameKey: "maintenance.light", icon: Lightbulb, color: "text-yellow-500" },
+        { name: "Duş/Musluk", nameKey: "maintenance.shower", icon: Droplet, color: "text-blue-400" },
         { name: "Sıcak Su", nameKey: "maintenance.water", icon: Bath, color: "text-blue-400" },
         { name: "WiFi Sorunu", nameKey: "maintenance.wifi", icon: Wifi, color: "text-indigo-500" },
         { name: "Kasa", nameKey: "maintenance.safe", icon: Lock, color: "text-gray-500" },
         { name: "Gider/Lavabo", nameKey: "maintenance.drain", icon: Waves, color: "text-blue-600" },
-        { name: "Priz/Elektrik", nameKey: "maintenance.plug", icon: PlugZap, color: "text-red-500" }
+        { name: "Tuvalet/Klozet", nameKey: "maintenance.toilet", icon: Bath, color: "text-indigo-600" },
+        { name: "Kapı/Kilit", nameKey: "maintenance.door", icon: Lock, color: "text-red-400" },
+        { name: "Priz/Elektrik", nameKey: "maintenance.plug", icon: PlugZap, color: "text-red-500" },
+        { name: "Mobilya/Yatak", nameKey: "maintenance.furniture", icon: Bed, color: "text-brown-500" }
     ];
 
     const [selectedItem, setSelectedItem] = useState("");
     const [selectedItemKey, setSelectedItemKey] = useState("");
     const [amount, setAmount] = useState(1);
     const [note, setNote] = useState("");
-    const [activeTab, setActiveTab] = useState<'housekeeping' | 'maintenance'>('housekeeping');
+
+    // Initialize activeTab from query param if available
+    const initialTab = searchParams.get('tab') as 'housekeeping' | 'maintenance';
+    const [activeTab, setActiveTab] = useState<'housekeeping' | 'maintenance'>(
+        (initialTab === 'housekeeping' || initialTab === 'maintenance') ? initialTab : 'housekeeping'
+    );
 
     const safeGetTranslation = (key: string, fallback: string = '') => {
         try {

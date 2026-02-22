@@ -1,0 +1,17 @@
+[
+  {
+    "id": "cmlf1ks690002aa4lfpk45k28",
+    "name": "System Admin Hotel",
+    "tenantId": "cmlf1krbl0000aa4l66neypa8"
+  },
+  {
+    "id": "cmlj93fv30002fw4l44jtefeh",
+    "name": "Grandhotel Istanbul",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf"
+  },
+  {
+    "id": "grand-hotel-primary",
+    "name": "Grand Hotel & Spa Resort Istanbul",
+    "tenantId": "cmlj93fuw0000fw4ldipx34qf"
+  }
+]
