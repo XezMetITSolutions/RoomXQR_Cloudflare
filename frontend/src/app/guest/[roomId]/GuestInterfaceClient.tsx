@@ -514,7 +514,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
               />
             </div>
             <span className="font-bold text-gray-800 text-lg">
-              {safeGetTranslation('room.housekeeping', 'Özel Talepler')}
+              {safeGetTranslation('cleaning.title', 'Guest Services')}
             </span>
           </button>
 

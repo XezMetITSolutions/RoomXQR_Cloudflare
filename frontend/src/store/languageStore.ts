@@ -157,8 +157,8 @@ export const translations: Record<string, Translations> = {
     'live_support': 'Canlı Destek',
     'room.services': 'Hizmetler',
     'room.room_service': 'Oda Servisi',
-    'room.housekeeping': 'Temizlik',
-    'room.maintenance': 'Bakım',
+    'room.housekeeping': 'Temizlik & İhtiyaç',
+    'room.maintenance': 'Teknik',
     'room.concierge': 'Konsiyerj',
     'room.wifi': 'WiFi',
     'room.wifi_subtitle': 'Ağ ve Otel Bilgileri',
@@ -197,7 +197,7 @@ export const translations: Record<string, Translations> = {
     'general.back': 'Geri',
 
     // Cleaning Page
-    'cleaning.title': 'Oda Temizliği & İstekler',
+    'cleaning.title': 'Hizmetler & Talepler',
     'cleaning.request_cleaning': 'Oda Temizliği İsteniyor',
     'cleaning.clean_my_room': 'Odamı Temizle',
     'cleaning.dnd': 'Rahatsız Etmeyin',
@@ -948,7 +948,7 @@ export const translations: Record<string, Translations> = {
     'room.services': 'Services',
     'room.room_service': 'Room Service',
     'room.housekeeping': 'Housekeeping',
-    'room.maintenance': 'Maintenance',
+    'room.maintenance': 'Technical Support',
     'room.concierge': 'Concierge',
     'room.wifi': 'WiFi',
     'room.wifi_subtitle': 'Network & Hotel Info',
@@ -987,7 +987,7 @@ export const translations: Record<string, Translations> = {
     'general.back': 'Back',
 
     // Cleaning Page
-    'cleaning.title': 'Housekeeping & Requests',
+    'cleaning.title': 'Services & Requests',
     'cleaning.request_cleaning': 'Request Cleaning',
     'cleaning.clean_my_room': 'Clean My Room',
     'cleaning.dnd': 'Do Not Disturb',
@@ -1703,8 +1703,8 @@ export const translations: Record<string, Translations> = {
     'live_support': 'Live-Support',
     'room.services': 'Dienstleistungen',
     'room.room_service': 'Zimmerservice',
-    'room.housekeeping': 'Reinigung',
-    'room.maintenance': 'Wartung',
+    'room.housekeeping': 'Reinigung & Bedarf',
+    'room.maintenance': 'Technik',
     'room.concierge': 'Concierge',
     'room.wifi': 'WiFi',
     'room.wifi_subtitle': 'Netzwerk- und Hotelinfo',
@@ -1740,7 +1740,7 @@ export const translations: Record<string, Translations> = {
     'concierge.footer': 'Alle Ihre Anfragen werden an unser Team gesendet. Wir setzen uns in Kürze mit Ihnen in Verbindung.',
 
     // Cleaning Page
-    'cleaning.title': 'Zimmerreinigung & Anfragen',
+    'cleaning.title': 'Services & Anfragen',
     'cleaning.request_cleaning': 'Reinigung anfordern',
     'cleaning.clean_my_room': 'Reinigen Sie mein Zimmer',
     'cleaning.dnd': 'Bitte nicht stören',
