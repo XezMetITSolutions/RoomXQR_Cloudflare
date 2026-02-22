@@ -185,7 +185,7 @@ export default function QRMenuPage() {
           // Backend'den gelen kategorileri çıkar (ürün müsait olmasa da kategori listelensin)
           const uniqueCategories = new Set<string>();
           formattedMenu.forEach((item: any) => {
-            if (item.category && item.category.trim()) {
+            if (item.category && item.category.trim() && item.available) {
               uniqueCategories.add(item.category.trim());
             }
           });
