@@ -5,15 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import {
   FaHeadset,
   FaArrowLeft,
-  FaUtensils,
-  FaCar,
-  FaMountain,
   FaCommentDots,
   FaPaperPlane,
-  FaSpa,
-  FaTshirt,
-  FaGift,
-  FaMoon,
   FaConciergeBell
 } from 'react-icons/fa';
 import { useThemeStore } from '@/store/themeStore';
@@ -22,14 +15,14 @@ import { ApiService } from '@/services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const CONCIERGE_OPTIONS = [
-  { id: 'restaurant', icon: FaUtensils, titleKey: 'concierge.restaurant', descKey: 'concierge.restaurant_desc', color: '#EF4444' },
-  { id: 'transfer', icon: FaCar, titleKey: 'concierge.transfer', descKey: 'concierge.transfer_desc', color: '#3B82F6' },
-  { id: 'spa', icon: FaSpa, titleKey: 'concierge.spa', descKey: 'concierge.spa_desc', color: '#8B5CF6' },
-  { id: 'valet', icon: FaConciergeBell, titleKey: 'concierge.valet', descKey: 'concierge.valet_desc', color: '#10B981' },
-  { id: 'wakeup', icon: FaMoon, titleKey: 'concierge.wakeup', descKey: 'concierge.wakeup_desc', color: '#F59E0B' },
-  { id: 'laundry', icon: FaTshirt, titleKey: 'concierge.laundry', descKey: 'concierge.laundry_desc', color: '#06B6D4' },
-  { id: 'gift', icon: FaGift, titleKey: 'concierge.gift', descKey: 'concierge.gift_desc', color: '#EC4899' },
-  { id: 'tour', icon: FaMountain, titleKey: 'concierge.tour', descKey: 'concierge.tour_desc', color: '#F97316' },
+  { id: 'restaurant', icon: 'https://img.icons8.com/3d-fluency/94/restaurant.png', titleKey: 'concierge.restaurant', descKey: 'concierge.restaurant_desc', color: '#EF4444' },
+  { id: 'transfer', icon: 'https://img.icons8.com/3d-fluency/94/car.png', titleKey: 'concierge.transfer', descKey: 'concierge.transfer_desc', color: '#3B82F6' },
+  { id: 'spa', icon: 'https://img.icons8.com/3d-fluency/94/spa.png', titleKey: 'concierge.spa', descKey: 'concierge.spa_desc', color: '#8B5CF6' },
+  { id: 'valet', icon: 'https://img.icons8.com/3d-fluency/188/bell-service.png', titleKey: 'concierge.valet', descKey: 'concierge.valet_desc', color: '#10B981' },
+  { id: 'wakeup', icon: 'https://img.icons8.com/3d-fluency/94/alarm-clock.png', titleKey: 'concierge.wakeup', descKey: 'concierge.wakeup_desc', color: '#F59E0B' },
+  { id: 'laundry', icon: 'https://img.icons8.com/3d-fluency/94/washing-machine.png', titleKey: 'concierge.laundry', descKey: 'concierge.laundry_desc', color: '#06B6D4' },
+  { id: 'gift', icon: 'https://img.icons8.com/3d-fluency/94/gift.png', titleKey: 'concierge.gift', descKey: 'concierge.gift_desc', color: '#EC4899' },
+  { id: 'tour', icon: 'https://img.icons8.com/3d-fluency/94/mountain.png', titleKey: 'concierge.tour', descKey: 'concierge.tour_desc', color: '#F97316' },
 ];
 
 export default function ConciergePage() {
@@ -139,7 +132,7 @@ export default function ConciergePage() {
                     className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110"
                     style={{ background: `${option.color}15` }}
                   >
-                    <Icon className="w-6 h-6 " style={{ color: option.color }} />
+                    <img src={option.icon} alt="" className="w-8 h-8 object-contain" />
                   </div>
 
                   <div className="text-left w-full">
