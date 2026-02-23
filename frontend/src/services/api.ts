@@ -146,10 +146,16 @@ export class ApiService {
       const data = await response.json();
       console.log('Created request:', data);
       return data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating request:', error);
-      // API hatasında mock'a düşme; resepsiyon gerçek API'den çektiği için istek orada görünmez.
-      // Hatayı çağırana ilet ki kullanıcıya "tekrar deneyin" veya hata mesajı gösterilebilsin.
+
+      // İnternet hatası mı kontrol et
+      if (typeof window !== 'undefined' && !navigator.onLine) {
+        console.log('Offline detected, queuing request');
+        ApiService.queueOfflineRequest('request', request);
+        throw new Error('OFFLINE_QUEUED');
+      }
+
       throw error;
     }
   }
@@ -834,6 +840,117 @@ export class ApiService {
   }
 
   // Local storage'dan oda isteklerini temizle
+  // Offline desteği için yeni metodlar
+  private static OFFLINE_QUEUE_KEY = 'roomxqr_offline_queue';
+
+  /**
+   * İnternet yokken başarısız olan isteği kuyruğa ekler
+   */
+  static queueOfflineRequest(type: 'order' | 'request', data: any): void {
+    if (typeof window === 'undefined') return;
+    try {
+      const queue = JSON.parse(localStorage.getItem(this.OFFLINE_QUEUE_KEY) || '[]');
+      queue.push({
+        id: `offline-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        type,
+        data,
+        timestamp: new Date().toISOString()
+      });
+      localStorage.setItem(this.OFFLINE_QUEUE_KEY, JSON.stringify(queue));
+      console.log(`Request queued offline: ${type}`, data);
+    } catch (error) {
+      console.error('Error queuing offline request:', error);
+    }
+  }
+
+  /**
+   * Kuyruktaki bekleyen istekleri alır
+   */
+  static getOfflineQueue(): any[] {
+    if (typeof window === 'undefined') return [];
+    try {
+      return JSON.parse(localStorage.getItem(this.OFFLINE_QUEUE_KEY) || '[]');
+    } catch (error) {
+      return [];
+    }
+  }
+
+  /**
+   * Kuyruktaki bekleyen istekleri backend'e gönderir
+   */
+  static async syncOfflineRequests(): Promise<{ successes: number; failures: number }> {
+    const queue = this.getOfflineQueue();
+    if (queue.length === 0) return { successes: 0, failures: 0 };
+
+    console.log(`Syncing ${queue.length} offline requests...`);
+
+    let successes = 0;
+    let failures = 0;
+    const remainingQueue = [];
+
+    for (const item of queue) {
+      try {
+        if (item.type === 'order') {
+          await this.createOrder(item.data);
+        } else {
+          // Re-adding deleted fields if necessary
+          await this.createGuestRequest(item.data);
+        }
+        successes++;
+        console.log(`Successfully synced offline ${item.type}:`, item.id);
+      } catch (error: any) {
+        // Eğer hala offline ise veya başka bir hata varsa kuyrukta tut
+        if (error.message === 'OFFLINE_QUEUED') {
+          remainingQueue.push(item);
+        } else {
+          console.error(`Failed to sync offline ${item.type}:`, error);
+          failures++;
+          // Kritik hatalarda da kuyrukta tutabiliriz veya silebiliriz. 
+          // Şimdilik tutmaya devam edelim ki veri kaybı olmasın.
+          remainingQueue.push(item);
+        }
+      }
+    }
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(this.OFFLINE_QUEUE_KEY, JSON.stringify(remainingQueue));
+    }
+
+    return { successes, failures };
+  }
+
+  /**
+   * Sipariş oluşturma (Oda Servisi)
+   */
+  static async createOrder(orderData: any): Promise<any> {
+    try {
+      const headers = this.getHeaders();
+      const response = await fetch(`${API_BASE_URL}/orders`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(orderData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Sipariş oluşturulamadı');
+      }
+
+      return await response.json();
+    } catch (error: any) {
+      console.error('Error creating order:', error);
+
+      // İnternet hatası mı kontrol et
+      if (typeof window !== 'undefined' && !navigator.onLine) {
+        console.log('Offline detected during order creation, queuing');
+        ApiService.queueOfflineRequest('order', orderData);
+        throw new Error('OFFLINE_QUEUED');
+      }
+
+      throw error;
+    }
+  }
+
   private static clearRoomRequestsFromLocalStorage(roomId: string): void {
     if (typeof window === 'undefined') return;
 

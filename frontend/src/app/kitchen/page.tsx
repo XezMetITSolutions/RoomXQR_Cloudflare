@@ -226,7 +226,18 @@ export default function KitchenPanel() {
 
     // Her 10 saniyede bir güncelle
     const interval = setInterval(loadOrders, 10000);
-    return () => clearInterval(interval);
+
+    // İnternet geri geldiğinde anında yenile
+    if (typeof window !== 'undefined') {
+      window.addEventListener('online', loadOrders);
+    }
+
+    return () => {
+      clearInterval(interval);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('online', loadOrders);
+      }
+    };
   }, []);
 
 

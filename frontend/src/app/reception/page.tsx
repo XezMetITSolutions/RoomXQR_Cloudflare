@@ -317,7 +317,14 @@ export default function ReceptionPanel() {
   useEffect(() => {
     loadData();
     const interval = setInterval(loadData, 5000); // 5 saniyede bir güncelle (yeni istekler için)
-    return () => clearInterval(interval);
+
+    // İnternet geri geldiğinde anında yenile
+    window.addEventListener('online', loadData);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('online', loadData);
+    };
   }, [loadData]);
 
   // Test için: Sayfa yüklendiğinde bir test bildirimi ekle (isteğe bağlı)

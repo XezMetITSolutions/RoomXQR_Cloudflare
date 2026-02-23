@@ -1050,6 +1050,7 @@ export default function QRMenuPage() {
             onPaymentSuccess={() => setOrderStatus('finalized')}
             onBack={() => setOrderStatus('idle')}
             getTranslation={getTranslation}
+            addNotification={addNotification}
           />
         )}
 
@@ -1390,7 +1391,7 @@ function CartModal({ items, note, setNote, onClose, onOrder, setCartQuantity, re
   );
 }
 
-function PaymentModal({ items, note, total, roomId, onPaymentSuccess, onBack, getTranslation }: {
+function PaymentModal({ items, note, total, roomId, onPaymentSuccess, onBack, getTranslation, addNotification }: {
   items: any[];
   note: string;
   total: number;
@@ -1398,6 +1399,7 @@ function PaymentModal({ items, note, total, roomId, onPaymentSuccess, onBack, ge
   onPaymentSuccess: () => void;
   onBack: () => void;
   getTranslation: (key: string) => string;
+  addNotification: (type: 'success' | 'info' | 'warning', title: string, message: string) => void;
 }) {
   const [selectedPayment, setSelectedPayment] = useState<'cash' | 'pos' | 'card' | 'room'>('cash');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -1436,35 +1438,35 @@ function PaymentModal({ items, note, total, roomId, onPaymentSuccess, onBack, ge
       const guestId = `guest-${roomId}`;
       const roomIdFormatted = `room-${roomId}`;
 
-      // Backend'e sipariş oluştur
-      const response = await fetch(`${API_BASE_URL}/api/orders`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-tenant': tenantSlug,
-        },
-        body: JSON.stringify({
-          roomId: roomIdFormatted,
-          guestId: guestId,
-          items: orderItems,
-          notes: note || undefined,
-          paymentMethod: selectedPayment === 'room' ? 'room_charge' : selectedPayment === 'pos' ? 'pos' : selectedPayment
-        }),
-      });
+      // Backend'e sipariş oluştur - CENTRALIZED API SERVICE
+      const orderData = {
+        roomId: roomIdFormatted,
+        guestId: guestId,
+        items: orderItems,
+        notes: note || undefined,
+        paymentMethod: selectedPayment === 'room' ? 'room_charge' : selectedPayment === 'pos' ? 'pos' : selectedPayment
+      };
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Sipariş oluşturulamadı');
+      try {
+        await ApiService.createOrder(orderData);
+        // Başarılı olduğunda callback'i çağır
+        onPaymentSuccess();
+      } catch (error: any) {
+        if (error.message === 'OFFLINE_QUEUED') {
+          // Offline modunda başarıymış gibi davran ama kullanıcıyı bilgilendir
+          onPaymentSuccess();
+          addNotification(
+            'warning',
+            'İnternet Yok',
+            'Şu anda internetsiz moddasınız. Siparişiniz cihazınıza kaydedildi ve internet geldiğinde otomatik olarak mutfağa iletilecek.'
+          );
+        } else {
+          console.error('Sipariş oluşturma hatası:', error);
+          alert(`Sipariş oluşturulamadı: ${error.message || 'Bilinmeyen hata'}`);
+        }
       }
-
-      const orderData = await response.json();
-      console.log('Sipariş oluşturuldu:', orderData);
-
-      // Başarılı olduğunda callback'i çağır
-      onPaymentSuccess();
     } catch (error: any) {
-      console.error('Sipariş oluşturma hatası:', error);
-      alert(`Sipariş oluşturulamadı: ${error.message || 'Bilinmeyen hata'}`);
+      console.error('Genel hata:', error);
     } finally {
       setIsSubmitting(false);
     }

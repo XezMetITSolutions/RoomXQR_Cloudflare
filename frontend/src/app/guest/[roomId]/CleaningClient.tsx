@@ -138,8 +138,23 @@ export default function CleaningClient({ roomId, initialLang }: CleaningClientPr
             setSelectedItemKey("");
             setAmount(1);
             setNote("");
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error sending request:', error);
+
+            if (error.message === 'OFFLINE_QUEUED') {
+                addNotification(
+                    'warning',
+                    safeGetTranslation('notifications.offline_title', 'İnternet Bağlantısı Yok'),
+                    safeGetTranslation('notifications.offline_message', 'Bağlantınız koptu ancak isteğiniz kaydedildi. İnternet geri geldiğinde otomatik olarak iletilecek.')
+                );
+                // Formu yine de sıfırla ki kullanıcı gönderildiğini bilsin
+                setSelectedItem("");
+                setSelectedItemKey("");
+                setAmount(1);
+                setNote("");
+                return;
+            }
+
             addNotification(
                 'warning',
                 safeGetTranslation('errors.error', 'Error'),

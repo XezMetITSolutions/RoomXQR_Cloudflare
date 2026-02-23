@@ -38,7 +38,19 @@ export default function ManagementOrdersPage() {
         setIsLoading(false);
       }
     };
+
     load();
+
+    // Periyodik yenileme (30 saniyede bir)
+    const interval = setInterval(load, 30000);
+
+    // İnternet geri geldiğinde anında yenile
+    window.addEventListener('online', load);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('online', load);
+    };
   }, [token, user]);
 
   const getStatusColor = (status: string) => {
