@@ -521,7 +521,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
             >
               <div className="w-full flex-1 flex items-center justify-center p-2">
                 <img
-                  src="https://img.icons8.com/3d-fluency/188/bell-service.png"
+                  src="/icons/concierge_3d.png"
                   alt="Concierge"
                   className="w-full h-full object-contain drop-shadow-2xl"
                 />
