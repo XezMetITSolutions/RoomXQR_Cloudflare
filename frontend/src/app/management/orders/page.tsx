@@ -97,7 +97,7 @@ export default function ManagementOrdersPage() {
                   <div className="flex items-center gap-3 flex-shrink-0">
                     <span className="text-sm font-medium text-gray-900">{amount}</span>
                     <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(status)}`}>
-                      {status}
+                      {getTranslation(`k_status_${status.toLowerCase()}`)}
                     </span>
                   </div>
                 </div>

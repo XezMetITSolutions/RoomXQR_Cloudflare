@@ -412,7 +412,7 @@ export default function AdminDashboard() {
                   <div className="flex items-center space-x-3">
                     <span className="text-sm font-medium text-gray-900">{order.amount}</span>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                      {order.status}
+                      {getTranslation(`k_status_${order.status.toLowerCase()}`)}
                     </span>
                   </div>
                 </div>
