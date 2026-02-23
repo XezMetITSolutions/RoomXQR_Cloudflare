@@ -559,7 +559,7 @@ export default function GuestInterfaceClient({ roomId, initialLang, guestName, g
             >
               <div className="w-full flex-1 flex items-center justify-center p-2">
                 <img
-                  src="/icons/2.png"
+                  src="/icons/services_3d.png"
                   alt="Special Requests"
                   className="w-full h-full object-contain drop-shadow-2xl"
                 />
