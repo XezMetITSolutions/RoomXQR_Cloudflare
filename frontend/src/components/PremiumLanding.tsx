@@ -660,7 +660,7 @@ export default function PremiumLanding() {
                 <div className="container mx-auto px-4 max-w-7xl">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 mb-16">
                         <div>
-                            <div className="text-4xl font-black tracking-tighter mb-8 bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">RestXQr</div>
+                            <img src="/logo.png" alt="RoomXQR Logo" className="h-16 w-auto mb-8 filter brightness-0 invert" />
                             <p className="text-xl text-slate-400 leading-relaxed font-medium max-w-md">{t('footerSlogan')}</p>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">

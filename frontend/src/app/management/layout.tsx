@@ -147,9 +147,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             {/* Mobile Header */}
             <div className="flex-shrink-0 flex items-center px-4 mb-6">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center shadow-sm">
-                  <Hotel className="h-6 w-6 text-white" />
-                </div>
+                <img src="/logo.png" alt="RoomXQR Logo" className="h-10 w-auto" />
                 <div>
                   <h1 className="text-xl font-bold text-gray-900">{getTranslation('sidebar.business_panel')}</h1>
                   <p className="text-sm text-gray-500">{getTranslation('sidebar.management_system')}</p>
@@ -215,9 +213,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
               {!sidebarCollapsed && (
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center shadow-sm">
-                    <Hotel className="h-5 w-5 text-white" />
-                  </div>
+                  <img src="/logo.png" alt="RoomXQR Logo" className="h-10 w-auto" />
                   <div>
                     <h1 className="text-lg font-bold text-gray-900">{getTranslation('sidebar.business_panel')}</h1>
                     <p className="text-xs text-gray-500">{getTranslation('sidebar.management_system')}</p>
@@ -226,9 +222,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               )}
               {sidebarCollapsed && (
                 <div className="w-full flex justify-center">
-                  <div className="w-8 h-8 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center shadow-sm">
-                    <Hotel className="h-5 w-5 text-white" />
-                  </div>
+                  <img src="/favicon.png" alt="RoomXQR Icon" className="h-8 w-8" />
                 </div>
               )}
               <button
@@ -328,9 +322,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <ChevronRight className="h-6 w-6" />
             </button>
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center shadow-sm">
-                <Hotel className="h-5 w-5 text-white" />
-              </div>
+              <img src="/logo.png" alt="RoomXQR Logo" className="h-8 w-auto" />
               <span className="text-lg font-bold text-gray-900">{getTranslation('sidebar.business_panel')}</span>
             </div>
           </div>
