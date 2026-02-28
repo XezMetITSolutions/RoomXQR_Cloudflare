@@ -660,6 +660,95 @@ export default function PremiumLanding() {
                 </div>
             </section>
 
+            {/* Blog Section */}
+            <section className="py-24 bg-slate-50 relative overflow-hidden">
+                <div className="container mx-auto px-4 max-w-7xl">
+                    <div className="text-center mb-16">
+                        <motion.span
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            className="text-blue-600 font-extrabold tracking-widest text-xs uppercase block mb-3"
+                        >
+                            {t('blogSectionBadge')}
+                        </motion.span>
+                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">
+                            {t('blogSectionTitle')}
+                        </h2>
+                        <div className="h-1.5 w-20 bg-blue-600 mx-auto rounded-full"></div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {[
+                            {
+                                id: 1,
+                                title: t('blogPost1Title'),
+                                desc: t('blogPost1Desc'),
+                                category: t('blogCategoryTrends'),
+                                image: "/images/blog/blog1.png",
+                                date: "Mar 2026",
+                                color: "text-blue-600"
+                            },
+                            {
+                                id: 2,
+                                title: t('blogPost2Title'),
+                                desc: t('blogPost2Desc'),
+                                category: t('blogCategoryTrends'),
+                                image: "/images/blog/blog2.png",
+                                date: "Feb 2026",
+                                color: "text-purple-600"
+                            },
+                            {
+                                id: 3,
+                                title: t('blogPost3Title'),
+                                desc: t('blogPost3Desc'),
+                                category: t('blogCategoryTech'),
+                                image: "/images/blog/blog3.png",
+                                date: "Jan 2026",
+                                color: "text-emerald-600"
+                            }
+                        ].map((post, i) => (
+                            <motion.div
+                                key={post.id}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.1 }}
+                                viewport={{ once: true }}
+                                className="group bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-lg hover:shadow-2xl transition-all h-full flex flex-col"
+                            >
+                                <div className="h-64 overflow-hidden relative">
+                                    <img
+                                        src={post.image}
+                                        alt={post.title}
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                    />
+                                    <div className="absolute top-6 left-6">
+                                        <span className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl text-xs font-black text-slate-900 border border-white/20 shadow-lg">
+                                            {post.category}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="p-8 md:p-10 flex-grow flex flex-col">
+                                    <div className="flex items-center gap-2 mb-4 text-slate-400 font-bold text-xs uppercase tracking-widest">
+                                        <FaClock className="text-blue-500" /> {post.date}
+                                    </div>
+                                    <h3 className="text-xl md:text-2xl font-black text-slate-900 mb-4 leading-tight group-hover:text-blue-600 transition-colors">
+                                        {post.title}
+                                    </h3>
+                                    <p className="text-slate-500 font-medium text-base leading-relaxed mb-10 line-clamp-3">
+                                        {post.desc}
+                                    </p>
+                                    <div className="mt-auto">
+                                        <button className="flex items-center gap-3 font-black text-sm text-slate-900 group-hover:gap-5 transition-all">
+                                            {t('blogReadMore')} <FaArrowRight className="text-blue-500" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
             {/* FAQ */}
             <section className="py-24 bg-white px-4">
                 <div className="container mx-auto max-w-4xl">
@@ -716,7 +805,7 @@ export default function PremiumLanding() {
 
             {/* Floating WhatsApp Action */}
             <div className="fixed bottom-8 right-8 z-[100]">
-                <a href="https://wa.me/436608682201" target="_blank" className="w-16 h-16 bg-emerald-500 text-white rounded-full flex items-center justify-center text-3xl shadow-2xl hover:scale-110 transition-all"><FaWhatsapp /></a>
+                <a href="https://wa.me/436608682201" target="_blank" className="w-16 h-16 bg-emerald-500 text-white rounded-full flex items-center justify-center text-3xl shadow-2xl hover:scale-110 transition-all" aria-label="WhatsApp üzerinden bizimle iletişime geçin"><FaWhatsapp /></a>
             </div>
 
             <DemoRequestModal isOpen={showDemoModal} onClose={() => setShowDemoModal(false)} />
