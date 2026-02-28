@@ -10,11 +10,12 @@ import {
     FaArrowRight, FaCogs, FaCreditCard, FaLayerGroup, FaWhatsapp
 } from 'react-icons/fa';
 import { useLanguageStore } from '@/store/languageStore';
-import LandingLanguageToggle from '@/components/LandingLanguageToggle';
+
 import DemoRequestModal from '@/components/DemoRequestModal';
 
 export default function PremiumLanding() {
     const { getTranslation: t, currentLanguage } = useLanguageStore();
+
 
     useEffect(() => {
         const title = t('metaTitle');
@@ -52,7 +53,7 @@ export default function PremiumLanding() {
 
     return (
         <main className="min-h-screen bg-slate-50 relative overflow-hidden font-sans selection:bg-purple-100 selection:text-purple-900">
-            <LandingLanguageToggle />
+
 
             {/* Hero Section */}
             <section className="relative min-h-[90vh] md:min-h-screen flex items-center justify-center bg-[#0B0F1A] text-white overflow-hidden pt-12 md:pt-20">
@@ -82,9 +83,7 @@ export default function PremiumLanding() {
                         transition={{ delay: 0.2 }}
                         className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black mb-6 md:mb-8 leading-[1.1] tracking-tight"
                     >
-                        <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">{t('heroTitle1')}</span>
-                        <br /><span className="text-white">{t('heroTitle2')}</span>
-                        <br /><span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">{t('heroTitle3')}</span>
+                        <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">{t('newIntroTitle')}</span>
                     </motion.h1>
 
                     <motion.p
@@ -92,11 +91,9 @@ export default function PremiumLanding() {
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true, margin: "-50px" }}
                         transition={{ delay: 0.4 }}
-                        className="text-base md:text-xl mb-10 md:mb-12 text-slate-300 leading-relaxed max-w-3xl mx-auto font-medium px-4"
+                        className="text-base md:text-xl mb-10 md:mb-12 text-slate-300 leading-relaxed max-w-4xl mx-auto font-medium px-4"
                     >
-                        🚀 <span className="text-white font-bold">{t('heroSubtitle1')}</span>
-                        <br className="hidden md:block" />
-                        <span className="text-slate-400 text-sm md:text-lg">{t('heroSubtitle2')}</span>
+                        {t('newIntroDesc')}
                     </motion.p>
 
                     <motion.div
@@ -264,67 +261,104 @@ export default function PremiumLanding() {
                 </div>
             </section>
 
-            {/* Marketing Grid */}
-            <section className="py-16 md:py-24 bg-white">
-                <div className="container mx-auto px-4">
+            {/* Misafir & İşletme Deneyimi */}
+            <section className="py-24 bg-white relative overflow-hidden">
+                <div className="container mx-auto px-4 max-w-7xl">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        {/* Misafir Tarafı */}
+                        <motion.div
+                            initial={{ opacity: 0, x: -50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            className="bg-slate-50 rounded-[3rem] p-8 md:p-12 border border-slate-100 shadow-xl"
+                        >
+                            <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-3xl mb-8 shadow-lg">
+                                <FaUsers />
+                            </div>
+                            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-6 leading-tight">
+                                {t('guestExperienceTitle')}
+                            </h2>
+                            <p className="text-lg text-slate-600 font-bold mb-8 italic">
+                                {t('guestExperienceSubtitle')}
+                            </p>
+                            <div className="space-y-6">
+                                {[
+                                    { icon: FaShoppingCart, text: t('guestExp1'), color: "text-blue-500" },
+                                    { icon: FaLayerGroup, text: t('guestExp2'), color: "text-purple-500" },
+                                    { icon: FaBell, text: t('guestExp3'), color: "text-orange-500" }
+                                ].map((item, i) => (
+                                    <div key={i} className="flex gap-4 items-start bg-white p-6 rounded-2xl border border-slate-100 shadow-sm transition-all hover:scale-[1.02]">
+                                        <item.icon className={`${item.color} text-2xl mt-1 shrink-0`} />
+                                        <p className="text-slate-700 font-medium text-lg leading-relaxed">{item.text}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </motion.div>
+
+                        {/* İşletme Tarafı */}
+                        <motion.div
+                            initial={{ opacity: 0, x: 50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            className="bg-[#0B0F1A] rounded-[3rem] p-8 md:p-12 text-white border border-white/5 shadow-2xl relative overflow-hidden"
+                        >
+                            <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-blue-600/10 blur-[100px] rounded-full"></div>
+                            <div className="relative z-10">
+                                <div className="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center text-white text-3xl mb-8 shadow-lg shadow-emerald-500/20">
+                                    <FaChartLine />
+                                </div>
+                                <h2 className="text-3xl md:text-4xl font-black mb-6 leading-tight">
+                                    {t('businessBenefitsTitle')}
+                                </h2>
+                                <p className="text-lg text-slate-400 font-bold mb-8 italic">
+                                    {t('businessBenefitsDesc')}
+                                </p>
+                                <div className="space-y-6">
+                                    {[
+                                        { icon: FaRocket, text: t('businessBenefit1'), color: "text-emerald-400" },
+                                        { icon: FaStar, text: t('businessBenefit2'), color: "text-blue-400" },
+                                        { icon: FaCheckCircle, text: t('businessBenefit3'), color: "text-cyan-400" }
+                                    ].map((item, i) => (
+                                        <div key={i} className="flex gap-4 items-start bg-white/5 p-6 rounded-2xl border border-white/5 backdrop-blur-sm transition-all hover:scale-[1.02]">
+                                            <item.icon className={`${item.color} text-2xl mt-1 shrink-0`} />
+                                            <p className="text-slate-200 font-medium text-lg leading-relaxed">{item.text}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Karşılaştırma Tablosu */}
+            <section className="py-24 bg-slate-50 overflow-hidden">
+                <div className="container mx-auto px-4 max-w-6xl">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
-                            {t('marketingSectionTitle')}
-                        </h2>
+                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">RoomXQR'ın Farkı</h2>
                         <div className="h-1.5 w-20 bg-blue-600 mx-auto rounded-full"></div>
                     </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {[
-                            { icon: FaUtensils, title: t('kitchenStatTitle'), desc: t('kitchenStatDesc'), color: "blue", badge: "Advanced" },
-                            { icon: FaCreditCard, title: t('splitPaymentTitle'), desc: t('splitPaymentDesc'), color: "emerald", badge: "Exclusive" },
-                            { icon: FaStar, title: t('socialGrowthTitle'), desc: t('socialGrowthDesc'), color: "orange", badge: "Growth" },
-                            { icon: FaLayerGroup, title: t('multiBranchTitle'), desc: t('multiBranchDesc'), color: "purple", badge: "Enterprise" },
-                            { icon: FaMagic, title: t('aiTitle'), desc: t('aiDesc'), color: "pink", badge: "AI Powered" }
-                        ].map((feature, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ delay: i * 0.05, duration: 0.4 }}
-                                viewport={{ once: true, margin: "-50px" }}
-                                className="group relative bg-white p-6 md:p-8 rounded-[2.5rem] shadow-lg hover:shadow-xl transition-all border border-slate-50 flex flex-col h-full"
-                            >
-                                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 
-                                    ${feature.color === 'blue' ? 'bg-blue-50 text-blue-600' :
-                                        feature.color === 'emerald' ? 'bg-emerald-50 text-emerald-600' :
-                                            feature.color === 'purple' ? 'bg-purple-50 text-purple-600' : 'bg-pink-50 text-pink-600'
-                                    } transition-transform group-hover:scale-110 shadow-sm`}>
-                                    <feature.icon className="text-2xl" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-4">
+                            <h3 className="text-2xl font-black text-blue-600 mb-6 flex items-center gap-3">
+                                <FaUsers /> {t('whyGuestTitle')}
+                            </h3>
+                            {[t('whyGuest1'), t('whyGuest2'), t('whyGuest3')].map((item, i) => (
+                                <div key={i} className="flex items-center gap-3 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm font-bold text-slate-700">
+                                    <FaCheckCircle className="text-emerald-500" /> {item}
                                 </div>
-                                <div className="mb-4">
-                                    <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full 
-                                        ${feature.color === 'blue' ? 'bg-blue-100 text-blue-700' :
-                                            feature.color === 'emerald' ? 'bg-emerald-100 text-emerald-700' :
-                                                feature.color === 'purple' ? 'bg-purple-100 text-purple-700' : 'bg-pink-100 text-pink-700'
-                                        }`}>
-                                        {feature.badge}
-                                    </span>
+                            ))}
+                        </div>
+                        <div className="space-y-4">
+                            <h3 className="text-2xl font-black text-emerald-600 mb-6 flex items-center gap-3">
+                                <FaCogs /> {t('whyBusinessTitle')}
+                            </h3>
+                            {[t('whyBusiness1'), t('whyBusiness2'), t('whyBusiness3')].map((item, i) => (
+                                <div key={i} className="flex items-center gap-3 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm font-bold text-slate-700">
+                                    <FaCheckCircle className="text-blue-500" /> {item}
                                 </div>
-                                <h3 className={`text-lg md:text-xl font-black mb-4 tracking-tight leading-tight 
-                                    ${feature.color === 'blue' ? 'text-blue-600' :
-                                        feature.color === 'emerald' ? 'text-emerald-600' :
-                                            feature.color === 'purple' ? 'text-purple-600' : 'text-pink-600'
-                                    }`}>
-                                    {feature.title}
-                                </h3>
-                                <p className="text-slate-500 font-medium text-sm md:text-base leading-relaxed mb-8 flex-grow">
-                                    {feature.desc}
-                                </p>
-                                <button className="flex items-center gap-2 font-black text-xs md:text-sm text-slate-800 group-hover:gap-4 transition-all uppercase tracking-widest">
-                                    {t('learnMore')} <FaArrowRight className={`
-                                        ${feature.color === 'blue' ? 'text-blue-500' :
-                                            feature.color === 'emerald' ? 'text-emerald-500' :
-                                                feature.color === 'purple' ? 'text-purple-500' : 'text-pink-500'
-                                        }`} />
-                                </button>
-                            </motion.div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </div>
             </section>
@@ -475,7 +509,9 @@ export default function PremiumLanding() {
                             <span className="text-blue-200 font-black tracking-[0.3em] text-[10px] md:text-xs uppercase block mb-6">{t('noChangeTitle')}</span>
                             <h2 className="text-3xl md:text-6xl font-black mb-6 md:mb-8 leading-tight">{t('noChangeSubtitle')}</h2>
                             <p className="text-lg md:text-2xl text-blue-100/80 mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed">{t('noChangeDesc')}</p>
-                            <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl text-lg md:text-xl font-black italic"><FaRocket className="text-emerald-400" /> "{t('noChangeFooter')}"</div>
+                            <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl text-lg md:text-xl font-black shadow-2xl">
+                                <FaRocket className="text-emerald-400" /> {t('finalSlogan')}
+                            </div>
                         </motion.div>
                     </div>
                 </div>
