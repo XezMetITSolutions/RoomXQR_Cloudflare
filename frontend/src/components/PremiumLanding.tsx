@@ -6,8 +6,8 @@ import {
     FaQrcode, FaUtensils, FaShoppingCart, FaBell, FaMagic,
     FaChartLine, FaUsers, FaClock, FaCheckCircle, FaRocket,
     FaShieldAlt, FaStar, FaPhone, FaChevronDown,
-    FaBrain, FaGlobe, FaDesktop,
-    FaArrowRight, FaCogs, FaCreditCard, FaLayerGroup, FaWhatsapp
+    FaBrain, FaGlobe, FaDesktop, FaLaptop, FaPrint, FaCreditCard as FaCreditCardIcon,
+    FaArrowRight, FaCogs, FaCreditCard, FaLayerGroup, FaWhatsapp, FaEnvelope, FaTimes
 } from 'react-icons/fa';
 import { useLanguageStore } from '@/store/languageStore';
 
@@ -28,10 +28,54 @@ export default function PremiumLanding() {
 
     const [openFAQ, setOpenFAQ] = useState<number | null>(null);
     const [showDemoModal, setShowDemoModal] = useState(false);
+    const [activeBlogPost, setActiveBlogPost] = useState<number | null>(null);
 
     const toggleFAQ = (index: number) => {
         setOpenFAQ(openFAQ === index ? null : index);
     };
+
+    const blogPostsContent = [
+        {
+            id: 1,
+            title: 'QR Menülerin Otel Gelirlerine Etkisi: %40 Artış Mümkün mü?',
+            date: 'Mart 2026',
+            category: 'Trendler',
+            content: `<p class="mb-4">Otelcilik sektöründe dijital dönüşüm artık bir tercih değil, zorunluluk haline gelmiştir. QR kod tabanlı menü ve sipariş sistemleri, yalnızca misafir deneyimini iyileştirmekle kalmayıp otel gelirlerini doğrudan etkileyen stratejik bir araç olarak öne çıkmaktadır.</p>
+<h3 class="text-xl font-bold mb-3 mt-6">Restoran ve Bar Gelirlerinde Artış</h3>
+<p class="mb-4">Fiziksel menülerde misafirler ortalama 3-4 dakika inceleme yaparak sipariş verir. Dijital QR menülerde ise etkileşim süresi %70 artmakta, önerilen ürünlere yönelik tıklama oranı %45'e ulaşmaktadır. Bu da doğrudan ek satış (upsell) fırsatı anlamına gelir.</p>
+<h3 class="text-xl font-bold mb-3 mt-6">Oda Servisi Kullanımı</h3>
+<p class="mb-4">Araştırmalar, QR kod bazlı oda servisi siparişlerinin fiziksel menüye kıyasla %30-40 daha fazla sipariş oluşturduğunu göstermektedir. Çünkü misafirler, süreci pratik buldukları için daha sık sipariş vermektedir.</p>
+<h3 class="text-xl font-bold mb-3 mt-6">Gerçek Veriler</h3>
+<p class="mb-4">RoomXQR kullanan otellerde ilk 3 ay içinde ortalama %37 ek hizmet geliri artışı gözlemlenmiştir. Bu artış; oda servisi, restoran rezervasyonu ve otel içi hizmet satışlarının toplamından kaynaklanmaktadır.</p>
+<p class="mb-4">%40 artış hedefi yalnızca teorik bir rakam değildir — doğru konumlandırma, QR erişim kolaylığı ve anlık güncelleme yeteneğiyle birleştiğinde son derece ulaşılabilir bir hedeftir.</p>`
+        },
+        {
+            id: 2,
+            title: 'Temassız Misafir Deneyimi: Yeni Nesil Otelcilikte Standartlar',
+            date: 'Şubat 2026',
+            category: 'Trendler',
+            content: `<p class="mb-4">Pandemi sonrası dünyada misafirler artık fiziksel temastan kaçınmak için değil, pratiklik ve hız için temassız hizmetleri tercih etmektedir. Bu değişim, otelcilik sektöründe kalıcı bir paradigma dönüşümüne yol açmıştır.</p>
+<h3 class="text-xl font-bold mb-3 mt-6">Neden Temassız?</h3>
+<p class="mb-4">Skift Research'ün 2025 verilerine göre, 5 yıldızlı otel misafirlerinin %68'i dijital self-servis seçeneklerini resepsiyon desteğine tercih etmektedir. Bu oran, lüks segmentte her geçen yıl artmaktadır.</p>
+<h3 class="text-xl font-bold mb-3 mt-6">QR ile Temassız Deneyim</h3>
+<p class="mb-4">Odaya yerleştirilen tek bir QR kod; menü erişimi, servis talebi, concierge hizmetleri ve anlık bildirimler için tek giriş noktası işlevi görür. Misafir, uygulama indirmek zorunda kalmadan tüm bu hizmetlere tarayıcıdan anında ulaşır.</p>
+<h3 class="text-xl font-bold mb-3 mt-6">Operasyonel Kazanımlar</h3>
+<p class="mb-4">Temassız sistemlere geçen otellerde resepsiyon telefon trafiği ortalama %50 azalmaktadır. Bu, personelin daha değerli misafir deneyimi faaliyetlerine odaklanmasını sağlar ve operasyonel verimliliği önemli ölçüde artırır.</p>`
+        },
+        {
+            id: 3,
+            title: 'AI Destekli Otel Yönetimi: Personel Yükünü Hafifletin',
+            date: 'Ocak 2026',
+            category: 'Teknoloji',
+            content: `<p class="mb-4">Yapay zeka, otel yönetiminin her katmanına entegre olmaya başlamıştır. Rezervasyon yönetiminden misafir iletişimine, menü optimizasyonundan talep yönlendirmeye kadar AI tabanlı araçlar operasyonel maliyetleri önemli ölçüde düşürmektedir.</p>
+<h3 class="text-xl font-bold mb-3 mt-6">Akıllı Talep Yönlendirme</h3>
+<p class="mb-4">AI destekli sistemler, gelen misafir taleplerini kategorize ederek ilgili departmana (Teknik Servis, Kat Hizmetleri, Mutfak) otomatik olarak iletir. Bu, yanıt sürelerini %60 kısaltmakta ve hata payını minimuma indirmektedir.</p>
+<h3 class="text-xl font-bold mb-3 mt-6">Çok Dilli İletişim</h3>
+<p class="mb-4">AI tabanlı çeviri sistemleri, misafirlerin tarayıcı diline göre içerikleri otomatik olarak yerelleştirir. 9 dil desteğiyle otel personelinin dil bariyerleri olmaksızın küresel misafirlerle sorunsuz iletişim kurması sağlanır.</p>
+<h3 class="text-xl font-bold mb-3 mt-6">Maliyet Avantajı</h3>
+<p class="mb-4">Dünya Turizm Örgütü'nün 2025 raporuna göre, AI destekli otel yönetim sistemleri kullanan işletmelerde personel başına işlem hacmi %40 artarken, müşteri memnuniyeti ortalaması 0.8 puan yükselmektedir. Bu kombinasyon, hem operasyonel hem finansal sürdürülebilirliği güçlendirmektedir.</p>`
+        }
+    ];
 
     const faqs = [
         { icon: FaQrcode, color: "orange-500", question: t('faq1Q'), answer: t('faq1A') },
@@ -517,6 +561,40 @@ export default function PremiumLanding() {
                 </div>
             </section>
 
+            {/* Hardware Section */}
+            <section className="py-16 md:py-20 bg-blue-50 overflow-hidden">
+                <div className="container mx-auto px-4 max-w-5xl">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-50px" }}
+                        className="text-center mb-10"
+                    >
+                        <p className="text-blue-700 font-black text-lg md:text-xl mb-6">
+                            Donanım ihtiyacınız mı var? İhtiyaç duyduğunuzda tam paket sunuyoruz.
+                        </p>
+                        <div className="flex flex-wrap justify-center gap-4">
+                            {[
+                                { icon: FaLaptop, label: 'POS Bilgisayarları' },
+                                { icon: FaPrint, label: 'Adisyon & Fiş Yazıcıları' },
+                                { icon: FaCreditCardIcon, label: 'Ödeme Cihazları' }
+                            ].map((item, i) => (
+                                <motion.button
+                                    key={i}
+                                    onClick={() => setShowDemoModal(true)}
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.97 }}
+                                    className="flex items-center gap-3 px-6 py-3.5 bg-white border-2 border-blue-200 hover:border-blue-500 hover:bg-blue-600 hover:text-white text-blue-900 font-black rounded-2xl shadow-sm transition-all text-sm md:text-base"
+                                >
+                                    <item.icon className="text-lg" />
+                                    {item.label}
+                                </motion.button>
+                            ))}
+                        </div>
+                    </motion.div>
+                </div>
+            </section>
+
             {/* Pricing Section */}
             <section className="py-24 bg-white overflow-hidden">
                 <div className="container mx-auto px-4 max-w-7xl">
@@ -537,7 +615,7 @@ export default function PremiumLanding() {
                             🚀 {t('devTeamPromise')}
                         </p>
                         <p className="text-sm font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 w-fit mx-auto px-6 py-2 rounded-full border border-emerald-100 shadow-sm">
-                            {t('annualGift')}
+                            1 YILLIK ALIMLARDA 1 AY HEDİYE
                         </p>
                     </div>
 
@@ -738,7 +816,10 @@ export default function PremiumLanding() {
                                         {post.desc}
                                     </p>
                                     <div className="mt-auto">
-                                        <button className="flex items-center gap-3 font-black text-sm text-slate-900 group-hover:gap-5 transition-all">
+                                        <button
+                                            onClick={() => setActiveBlogPost(post.id)}
+                                            className="flex items-center gap-3 font-black text-sm text-slate-900 group-hover:gap-5 transition-all hover:text-blue-600"
+                                        >
                                             {t('blogReadMore')} <FaArrowRight className="text-blue-500" />
                                         </button>
                                     </div>
@@ -779,26 +860,94 @@ export default function PremiumLanding() {
                 </div>
             </section>
 
+            {/* Blog Post Modal */}
+            <AnimatePresence>
+                {activeBlogPost !== null && (() => {
+                    const post = blogPostsContent.find(p => p.id === activeBlogPost);
+                    if (!post) return null;
+                    return (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+                            onClick={() => setActiveBlogPost(null)}
+                        >
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                                className="bg-white rounded-[2rem] max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl"
+                                onClick={e => e.stopPropagation()}
+                            >
+                                <div className="p-8 md:p-12">
+                                    <div className="flex items-start justify-between mb-6">
+                                        <div>
+                                            <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-black uppercase tracking-widest">{post.category}</span>
+                                            <p className="text-slate-400 text-sm font-bold mt-2 flex items-center gap-2">
+                                                <FaClock className="text-blue-400" /> {post.date}
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={() => setActiveBlogPost(null)}
+                                            className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-all"
+                                        >
+                                            <FaTimes />
+                                        </button>
+                                    </div>
+                                    <h2 className="text-2xl md:text-3xl font-black text-slate-900 mb-6 leading-tight">{post.title}</h2>
+                                    <div
+                                        className="text-slate-600 leading-relaxed font-medium text-base"
+                                        dangerouslySetInnerHTML={{ __html: post.content }}
+                                    />
+                                    <div className="mt-8 pt-6 border-t border-slate-100">
+                                        <button
+                                            onClick={() => { setActiveBlogPost(null); setShowDemoModal(true); }}
+                                            className="w-full py-4 bg-blue-600 text-white font-black rounded-2xl hover:bg-blue-700 transition-all text-sm uppercase tracking-widest"
+                                        >
+                                            Ücretsiz Demo Al
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    );
+                })()}
+            </AnimatePresence>
+
             {/* Footer */}
             <footer className="bg-slate-950 text-white pt-24 pb-12 relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600"></div>
                 <div className="container mx-auto px-4 max-w-7xl">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 mb-16">
-                        <div>
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 mb-16">
+                        <div className="lg:col-span-2">
                             <img src="/logo.png" alt="RoomXQR Logo" className="h-16 w-auto mb-8 filter brightness-0 invert" />
-                            <p className="text-xl text-slate-400 leading-relaxed font-medium max-w-md">{t('footerSlogan')}</p>
+                            <p className="text-lg text-slate-400 leading-relaxed font-medium max-w-md">{t('footerSlogan')}</p>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
-                            <div>
-                                <h4 className="text-[10px] font-black text-slate-500 mb-8 uppercase tracking-[0.3em]">{t('contactUs')}</h4>
-                                <div className="space-y-4">
-                                    <a href="tel:+436608682201" className="flex items-center gap-4 text-slate-300 hover:text-white transition-all font-bold">
-                                        <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-emerald-400"><FaPhone /></div>
-                                        +43 660 868 22 01
-                                    </a>
-                                </div>
+                        <div>
+                            <h4 className="text-[10px] font-black text-slate-500 mb-6 uppercase tracking-[0.3em]">{t('contactUs')}</h4>
+                            <div className="space-y-4">
+                                <a href="tel:+436608682201" className="flex items-center gap-4 text-slate-300 hover:text-white transition-all font-bold">
+                                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-emerald-400"><FaPhone /></div>
+                                    +43 660 868 22 01
+                                </a>
+                                <a href="mailto:info@roomxqr.com" className="flex items-center gap-4 text-slate-300 hover:text-white transition-all font-bold">
+                                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-blue-400"><FaEnvelope /></div>
+                                    info@roomxqr.com
+                                </a>
                             </div>
                         </div>
+                        <div>
+                            <h4 className="text-[10px] font-black text-slate-500 mb-6 uppercase tracking-[0.3em]">YASAL</h4>
+                            <div className="space-y-3">
+                                <a href="/gizlilik-politikasi" className="block text-slate-400 hover:text-white transition-all font-bold text-sm">Gizlilik Politikası</a>
+                                <a href="/kullanim-kosullari" className="block text-slate-400 hover:text-white transition-all font-bold text-sm">Kullanım Koşulları</a>
+                                <a href="/yasal-bilgiler" className="block text-slate-400 hover:text-white transition-all font-bold text-sm">Yasal Bilgiler</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="border-t border-white/5 pt-8 text-center text-slate-600 text-sm font-bold">
+                        © {new Date().getFullYear()} RoomXQR. Tüm hakları saklıdır.
                     </div>
                 </div>
             </footer>
