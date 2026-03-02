@@ -104,10 +104,10 @@ export default function PremiumLanding() {
 
 
             {/* Hero Section */}
-            <section className="relative min-h-[85vh] flex items-center pt-24 pb-16 overflow-hidden bg-slate-950 text-white">
-                <div className="absolute inset-0 z-0 opacity-40">
-                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/20 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-600/20 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
+            <section className="relative min-h-[85vh] flex items-center pt-24 pb-16 overflow-hidden bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 text-slate-900">
+                <div className="absolute inset-0 z-0 opacity-30">
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-400/20 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-400/20 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
                 </div>
 
                 <div className="container mx-auto px-4 relative z-10">
@@ -118,10 +118,10 @@ export default function PremiumLanding() {
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.4 }}
-                                className="inline-flex items-center px-5 py-2.5 bg-white/5 backdrop-blur-2xl rounded-full border border-white/10 mb-8 shadow-2xl"
+                                className="inline-flex items-center px-5 py-2.5 bg-blue-600/10 backdrop-blur-2xl rounded-full border border-blue-600/20 mb-8 shadow-lg"
                             >
-                                <FaStar className="text-yellow-400 mr-2 text-sm animate-pulse" />
-                                <span className="text-xs font-black tracking-widest uppercase bg-gradient-to-r from-yellow-200 to-orange-300 bg-clip-text text-transparent">
+                                <FaStar className="text-yellow-500 mr-2 text-sm animate-pulse" />
+                                <span className="text-xs font-black tracking-widest uppercase text-blue-700">
                                     {t('heroBadge')}
                                 </span>
                             </motion.div>
@@ -132,7 +132,7 @@ export default function PremiumLanding() {
                                 transition={{ delay: 0.2 }}
                                 className="text-2xl md:text-4xl lg:text-5xl font-black mb-4 leading-tight tracking-tight"
                             >
-                                <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                                <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
                                     {t('newIntroTitle')}
                                 </span>
                             </motion.h1>
@@ -141,7 +141,7 @@ export default function PremiumLanding() {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.4 }}
-                                className="text-lg md:text-xl mb-10 text-slate-300 leading-relaxed max-w-2xl font-medium"
+                                className="text-lg md:text-xl mb-10 text-slate-700 leading-relaxed max-w-2xl font-medium"
                             >
                                 {t('newIntroDesc')}
                             </motion.p>
@@ -154,16 +154,16 @@ export default function PremiumLanding() {
                             >
                                 <button
                                     onClick={() => setShowDemoModal(true)}
-                                    className="px-12 py-5 bg-blue-600 rounded-2xl font-black text-xl transition-all hover:scale-105 active:scale-95 shadow-[0_20px_40px_rgba(37,99,235,0.3)] flex items-center justify-center gap-4 text-center"
+                                    className="px-12 py-5 bg-blue-600 text-white rounded-2xl font-black text-xl transition-all hover:scale-105 active:scale-95 shadow-[0_20px_40px_rgba(37,99,235,0.3)] flex items-center justify-center gap-4 text-center"
                                 >
                                     <FaUsers className="text-2xl" /> {t('requestDemo')}
                                 </button>
                                 <a
                                     href="https://wa.me/436608682201"
                                     target="_blank"
-                                    className="px-12 py-5 bg-white/5 hover:bg-white/10 border border-white/20 backdrop-blur-md rounded-2xl font-black text-xl transition-all hover:scale-105 active:scale-95 text-white flex items-center justify-center gap-4 text-center"
+                                    className="px-12 py-5 bg-white hover:bg-slate-50 border-2 border-blue-600 backdrop-blur-md rounded-2xl font-black text-xl transition-all hover:scale-105 active:scale-95 text-blue-600 flex items-center justify-center gap-4 text-center"
                                 >
-                                    <FaRocket className="text-2xl text-emerald-400" /> {t('startNow')}
+                                    <FaRocket className="text-2xl text-emerald-500" /> {t('startNow')}
                                 </a>
                             </motion.div>
                         </div>
@@ -175,17 +175,17 @@ export default function PremiumLanding() {
                             transition={{ duration: 0.8, delay: 0.3 }}
                             className="lg:w-1/2 relative"
                         >
-                            <div className="relative z-10 rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl">
+                            <div className="relative z-10 rounded-[3rem] overflow-hidden border border-slate-200 shadow-2xl">
                                 <img
                                     src="/images/hero.png"
                                     alt="RoomXQR Guest Experience"
                                     className="w-full h-auto object-cover"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F1A]/60 to-transparent"></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent"></div>
                             </div>
                             {/* Decorative Elements */}
-                            <div className="absolute -top-10 -right-10 w-64 h-64 bg-blue-600/30 blur-[100px] rounded-full -z-10"></div>
-                            <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-emerald-600/20 blur-[100px] rounded-full -z-10"></div>
+                            <div className="absolute -top-10 -right-10 w-64 h-64 bg-blue-500/20 blur-[100px] rounded-full -z-10"></div>
+                            <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-indigo-500/20 blur-[100px] rounded-full -z-10"></div>
                         </motion.div>
                     </div>
                 </div>
@@ -304,6 +304,24 @@ export default function PremiumLanding() {
                             </motion.div>
                         ))}
                     </div>
+                </div>
+            </section>
+
+            {/* Happy Customers Stats */}
+            <section className="py-12 bg-slate-50">
+                <div className="container mx-auto px-4 max-w-4xl">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-[2.5rem] p-8 md:p-12 border border-slate-700 shadow-2xl"
+                    >
+                        <div className="text-center">
+                            <span className="text-slate-400 font-black tracking-[0.2em] text-xs uppercase block mb-4">MUTLU OTELLER</span>
+                            <div className="text-6xl md:text-7xl font-black text-white mb-2">500+</div>
+                            <p className="text-slate-400 font-medium text-lg">Otel RoomXQR ile dijitalleşti</p>
+                        </div>
+                    </motion.div>
                 </div>
             </section>
 
@@ -558,11 +576,11 @@ export default function PremiumLanding() {
 
                         {/* Content Right */}
                         <div className="lg:w-1/2">
-                            <span className="text-blue-600 font-black tracking-[0.2em] text-xs uppercase block mb-6 px-4 py-2 bg-blue-50 rounded-full w-fit">
-                                MİSAFİR DENEYİMİ & OPERASYONEL GÜÇ
+                            <span className="text-emerald-600 font-black tracking-[0.2em] text-xs uppercase block mb-6 px-4 py-2 bg-emerald-50 rounded-full w-fit">
+                                GELİR ARTIŞI & KÂRLILIK
                             </span>
                             <h2 className="text-4xl md:text-5xl font-black text-slate-950 mb-8 leading-tight tracking-tight">
-                                Otelinizi <span className="text-blue-600">Akıllıca Yönetin.</span>
+                                Otelinizin <span className="text-emerald-600">Gelirini Artırın.</span>
                             </h2>
                             <p className="text-lg text-slate-600 font-medium leading-relaxed mb-10">
                                 RoomXQR, misafir memnuniyetini artırırken operasyonel yükü sıfırlayan tam entegre bir ekosistemdir. Dijital concierge, QR hizmet yönetimi, restoran stokları ve genel otel envanteri (teknik, temizlik vb.) kontrolü ile işletmenizin kâr potansiyelini maksimize edin.
@@ -655,7 +673,6 @@ export default function PremiumLanding() {
                         {[
                             {
                                 title: t('planBasicTitle'),
-                                price: t('planBasicPriceTL'),
                                 desc: t('planBasicDesc'),
                                 features: [
                                     t('planBasicFeat1'),
@@ -670,7 +687,6 @@ export default function PremiumLanding() {
                             },
                             {
                                 title: t('planProTitle'),
-                                price: t('planProPriceTL'),
                                 desc: t('planProDesc'),
                                 features: [
                                     t('planProFeat1'),
@@ -686,7 +702,6 @@ export default function PremiumLanding() {
                             },
                             {
                                 title: t('planEntTitle'),
-                                price: t('planEntPriceTL'),
                                 desc: t('planEntDesc'),
                                 features: [
                                     t('planEntFeat1'),
@@ -717,10 +732,7 @@ export default function PremiumLanding() {
                                         {plan.badge}
                                     </div>
                                 )}
-                                <h3 className="text-2xl font-black mb-4 uppercase tracking-tighter">{plan.title}</h3>
-                                <div className="mb-6">
-                                    <span className="text-4xl md:text-5xl font-black">{plan.price}</span>
-                                </div>
+                                <h3 className="text-2xl font-black mb-6 uppercase tracking-tighter">{plan.title}</h3>
                                 <p className={`mb-8 font-medium italic ${plan.featured ? 'text-slate-400' : 'text-slate-500'}`}>{plan.desc}</p>
                                 <div className="space-y-4 mb-12 flex-grow">
                                     {plan.features.map((feat, fi) => (
