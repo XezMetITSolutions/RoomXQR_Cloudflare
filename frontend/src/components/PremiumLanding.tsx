@@ -38,43 +38,24 @@ export default function PremiumLanding() {
     const blogPostsContent = [
         {
             id: 1,
-            title: 'QR Menülerin Otel Gelirlerine Etkisi: %40 Artış Mümkün mü?',
-            date: 'Mart 2026',
-            category: 'Trendler',
-            content: `<p class="mb-4">Otelcilik sektöründe dijital dönüşüm artık bir tercih değil, zorunluluk haline gelmiştir. QR kod tabanlı menü ve sipariş sistemleri, yalnızca misafir deneyimini iyileştirmekle kalmayıp otel gelirlerini doğrudan etkileyen stratejik bir araç olarak öne çıkmaktadır.</p>
-<h3 class="text-xl font-bold mb-3 mt-6">Restoran ve Bar Gelirlerinde Artış</h3>
-<p class="mb-4">Fiziksel menülerde misafirler ortalama 3-4 dakika inceleme yaparak sipariş verir. Dijital QR menülerde ise etkileşim süresi %70 artmakta, önerilen ürünlere yönelik tıklama oranı %45'e ulaşmaktadır. Bu da doğrudan ek satış (upsell) fırsatı anlamına gelir.</p>
-<h3 class="text-xl font-bold mb-3 mt-6">Oda Servisi Kullanımı</h3>
-<p class="mb-4">Araştırmalar, QR kod bazlı oda servisi siparişlerinin fiziksel menüye kıyasla %30-40 daha fazla sipariş oluşturduğunu göstermektedir. Çünkü misafirler, süreci pratik buldukları için daha sık sipariş vermektedir.</p>
-<h3 class="text-xl font-bold mb-3 mt-6">Gerçek Veriler</h3>
-<p class="mb-4">RoomXQR kullanan otellerde ilk 3 ay içinde ortalama %37 ek hizmet geliri artışı gözlemlenmiştir. Bu artış; oda servisi, restoran rezervasyonu ve otel içi hizmet satışlarının toplamından kaynaklanmaktadır.</p>
-<p class="mb-4">%40 artış hedefi yalnızca teorik bir rakam değildir — doğru konumlandırma, QR erişim kolaylığı ve anlık güncelleme yeteneğiyle birleştiğinde son derece ulaşılabilir bir hedeftir.</p>`
+            title: t('blogPost1Title'),
+            date: t('blogPost1Date'),
+            category: t('blogCategoryTrends'),
+            content: t('blogPost1Content'),
         },
         {
             id: 2,
-            title: 'Temassız Misafir Deneyimi: Yeni Nesil Otelcilikte Standartlar',
-            date: 'Şubat 2026',
-            category: 'Trendler',
-            content: `<p class="mb-4">Pandemi sonrası dünyada misafirler artık fiziksel temastan kaçınmak için değil, pratiklik ve hız için temassız hizmetleri tercih etmektedir. Bu değişim, otelcilik sektöründe kalıcı bir paradigma dönüşümüne yol açmıştır.</p>
-<h3 class="text-xl font-bold mb-3 mt-6">Neden Temassız?</h3>
-<p class="mb-4">Skift Research'ün 2025 verilerine göre, 5 yıldızlı otel misafirlerinin %68'i dijital self-servis seçeneklerini resepsiyon desteğine tercih etmektedir. Bu oran, lüks segmentte her geçen yıl artmaktadır.</p>
-<h3 class="text-xl font-bold mb-3 mt-6">QR ile Temassız Deneyim</h3>
-<p class="mb-4">Odaya yerleştirilen tek bir QR kod; menü erişimi, servis talebi, concierge hizmetleri ve anlık bildirimler için tek giriş noktası işlevi görür. Misafir, uygulama indirmek zorunda kalmadan tüm bu hizmetlere tarayıcıdan anında ulaşır.</p>
-<h3 class="text-xl font-bold mb-3 mt-6">Operasyonel Kazanımlar</h3>
-<p class="mb-4">Temassız sistemlere geçen otellerde resepsiyon telefon trafiği ortalama %50 azalmaktadır. Bu, personelin daha değerli misafir deneyimi faaliyetlerine odaklanmasını sağlar ve operasyonel verimliliği önemli ölçüde artırır.</p>`
+            title: t('blogPost2Title'),
+            date: t('blogPost2Date'),
+            category: t('blogCategoryTrends'),
+            content: t('blogPost2Content'),
         },
         {
             id: 3,
-            title: 'AI Destekli Otel Yönetimi: Personel Yükünü Hafifletin',
-            date: 'Ocak 2026',
-            category: 'Teknoloji',
-            content: `<p class="mb-4">Yapay zeka, otel yönetiminin her katmanına entegre olmaya başlamıştır. Rezervasyon yönetiminden misafir iletişimine, menü optimizasyonundan talep yönlendirmeye kadar AI tabanlı araçlar operasyonel maliyetleri önemli ölçüde düşürmektedir.</p>
-<h3 class="text-xl font-bold mb-3 mt-6">Akıllı Talep Yönlendirme</h3>
-<p class="mb-4">AI destekli sistemler, gelen misafir taleplerini kategorize ederek ilgili departmana (Teknik Servis, Kat Hizmetleri, Mutfak) otomatik olarak iletir. Bu, yanıt sürelerini %60 kısaltmakta ve hata payını minimuma indirmektedir.</p>
-<h3 class="text-xl font-bold mb-3 mt-6">Çok Dilli İletişim</h3>
-<p class="mb-4">AI tabanlı çeviri sistemleri, misafirlerin tarayıcı diline göre içerikleri otomatik olarak yerelleştirir. Çoklu dil desteğiyle otel personelinin dil bariyerleri olmaksızın küresel misafirlerle sorunsuz iletişim kurması sağlanır.</p>
-<h3 class="text-xl font-bold mb-3 mt-6">Maliyet Avantajı</h3>
-<p class="mb-4">Dünya Turizm Örgütü'nün 2025 raporuna göre, AI destekli otel yönetim sistemleri kullanan işletmelerde personel başına işlem hacmi %40 artarken, müşteri memnuniyeti ortalaması 0.8 puan yükselmektedir. Bu kombinasyon, hem operasyonel hem finansal sürdürülebilirliği güçlendirmektedir.</p>`
+            title: t('blogPost3Title'),
+            date: t('blogPost3Date'),
+            category: t('blogCategoryTech'),
+            content: t('blogPost3Content'),
         }
     ];
 
