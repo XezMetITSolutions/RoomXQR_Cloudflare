@@ -116,7 +116,7 @@ export default function PremiumLanding() {
                             className="relative rounded-3xl overflow-hidden shadow-2xl mb-6"
                         >
                             <img
-                                src="/images/hero-mobile-bg.png"
+                                src="/images/hero-showcase.png"
                                 alt="RoomXQR"
                                 className="w-full h-auto object-cover"
                             />
@@ -265,6 +265,26 @@ export default function PremiumLanding() {
                 >
                     <FaChevronDown />
                 </motion.div>
+            </section>
+
+            {/* Hero Showcase Image - Below Hero */}
+            <section className="py-12 md:py-16 bg-white">
+                <div className="container mx-auto px-4 max-w-6xl">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8 }}
+                        className="relative rounded-3xl overflow-hidden shadow-2xl"
+                    >
+                        <img
+                            src="/images/hero-showcase.png"
+                            alt="RoomXQR in Action"
+                            className="w-full h-auto object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-blue-900/30 to-transparent"></div>
+                    </motion.div>
+                </div>
             </section>
 
             {/* Neden RoomXQR? - Consolidation */}
