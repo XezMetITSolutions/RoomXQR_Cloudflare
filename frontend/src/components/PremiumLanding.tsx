@@ -104,10 +104,10 @@ export default function PremiumLanding() {
 
 
             {/* Hero Section */}
-            <section className="relative min-h-[85vh] flex items-center pt-24 pb-16 overflow-hidden bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 text-slate-900">
-                <div className="absolute inset-0 z-0 opacity-30">
-                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-400/20 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-400/20 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
+            <section className="relative min-h-[85vh] flex items-center pt-24 pb-16 overflow-hidden bg-gradient-to-br from-white via-blue-50/30 to-sky-50/50 text-slate-900">
+                <div className="absolute inset-0 z-0 opacity-20">
+                    <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-300/15 blur-[140px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-sky-300/15 blur-[130px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
                 </div>
 
                 <div className="container mx-auto px-4 relative z-10">
@@ -307,24 +307,6 @@ export default function PremiumLanding() {
                 </div>
             </section>
 
-            {/* Happy Customers Stats */}
-            <section className="py-12 bg-slate-50">
-                <div className="container mx-auto px-4 max-w-4xl">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-[2.5rem] p-8 md:p-12 border border-slate-700 shadow-2xl"
-                    >
-                        <div className="text-center">
-                            <span className="text-slate-400 font-black tracking-[0.2em] text-xs uppercase block mb-4">MUTLU OTELLER</span>
-                            <div className="text-6xl md:text-7xl font-black text-white mb-2">500+</div>
-                            <p className="text-slate-400 font-medium text-lg">Otel RoomXQR ile dijitalleşti</p>
-                        </div>
-                    </motion.div>
-                </div>
-            </section>
-
             {/* Success Stories */}
             <section className="py-16 md:py-24 bg-slate-50 relative overflow-hidden">
                 <div className="container mx-auto px-4">
@@ -397,11 +379,11 @@ export default function PremiumLanding() {
 
                             <div className="absolute bottom-6 left-6 right-6 grid grid-cols-2 gap-4">
                                 <div className="bg-white/5 backdrop-blur-3xl border border-white/10 p-5 rounded-[2rem]">
-                                    <div className="text-slate-400 text-[8px] md:text-[10px] font-black uppercase mb-1 tracking-widest">{t('satisfiedClientsLabel')}</div>
+                                    <div className="text-slate-400 text-[8px] md:text-[10px] font-black uppercase mb-1 tracking-widest">MUTLU MÜŞTERİLER</div>
                                     <div className="text-white text-2xl md:text-3xl font-black">500+</div>
                                 </div>
                                 <div className="bg-emerald-600/10 backdrop-blur-3xl border border-emerald-500/20 p-5 rounded-[2rem] text-right">
-                                    <div className="text-emerald-400 text-[8px] md:text-[10px] font-black uppercase mb-1 tracking-widest">{t('averageGrowthLabel')}</div>
+                                    <div className="text-emerald-400 text-[8px] md:text-[10px] font-black uppercase mb-1 tracking-widest">OPERASYONEL HIZ</div>
                                     <div className="text-white text-2xl md:text-3xl font-black">+35%</div>
                                 </div>
                             </div>
