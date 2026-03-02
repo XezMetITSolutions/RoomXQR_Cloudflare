@@ -196,138 +196,7 @@ export default function PremiumLanding() {
                 </motion.div>
             </section>
 
-            {/* Premium Features */}
-            <section className="py-16 md:py-24 bg-white">
-                <div className="container mx-auto px-4 max-w-6xl">
-                    <div className="text-center mb-12 md:mb-16">
-                        <motion.span
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            viewport={{ once: true, margin: "-50px" }}
-                            className="text-blue-600 font-extrabold tracking-widest text-[10px] md:text-xs uppercase block mb-3"
-                        >
-                            {t('premiumServicesBadge')}
-                        </motion.span>
-                        <h2 className="text-2xl md:text-4xl lg:text-5xl font-black text-slate-900 leading-tight">
-                            {t('premiumServices')}
-                        </h2>
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                        {[
-                            { icon: FaQrcode, title: t('qrMenuSystem'), color: "bg-orange-500", desc: t('valPropDigital') },
-                            { icon: FaShoppingCart, title: t('orderManagement'), color: "bg-blue-500", desc: t('valPropSpeed') },
-                            { icon: FaBrain, title: t('aiTitle'), color: "bg-purple-500", desc: t('valPropSatisfy') },
-                            { icon: FaChartLine, title: t('detailedReporting'), color: "bg-green-500", desc: t('valPropProfit') },
-                            { icon: FaGlobe, title: 'Çoklu Dil Desteği', color: "bg-indigo-500", desc: t('valPropTrust') },
-                            { icon: FaBell, title: t('marketingAdsTitle'), color: "bg-yellow-500", desc: t('adIncomeTitle') },
-                            { icon: FaCogs, title: t('allInOneTitle'), color: "bg-slate-600", desc: t('valPropDigital') },
-                            { icon: FaChartLine, title: t('support247'), color: "bg-red-500", desc: t('valPropTrust') }
-                        ].map((s, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true, margin: "-50px" }}
-                                transition={{ delay: i * 0.03, duration: 0.4 }}
-                                className="flex flex-col items-center bg-slate-50 p-6 md:p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-lg transition-all group"
-                            >
-                                <div className={`${s.color} w-12 h-12 md:w-16 md:h-16 rounded-2xl flex items-center justify-center text-white text-xl md:text-3xl mb-4 md:mb-6 shadow-lg group-hover:rotate-6 transition-transform`}>
-                                    <s.icon />
-                                </div>
-                                <span className="text-[10px] md:text-xs font-black text-center text-slate-900 uppercase tracking-wider mb-1 px-2">{s.title}</span>
-                                <span className="text-[8px] md:text-[10px] font-bold text-slate-400 uppercase">{s.desc}</span>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Success Stories */}
-            <section className="py-16 md:py-24 bg-slate-50 relative overflow-hidden">
-                <div className="container mx-auto px-4">
-                    <div className="max-w-6xl mx-auto rounded-[2.5rem] md:rounded-[4rem] bg-slate-900 overflow-hidden shadow-2xl flex flex-col lg:flex-row border border-white/5 relative">
-                        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-600/10 blur-[120px] -translate-y-1/2 translate-x-1/2"></div>
-
-                        <div className="lg:w-1/2 p-10 md:p-16 flex flex-col justify-center relative z-10">
-                            <motion.div
-                                initial="initial"
-                                whileInView="animate"
-                                variants={fadeIn}
-                                viewport={{ once: true }}
-                            >
-                                <div className="inline-flex items-center px-5 py-2.5 bg-emerald-500/10 text-emerald-400 rounded-full text-[10px] font-black mb-6 md:mb-8 border border-emerald-500/20 tracking-[0.2em]">
-                                    <FaStar className="mr-2 text-yellow-500" /> {t('caseStudyBadge')}
-                                </div>
-                                <h3 className="text-3xl md:text-5xl font-black text-white mb-6 md:mb-8 leading-[1.2]">
-                                    {t('customersSuccessTitle')}
-                                </h3>
-                                <p className="text-lg text-slate-400 mb-10 md:mb-12 leading-relaxed font-medium">
-                                    {t('customersSuccessDesc')}
-                                </p>
-
-                                <div className="grid grid-cols-2 gap-3 md:gap-4 mb-10 md:mb-12">
-                                    {[
-                                        { label: t('valPropSatisfy'), icon: FaStar, color: "text-pink-400" },
-                                        { label: t('valPropProfit'), icon: FaChartLine, color: "text-emerald-400" },
-                                        { label: t('valPropStaff'), icon: FaUsers, color: "text-blue-400" },
-                                        { label: t('valPropSpeed'), icon: FaRocket, color: "text-orange-400" },
-                                        { label: t('valPropDigital'), icon: FaDesktop, color: "text-purple-400" },
-                                        { label: t('valPropTrust'), icon: FaShieldAlt, color: "text-cyan-400" }
-                                    ].map((res, i) => (
-                                        <div key={i} className="flex items-center gap-3 bg-white/5 p-4 rounded-2xl border border-white/5 group hover:bg-white/10 transition-all">
-                                            <res.icon className={`${res.color} text-lg md:text-xl`} />
-                                            <span className="text-white font-bold text-xs md:text-sm tracking-tight">{res.label}</span>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <button onClick={() => setShowDemoModal(true)} className="flex items-center gap-4 text-white font-black text-xl hover:gap-6 transition-all group">
-                                    {t('examineFeature')} <FaArrowRight className="text-blue-500 group-hover:translate-x-3 transition-transform" />
-                                </button>
-                            </motion.div>
-                        </div>
-
-                        <div className="lg:w-1/2 bg-[#0F172A] relative min-h-[450px] md:min-h-[550px] overflow-hidden flex items-center justify-center">
-                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/30 via-transparent to-transparent"></div>
-
-                            <div className="relative z-10">
-                                <motion.div
-                                    animate={{ scale: [1, 1.05, 1] }}
-                                    transition={{ duration: 8, repeat: Infinity }}
-                                    className="w-40 h-40 md:w-56 md:h-56 bg-white/5 backdrop-blur-3xl rounded-[2.5rem] border border-white/10 flex items-center justify-center shadow-2xl relative"
-                                >
-                                    <FaUsers className="text-5xl md:text-7xl text-white/20" />
-                                    {[
-                                        { icon: FaUtensils, color: "text-blue-400", pos: "-top-10 -left-10" },
-                                        { icon: FaChartLine, color: "text-emerald-400", pos: "-bottom-10 -right-10" },
-                                        { icon: FaQrcode, color: "text-purple-400", pos: "-top-10 -right-10" },
-                                        { icon: FaShieldAlt, color: "text-cyan-400", pos: "-bottom-10 -left-10" },
-                                        { icon: FaBell, color: "text-pink-400", pos: "top-1/2 -right-16 -translate-y-1/2" },
-                                        { icon: FaRocket, color: "text-orange-400", pos: "top-1/2 -left-16 -translate-y-1/2" }
-                                    ].map((item, i) => (
-                                        <motion.div key={i} animate={{ y: [0, -10, 0] }} transition={{ duration: 4, repeat: Infinity, delay: i * 0.7 }} className={`absolute ${item.pos} w-14 h-14 md:w-16 md:h-16 bg-white/10 backdrop-blur-2xl rounded-2xl border border-white/10 flex items-center justify-center text-xl md:text-2xl ${item.color} shadow-2xl`}>
-                                            <item.icon />
-                                        </motion.div>
-                                    ))}
-                                </motion.div>
-                            </div>
-
-                            <div className="absolute bottom-6 left-6 right-6 grid grid-cols-2 gap-4">
-                                <div className="bg-white/5 backdrop-blur-3xl border border-white/10 p-5 rounded-[2rem]">
-                                    <div className="text-slate-400 text-[8px] md:text-[10px] font-black uppercase mb-1 tracking-widest">{t('satisfiedClientsLabel')}</div>
-                                    <div className="text-white text-2xl md:text-3xl font-black">500+</div>
-                                </div>
-                                <div className="bg-emerald-600/10 backdrop-blur-3xl border border-emerald-500/20 p-5 rounded-[2rem] text-right">
-                                    <div className="text-emerald-400 text-[8px] md:text-[10px] font-black uppercase mb-1 tracking-widest">{t('averageGrowthLabel')}</div>
-                                    <div className="text-white text-2xl md:text-3xl font-black">+35%</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Misafir & İşletme Deneyimi - Styled like Image 1 */}
+            {/* Neden RoomXQR? - Consolidation */}
             <section id="neden-roomxqr" className="py-20 bg-white overflow-hidden">
                 <div className="container mx-auto px-4 max-w-7xl">
                     <div className="text-center mb-16">
@@ -435,6 +304,92 @@ export default function PremiumLanding() {
                 </div>
             </section>
 
+            {/* Success Stories */}
+            <section className="py-16 md:py-24 bg-slate-50 relative overflow-hidden">
+                <div className="container mx-auto px-4">
+                    <div className="max-w-6xl mx-auto rounded-[2.5rem] md:rounded-[4rem] bg-slate-900 overflow-hidden shadow-2xl flex flex-col lg:flex-row border border-white/5 relative">
+                        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-600/10 blur-[120px] -translate-y-1/2 translate-x-1/2"></div>
+
+                        <div className="lg:w-1/2 p-10 md:p-16 flex flex-col justify-center relative z-10">
+                            <motion.div
+                                initial="initial"
+                                whileInView="animate"
+                                variants={fadeIn}
+                                viewport={{ once: true }}
+                            >
+                                <div className="inline-flex items-center px-5 py-2.5 bg-emerald-500/10 text-emerald-400 rounded-full text-[10px] font-black mb-6 md:mb-8 border border-emerald-500/20 tracking-[0.2em]">
+                                    <FaStar className="mr-2 text-yellow-500" /> {t('caseStudyBadge')}
+                                </div>
+                                <h3 className="text-3xl md:text-5xl font-black text-white mb-6 md:mb-8 leading-[1.2]">
+                                    {t('customersSuccessTitle')}
+                                </h3>
+                                <p className="text-lg text-slate-400 mb-10 md:mb-12 leading-relaxed font-medium">
+                                    {t('customersSuccessDesc')}
+                                </p>
+
+                                <div className="grid grid-cols-2 gap-3 md:gap-4 mb-10 md:mb-12">
+                                    {[
+                                        { label: t('valPropSatisfy'), icon: FaStar, color: "text-pink-400" },
+                                        { label: t('valPropProfit'), icon: FaChartLine, color: "text-emerald-400" },
+                                        { label: t('valPropStaff'), icon: FaUsers, color: "text-blue-400" },
+                                        { label: t('valPropSpeed'), icon: FaRocket, color: "text-orange-400" },
+                                        { label: t('valPropDigital'), icon: FaDesktop, color: "text-purple-400" },
+                                        { label: t('valPropTrust'), icon: FaShieldAlt, color: "text-cyan-400" }
+                                    ].map((res, i) => (
+                                        <div key={i} className="flex items-center gap-3 bg-white/5 p-4 rounded-2xl border border-white/5 group hover:bg-white/10 transition-all">
+                                            <res.icon className={`${res.color} text-lg md:text-xl`} />
+                                            <span className="text-white font-bold text-xs md:text-sm tracking-tight">{res.label}</span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <button onClick={() => setShowDemoModal(true)} className="flex items-center gap-4 text-white font-black text-xl hover:gap-6 transition-all group">
+                                    {t('examineFeature')} <FaArrowRight className="text-blue-500 group-hover:translate-x-3 transition-transform" />
+                                </button>
+                            </motion.div>
+                        </div>
+
+                        <div className="lg:w-1/2 bg-[#0F172A] relative min-h-[450px] md:min-h-[550px] overflow-hidden flex items-center justify-center">
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/30 via-transparent to-transparent"></div>
+
+                            <div className="relative z-10">
+                                <motion.div
+                                    animate={{ scale: [1, 1.05, 1] }}
+                                    transition={{ duration: 8, repeat: Infinity }}
+                                    className="w-40 h-40 md:w-56 md:h-56 bg-white/5 backdrop-blur-3xl rounded-[2.5rem] border border-white/10 flex items-center justify-center shadow-2xl relative"
+                                >
+                                    <FaUsers className="text-5xl md:text-7xl text-white/20" />
+                                    {[
+                                        { icon: FaUtensils, color: "text-blue-400", pos: "-top-10 -left-10" },
+                                        { icon: FaChartLine, color: "text-emerald-400", pos: "-bottom-10 -right-10" },
+                                        { icon: FaQrcode, color: "text-purple-400", pos: "-top-10 -right-10" },
+                                        { icon: FaShieldAlt, color: "text-cyan-400", pos: "-bottom-10 -left-10" },
+                                        { icon: FaBell, color: "text-pink-400", pos: "top-1/2 -right-16 -translate-y-1/2" },
+                                        { icon: FaRocket, color: "text-orange-400", pos: "top-1/2 -left-16 -translate-y-1/2" }
+                                    ].map((item, i) => (
+                                        <motion.div key={i} animate={{ y: [0, -10, 0] }} transition={{ duration: 4, repeat: Infinity, delay: i * 0.7 }} className={`absolute ${item.pos} w-14 h-14 md:w-16 md:h-16 bg-white/10 backdrop-blur-2xl rounded-2xl border border-white/10 flex items-center justify-center text-xl md:text-2xl ${item.color} shadow-2xl`}>
+                                            <item.icon />
+                                        </motion.div>
+                                    ))}
+                                </motion.div>
+                            </div>
+
+                            <div className="absolute bottom-6 left-6 right-6 grid grid-cols-2 gap-4">
+                                <div className="bg-white/5 backdrop-blur-3xl border border-white/10 p-5 rounded-[2rem]">
+                                    <div className="text-slate-400 text-[8px] md:text-[10px] font-black uppercase mb-1 tracking-widest">{t('satisfiedClientsLabel')}</div>
+                                    <div className="text-white text-2xl md:text-3xl font-black">500+</div>
+                                </div>
+                                <div className="bg-emerald-600/10 backdrop-blur-3xl border border-emerald-500/20 p-5 rounded-[2rem] text-right">
+                                    <div className="text-emerald-400 text-[8px] md:text-[10px] font-black uppercase mb-1 tracking-widest">{t('averageGrowthLabel')}</div>
+                                    <div className="text-white text-2xl md:text-3xl font-black">+35%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
             {/* Power Section - Moved and Updated */}
             <section className="py-20 bg-[#0B0F1A] text-white overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 blur-[150px] rounded-full"></div>
@@ -443,10 +398,10 @@ export default function PremiumLanding() {
                     <div className="text-center mb-16">
                         <span className="inline-block bg-white/5 border border-white/10 text-blue-400 px-5 py-2 rounded-full text-[10px] font-black tracking-[0.2em] uppercase mb-4 text-xs">RAKAMLARLA ROOMXQR</span>
                         <h2 className="text-3xl md:text-4xl font-black mb-4 leading-tight">
-                            Piyasadaki Basit QR Menüler <span className="text-red-400 line-through opacity-60">Sadece Menü Gösterir.</span>
+                            Klasik Otel Programları <span className="text-red-400 line-through opacity-60">Sadece Kayıt Tutarlar.</span>
                         </h2>
                         <p className="text-lg text-blue-300 font-black max-w-3xl mx-auto">
-                            RoomXQR otelinizi baştan sona dijitalleştirir — Menü, talep, duyuru, concierge, raporlama <span className="text-emerald-400">hepsi bir arada.</span>
+                            RoomXQR Otelinizin Geleceğini Otomatikleştirir — Tüm süreçlerinizi dijitalin hızıyla <span className="text-emerald-400">akıllıca yönetin.</span>
                         </p>
                     </div>
 
@@ -601,13 +556,13 @@ export default function PremiumLanding() {
                         {/* Content Right */}
                         <div className="lg:w-1/2">
                             <span className="text-blue-600 font-black tracking-[0.2em] text-xs uppercase block mb-6 px-4 py-2 bg-blue-50 rounded-full w-fit">
-                                EK GELİR & REKLAM FIRSATI
+                                MİSAFİR DENEYİMİ & OPERASYONEL GÜÇ
                             </span>
                             <h2 className="text-4xl md:text-5xl font-black text-slate-950 mb-8 leading-tight tracking-tight">
-                                Gelirlerinizi <span className="text-blue-600">Patlatın.</span>
+                                Otelinizi <span className="text-blue-600">Akıllıca Yönetin.</span>
                             </h2>
                             <p className="text-lg text-slate-600 font-medium leading-relaxed mb-10">
-                                RoomXQR sadece bir menü değil, oteliniz için yeni bir kâr merkezidir. Concierge hizmetleri ile otel dışı turlardan ve QR menü üzerinden artan oda servisi/restoran kullanımlarından doğrudan ek gelir elde edin.
+                                RoomXQR, misafir memnuniyetini artırırken operasyonel yükü sıfırlayan tam entegre bir ekosistemdir. Dijital concierge, QR hizmet yönetimi ve anlık raporlama ile işletmenizin kâr potansiyelini maksimize edin.
                             </p>
                             <div className="space-y-6 mb-12">
                                 {[
