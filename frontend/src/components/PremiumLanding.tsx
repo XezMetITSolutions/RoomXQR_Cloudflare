@@ -280,94 +280,34 @@ export default function PremiumLanding() {
                 </motion.div>
             </section>
 
-            {/* Neden RoomXQR? - Consolidation */}
+            {/* Why RoomXQR? - Consolidation */}
             <section id="neden-roomxqr" className="py-12 md:py-16 bg-white overflow-hidden">
                 <div className="container mx-auto px-4 max-w-7xl">
                     <div className="text-center mb-10 md:mb-12">
-                        <span className="text-blue-600 font-black tracking-[0.2em] text-[10px] md:text-xs uppercase block mb-3">OTELİNİZE SAĞLADIĞI FAYDALAR</span>
+                        <span className="text-blue-600 font-black tracking-[0.2em] text-[10px] md:text-xs uppercase block mb-3">{t('whyRoomxqr.badge')}</span>
                         <h2 className="text-2xl md:text-4xl font-black text-slate-900 mb-3 tracking-tight">
-                            Neden RoomXQR?
+                            {t('whyRoomxqr.title')}
                         </h2>
                         <div className="h-1.5 w-20 bg-blue-600 mx-auto rounded-full mb-4"></div>
                         <p className="text-lg md:text-xl text-slate-900 font-black max-w-3xl mx-auto">
-                            Misafirinizin Her İhtiyacı, Tek QR'da
+                            {t('whyRoomxqr.subtitle')}
                         </p>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
                         {[
-                            {
-                                icon: FaQrcode,
-                                color: 'bg-blue-600',
-                                title: '%100 Dijitalleşme',
-                                desc: 'Oda servisi, temizlik ve tüm hizmetleri saniyeler içinde dijitalleştirin. Uygulama indirmeye gerek kalmadan kusursuz erişim.'
-                            },
-                            {
-                                icon: FaCogs,
-                                color: 'bg-emerald-600',
-                                title: 'POS Entegrasyonu',
-                                desc: 'Mevcut POS ile entegre; kasa düzeninizi değiştirmenize gerek yok. Tek çatıda tam kontrol sağlayın.'
-                            },
-                            {
-                                icon: FaChartLine,
-                                color: 'bg-blue-600',
-                                title: 'Kâr Artışı & EKSTRA GELİR',
-                                desc: 'QR Menü ile oda servisi satışlarını artırırken, dijital reklam alanları ile ek gelir fırsatları yaratın.'
-                            },
-                            {
-                                icon: FaMagic,
-                                color: 'bg-purple-600',
-                                title: 'AI ile Görsel Optimizasyonu',
-                                desc: 'Anlık QR Menü Yönetimi: AI destekli iştah açıcı görsellerle satışları ve kullanıcı deneyimini zirveye taşıyın.'
-                            },
-                            {
-                                icon: FaUsers,
-                                color: 'bg-pink-600',
-                                title: 'Müşteri Memnuniyeti',
-                                desc: 'Misafirleri kendi dilinde karşılayın, WiFi bilgilerine anında ulaştırın. Google yorumları ile puanınızı yükseltin.'
-                            },
-                            {
-                                icon: FaBell,
-                                color: 'bg-orange-600',
-                                title: 'Akıllı Duyuru ve Reklam',
-                                desc: 'Otel içi etkinlikleri veya yerel fırsatları anlık olarak duyurun. Misafirlerinize doğru zamanda ulaşın.'
-                            },
-                            {
-                                icon: FaLayerGroup,
-                                color: 'bg-indigo-600',
-                                title: 'Akıllı Stok Takibi',
-                                desc: 'Hem restoran stoklarını (mutfak, bar) hem de otel envanterini (teknik servis malzemeleri, kat hizmetleri, temizlik ürünleri vb.) kapsayan tam kontrol sistemi. Giderleri net hesaplar, fireyi minimize eder.'
-                            },
-                            {
-                                icon: FaBalanceScale,
-                                color: 'bg-emerald-500',
-                                title: 'Gelişmiş Gelir-Gider Analizi',
-                                desc: 'Mutfak harcamaları ve genel envanter giderlerini satışlarla anlık karşılaştırak kârlılığı raporlayan finansal sistem.'
-                            },
-                            {
-                                icon: FaUserTie,
-                                color: 'bg-slate-900',
-                                title: 'Personel Performans Ölçümü',
-                                desc: 'Taleplerin çözüm süresi ve personelin iş yükü analizi ile operasyonel verimliliği ve başarıyı somut verilerle ölçün.'
-                            },
-                            {
-                                icon: FaGlobe,
-                                color: 'bg-blue-500',
-                                title: 'Dijital Concierge Hizmeti',
-                                desc: 'Otel dışı transfer, tur ve aktivite yönlendirmeleri ile misafirinize değer katın, komisyon kazancı elde edin.'
-                            },
-                            {
-                                icon: FaDesktop,
-                                color: 'bg-purple-500',
-                                title: 'Tek Çatıda Tam Kontrol',
-                                desc: 'Teknik servis, kat hizmetleri ve restoran taleplerini tek bir panelden yönetin, operasyonel yükü kökten çözün.'
-                            },
-                            {
-                                icon: FaShieldAlt,
-                                color: 'bg-emerald-600',
-                                title: 'Güvenilir Altyapı',
-                                desc: 'Kesintisiz bulut tabanlı yapı, %100 dijital güvenlik ve hızlı teknik destek ile oteliniz her zaman güvende.'
-                            }
+                            { icon: FaQrcode, color: 'bg-blue-600', title: t('feat.digitalize.title'), desc: t('feat.digitalize.desc') },
+                            { icon: FaCogs, color: 'bg-emerald-600', title: t('feat.pos.title'), desc: t('feat.pos.desc') },
+                            { icon: FaChartLine, color: 'bg-blue-600', title: t('feat.revenue.title'), desc: t('feat.revenue.desc') },
+                            { icon: FaMagic, color: 'bg-purple-600', title: t('feat.ai.title'), desc: t('feat.ai.desc') },
+                            { icon: FaUsers, color: 'bg-pink-600', title: t('feat.satisfaction.title'), desc: t('feat.satisfaction.desc') },
+                            { icon: FaBell, color: 'bg-orange-600', title: t('feat.announcement.title'), desc: t('feat.announcement.desc') },
+                            { icon: FaLayerGroup, color: 'bg-indigo-600', title: t('feat.stock.title'), desc: t('feat.stock.desc') },
+                            { icon: FaBalanceScale, color: 'bg-emerald-500', title: t('feat.finance.title'), desc: t('feat.finance.desc') },
+                            { icon: FaUserTie, color: 'bg-slate-900', title: t('feat.staff.title'), desc: t('feat.staff.desc') },
+                            { icon: FaGlobe, color: 'bg-blue-500', title: t('feat.concierge.title'), desc: t('feat.concierge.desc') },
+                            { icon: FaDesktop, color: 'bg-purple-500', title: t('feat.control.title'), desc: t('feat.control.desc') },
+                            { icon: FaShieldAlt, color: 'bg-emerald-600', title: t('feat.infra.title'), desc: t('feat.infra.desc') }
                         ].map((item, i) => (
                             <motion.div
                                 key={i}
@@ -460,11 +400,11 @@ export default function PremiumLanding() {
 
                             <div className="absolute bottom-6 left-6 right-6 grid grid-cols-2 gap-4">
                                 <div className="bg-white/5 backdrop-blur-3xl border border-white/10 p-5 rounded-[2rem]">
-                                    <div className="text-slate-400 text-[8px] md:text-[10px] font-black uppercase mb-1 tracking-widest">MUTLU MÜŞTERİLER</div>
+                                    <div className="text-slate-400 text-[8px] md:text-[10px] font-black uppercase mb-1 tracking-widest">{t('satisfied.label')}</div>
                                     <div className="text-white text-2xl md:text-3xl font-black">500+</div>
                                 </div>
                                 <div className="bg-emerald-600/10 backdrop-blur-3xl border border-emerald-500/20 p-5 rounded-[2rem] text-right">
-                                    <div className="text-emerald-400 text-[8px] md:text-[10px] font-black uppercase mb-1 tracking-widest">OPERASYONEL HIZ</div>
+                                    <div className="text-emerald-400 text-[8px] md:text-[10px] font-black uppercase mb-1 tracking-widest">{t('operational.label')}</div>
                                     <div className="text-white text-2xl md:text-3xl font-black">+35%</div>
                                 </div>
                             </div>
@@ -480,22 +420,22 @@ export default function PremiumLanding() {
                 <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-600/10 blur-[120px] rounded-full"></div>
                 <div className="container mx-auto px-4 max-w-7xl relative z-10">
                     <div className="text-center mb-16">
-                        <span className="inline-block bg-white/5 border border-white/10 text-blue-400 px-5 py-2 rounded-full text-[10px] font-black tracking-[0.2em] uppercase mb-4 text-xs">RAKAMLARLA ROOMXQR</span>
+                        <span className="inline-block bg-white/5 border border-white/10 text-blue-400 px-5 py-2 rounded-full text-[10px] font-black tracking-[0.2em] uppercase mb-4 text-xs">{t('power.badge')}</span>
                         <h2 className="text-3xl md:text-4xl font-black mb-4 leading-tight">
-                            Klasik Otel Programları <span className="text-red-400 line-through opacity-60">Sadece Kayıt Tutarlar.</span>
+                            {t('power.title').replace(t('power.titleStrike'), '')} <span className="text-red-400 line-through opacity-60">{t('power.titleStrike')}</span>
                         </h2>
                         <p className="text-lg text-blue-300 font-black max-w-3xl mx-auto">
-                            RoomXQR Otelinizin Geleceğini Otomatikleştirir — Tüm süreçlerinizi dijitalin hızıyla <span className="text-emerald-400">akıllıca yönetin.</span>
+                            {t('power.subtitle')}
                         </p>
                     </div>
 
                     {/* Stats Row */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
                         {[
-                            { number: '%30', label: 'Operasyonel Maliyet Düşüşü', color: 'from-blue-600 to-blue-700' },
-                            { number: '+%40', label: 'Restoran & Ek Satış Artışı', color: 'from-emerald-600 to-emerald-700' },
-                            { number: '%50', label: 'Resepsiyon Yükü Azalması', color: 'from-orange-600 to-orange-700' },
-                            { number: '15dk', label: 'Personel Eğitim Süresi', color: 'from-purple-600 to-purple-700' }
+                            { number: '%30', label: t('stats.costDrop'), color: 'from-blue-600 to-blue-700' },
+                            { number: '+%40', label: t('stats.salesGrowth'), color: 'from-emerald-600 to-emerald-700' },
+                            { number: '%50', label: t('stats.receptionLoad'), color: 'from-orange-600 to-orange-700' },
+                            { number: '15dk', label: t('stats.trainingTime'), color: 'from-purple-600 to-purple-700' }
                         ].map((stat, i) => (
                             <motion.div
                                 key={i}
@@ -569,7 +509,7 @@ export default function PremiumLanding() {
                             {/* Stats Badge Overlay */}
                             <div className="absolute -top-6 -left-6 bg-blue-600 text-white p-6 rounded-[2rem] shadow-2xl animate-bounce-slow">
                                 <div className="text-2xl font-black mb-1">-%50</div>
-                                <div className="text-[10px] font-bold text-blue-100 uppercase tracking-widest text-center">İş Yükü Azalması</div>
+                                <div className="text-[10px] font-bold text-blue-100 uppercase tracking-widest text-center">{t('workload.badge')}</div>
                             </div>
                         </motion.div>
                     </div>
@@ -584,15 +524,15 @@ export default function PremiumLanding() {
                         <span className="text-orange-400 font-black tracking-[0.2em] text-[10px] md:text-xs uppercase block mb-6">{t('zeroErrorSectionTitle')}</span>
                         <h2 className="text-3xl md:text-5xl font-black leading-tight tracking-tight mb-6">{t('qrToKitchenTitle')}</h2>
                         <p className="text-lg text-slate-400 font-medium max-w-2xl mx-auto">
-                            Talepler resepsiyonu meşgul etmeden doğrudan ilgili departmana (Kat Hizmetleri, Teknik Servis, Restoran vb.) aktarılır.
+                            {t('zero.desc')}
                         </p>
                     </div>
                     <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 relative justify-center">
                         {[
-                            { step: "01", title: 'Hızlı QR Erişim', icon: FaQrcode, color: "bg-blue-600", sub: 'Misafir tek tıkla talebi iletir' },
-                            { step: "02", title: 'Doğru Departman', icon: FaCogs, color: "bg-orange-600", sub: 'Mutfak, Kat, Teknik, Resepsiyon' },
-                            { step: "03", title: 'Anlık Bildirim', icon: FaBell, color: "bg-emerald-600", sub: 'Personel saniyelerde haberdar' },
-                            { step: "04", title: 'Hızlı Çözüm', icon: FaCheckCircle, color: "bg-pink-600", sub: 'Misafir memnuniyeti zirveye' }
+                            { step: "01", title: t('zero.step1.title'), icon: FaQrcode, color: "bg-blue-600", sub: t('zero.step1.sub') },
+                            { step: "02", title: t('zero.step2.title'), icon: FaCogs, color: "bg-orange-600", sub: t('zero.step2.sub') },
+                            { step: "03", title: t('zero.step3.title'), icon: FaBell, color: "bg-emerald-600", sub: t('zero.step3.sub') },
+                            { step: "04", title: t('zero.step4.title'), icon: FaCheckCircle, color: "bg-pink-600", sub: t('zero.step4.sub') }
                         ].map((item, i) => (
                             <motion.div
                                 key={i}
@@ -633,26 +573,26 @@ export default function PremiumLanding() {
                             </div>
                             <div className="absolute -bottom-8 -right-8 bg-slate-900 text-white p-8 rounded-[2rem] shadow-2xl hidden md:block">
                                 <div className="text-3xl font-black mb-1">+%45</div>
-                                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest text-center">Restoran Siparişi</div>
+                                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest text-center">{t('restaurant.orderBadge')}</div>
                             </div>
                         </motion.div>
 
                         {/* Content Right */}
                         <div className="lg:w-1/2">
                             <span className="text-emerald-600 font-black tracking-[0.2em] text-xs uppercase block mb-6 px-4 py-2 bg-emerald-50 rounded-full w-fit">
-                                GELİR ARTIŞI & KÂRLILIK
+                                {t('revenue.badge')}
                             </span>
                             <h2 className="text-4xl md:text-5xl font-black text-slate-950 mb-8 leading-tight tracking-tight">
-                                Otelinizin <span className="text-emerald-600">Gelirini Artırın.</span>
+                                {t('revenue.title').replace(t('revenue.titleHighlight'), '')} <span className="text-emerald-600">{t('revenue.titleHighlight')}</span>
                             </h2>
                             <p className="text-lg text-slate-600 font-medium leading-relaxed mb-10">
-                                RoomXQR, misafir memnuniyetini artırırken operasyonel yükü sıfırlayan tam entegre bir ekosistemdir. Dijital concierge, QR hizmet yönetimi, restoran stokları ve genel otel envanteri (teknik, temizlik vb.) kontrolü ile işletmenizin kâr potansiyelini maksimize edin.
+                                {t('revenue.desc')}
                             </p>
                             <div className="space-y-4 md:space-y-6 mb-8 md:mb-12">
                                 {[
-                                    { icon: FaChartLine, text: 'Restoran ve Oda Servisi satışlarında %40\'a varan artış.' },
-                                    { icon: FaGlobe, text: 'Transfer, Tur ve Aktivite yönlendirmelerinden komisyon kazancı.' },
-                                    { icon: FaBell, text: 'QR reklam alanları ile yerel işletmelerden reklam geliri.' }
+                                    { icon: FaChartLine, text: t('revenue.item1') },
+                                    { icon: FaGlobe, text: t('revenue.item2') },
+                                    { icon: FaBell, text: t('revenue.item3') }
                                 ].map((item, i) => (
                                     <div key={i} className="flex items-center gap-3 md:gap-5 text-slate-800 font-bold text-sm md:text-lg">
                                         <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
@@ -663,7 +603,7 @@ export default function PremiumLanding() {
                                 ))}
                             </div>
                             <button onClick={() => setShowDemoModal(true)} className="px-12 py-5 bg-slate-950 text-white font-black rounded-2xl hover:bg-blue-600 transition-all shadow-xl uppercase tracking-widest text-sm">
-                                Gelirlerinizi Artırmaya Başlayın
+                                {t('revenue.cta')}
                             </button>
                         </div>
                     </div>
@@ -685,13 +625,13 @@ export default function PremiumLanding() {
 
                             <div className="border-t border-white/10 pt-10">
                                 <p className="text-white font-black text-lg mb-6">
-                                    Donanım ihtiyacınız mı var? İhtiyaç duyduğunuzda tam paket sunuyoruz.
+                                    {t('hardware.title')}
                                 </p>
                                 <div className="flex flex-wrap justify-center gap-4">
                                     {[
-                                        { icon: FaLaptop, label: 'POS Bilgisayarları' },
-                                        { icon: FaPrint, label: 'Adisyon & Fiş Yazıcıları' },
-                                        { icon: FaCreditCardIcon, label: 'Ödeme Cihazları' }
+                                        { icon: FaLaptop, label: t('hardware.pos') },
+                                        { icon: FaPrint, label: t('hardware.printer') },
+                                        { icon: FaCreditCardIcon, label: t('hardware.payment') }
                                     ].map((item, i) => (
                                         <div
                                             key={i}
@@ -728,7 +668,7 @@ export default function PremiumLanding() {
                             🚀 {t('devTeamPromise')}
                         </p>
                         <p className="text-sm font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 w-fit mx-auto px-6 py-2 rounded-full border border-emerald-100 shadow-sm">
-                            1 YILLIK ALIMLARDA 1 AY HEDİYE
+                            {t('pricing.offer')}
                         </p>
                     </div>
 
@@ -849,23 +789,23 @@ export default function PremiumLanding() {
                         className="bg-[#0B1628] rounded-[2.5rem] p-10 md:p-14 text-white relative overflow-hidden shadow-2xl"
                     >
                         <div className="absolute top-0 right-0 w-40 h-40 bg-blue-600/10 blur-[60px] rounded-full"></div>
-                        <h3 className="text-xl md:text-3xl font-black text-center mb-8 md:mb-12 relative z-10">Yatırım Geri Dönüş (ROI) Tahmini</h3>
+                        <h3 className="text-xl md:text-3xl font-black text-center mb-8 md:mb-12 relative z-10">{t('roi.title')}</h3>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 mb-8 md:mb-10 relative z-10">
                             <div className="bg-white/5 border border-white/10 rounded-xl md:rounded-[2rem] p-5 md:p-8 text-center backdrop-blur-sm">
                                 <div className="text-3xl md:text-5xl font-black text-emerald-400 mb-1 md:mb-2">+%37</div>
-                                <div className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 leading-tight">Hizmet Geliri Artışı</div>
+                                <div className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 leading-tight">{t('roi.revenue')}</div>
                             </div>
                             <div className="bg-white/5 border border-white/10 rounded-xl md:rounded-[2rem] p-5 md:p-8 text-center backdrop-blur-sm">
                                 <div className="text-3xl md:text-5xl font-black text-blue-400 mb-1 md:mb-2">%50</div>
-                                <div className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 leading-tight">Telefon Trafiği Azalması</div>
+                                <div className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 leading-tight">{t('roi.phoneDrop')}</div>
                             </div>
                             <div className="bg-white/5 border border-white/10 rounded-xl md:rounded-[2rem] p-5 md:p-8 text-center backdrop-blur-sm col-span-2 md:col-span-1">
-                                <div className="text-3xl md:text-5xl font-black text-pink-400 mb-1 md:mb-2">Sıfır</div>
-                                <div className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 leading-tight">Operasyonel Hata</div>
+                                <div className="text-3xl md:text-5xl font-black text-pink-400 mb-1 md:mb-2">{t('roi.errors')}</div>
+                                <div className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 leading-tight">{t('roi.errorsLabel')}</div>
                             </div>
                         </div>
                         <p className="text-center text-slate-400 italic text-sm font-medium relative z-10">
-                            &quot; Mevcut müşteri verilerine göre: RoomXQR kullanımı ile operasyonel verimlilik artarken, aylık kâr ortalama %22 yükselmektedir. &quot;
+                            {t('roi.quote')}
                         </p>
                     </motion.div>
                 </div>
@@ -878,20 +818,20 @@ export default function PremiumLanding() {
                         <div className="mx-auto max-w-3xl text-center">
                             <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-[10px] md:text-xs font-black tracking-widest uppercase mb-6 border border-blue-100">
                                 <FaRocket />
-                                HIZLI VE SORUNSUZ KURULUM: SİZ HAZIRSANIZ BİZ HAZIRIZ
+                                {t('setup.badge')}
                             </div>
                             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-6 tracking-tight leading-tight">
-                                Hızlı ve Sorunsuz Kurulum: <br /> Siz Hazırsanız Biz Hazırız
+                                {t('setup.title')} <br /> {t('setup.titleSub')}
                             </h2>
                             <p className="text-base md:text-lg text-slate-500 font-medium leading-relaxed mb-10">
-                                Hantal ve yavaş kurulan eski sistemleri unutun. RoomXQR sadece bir linkle çalışır. Tek yapmanız gereken bize ulaşmak; tüm kurulum ve menü dijitalleştirme sürecini biz titizlikle hallediyoruz.
+                                {t('setup.desc')}
                             </p>
                             <div className="flex flex-wrap justify-center gap-4">
                                 <button
                                     onClick={() => setShowDemoModal(true)}
                                     className="px-10 py-5 bg-blue-600 text-white rounded-2xl font-black text-sm md:text-base uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl"
                                 >
-                                    HEMEN BAŞLAYIN
+                                    {t('setup.cta')}
                                 </button>
                                 <a
                                     href="https://wa.me/436608682201"
@@ -1076,7 +1016,7 @@ export default function PremiumLanding() {
                                                 onClick={() => { setActiveBlogPost(null); setShowDemoModal(true); }}
                                                 className="w-full py-4 bg-blue-600 text-white font-black rounded-2xl hover:bg-blue-700 transition-all text-sm uppercase tracking-widest"
                                             >
-                                                Ücretsiz Demo Al
+                                                {t('blog.modal.cta')}
                                             </button>
                                         </div>
                                     </div>
@@ -1110,16 +1050,16 @@ export default function PremiumLanding() {
                             </div>
                         </div>
                         <div>
-                            <h4 className="text-[10px] font-black text-slate-500 mb-6 uppercase tracking-[0.3em]">YASAL</h4>
+                            <h4 className="text-[10px] font-black text-slate-500 mb-6 uppercase tracking-[0.3em]">{t('footer.legal')}</h4>
                             <div className="space-y-3">
-                                <a href="/gizlilik-politikasi" className="block text-slate-400 hover:text-white transition-all font-bold text-sm">Gizlilik Politikası</a>
-                                <a href="/kullanim-kosullari" className="block text-slate-400 hover:text-white transition-all font-bold text-sm">Kullanım Koşulları</a>
-                                <a href="/yasal-bilgiler" className="block text-slate-400 hover:text-white transition-all font-bold text-sm">Yasal Bilgiler</a>
+                                <a href="/gizlilik-politikasi" className="block text-slate-400 hover:text-white transition-all font-bold text-sm">{t('privacyPolicy')}</a>
+                                <a href="/kullanim-kosullari" className="block text-slate-400 hover:text-white transition-all font-bold text-sm">{t('termsOfService')}</a>
+                                <a href="/yasal-bilgiler" className="block text-slate-400 hover:text-white transition-all font-bold text-sm">{t('legalInfo')}</a>
                             </div>
                         </div>
                     </div>
                     <div className="border-t border-white/5 pt-8 text-center text-slate-600 text-sm font-bold">
-                        © {new Date().getFullYear()} RoomXQR. Tüm hakları saklıdır.
+                        © {new Date().getFullYear()} RoomXQR. {t('footer.copyright')}
                     </div>
                 </div>
             </footer>
