@@ -105,103 +105,156 @@ export default function PremiumLanding() {
 
             {/* Hero Section */}
             <section className="relative min-h-[70vh] md:min-h-[75vh] flex items-center pt-16 md:pt-20 pb-10 md:pb-12 overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 text-slate-900">
-                {/* Mobile Background Image */}
-                <div className="absolute inset-0 z-0 md:hidden">
-                    <img
-                        src="/images/hero-mobile-bg.png"
-                        alt="Background"
-                        className="w-full h-full object-cover opacity-[0.12] blur-md"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-b from-slate-50/90 via-blue-50/85 to-indigo-50/90"></div>
-                </div>
+                {/* Mobile Hero - Card Style */}
+                <div className="md:hidden w-full relative z-10">
+                    <div className="container mx-auto px-4">
+                        {/* Mobile Hero Image Card */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6 }}
+                            className="relative rounded-3xl overflow-hidden shadow-2xl mb-6"
+                        >
+                            <img
+                                src="/images/hero-mobile-bg.png"
+                                alt="RoomXQR"
+                                className="w-full h-auto object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-slate-900/20 to-transparent"></div>
+                        </motion.div>
 
-                {/* Desktop Background Effects */}
-                <div className="absolute inset-0 z-0 opacity-40 hidden md:block">
-                    <div className="absolute top-0 right-0 w-[700px] h-[700px] bg-gradient-to-br from-blue-400/20 to-indigo-400/20 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                    <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-purple-400/15 to-blue-400/15 blur-[140px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
-                </div>
-
-                <div className="container mx-auto px-4 md:px-6 relative z-10">
-                    <div className="flex flex-col lg:flex-row items-center gap-8 md:gap-16">
-                        {/* Hero Text */}
-                        <div className="lg:w-1/2 text-center lg:text-left px-2 md:px-0">
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 0.4 }}
-                                className="inline-flex items-center px-4 md:px-5 py-1.5 md:py-2 bg-gradient-to-r from-blue-600/15 to-indigo-600/15 backdrop-blur-2xl rounded-full border border-blue-600/30 mb-4 md:mb-6 shadow-lg"
-                            >
-                                <FaStar className="text-yellow-500 mr-2 text-xs md:text-sm animate-pulse" />
-                                <span className="text-[10px] md:text-xs font-black tracking-widest uppercase text-blue-700">
+                        {/* Mobile Hero Content Card */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.2 }}
+                            className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/50"
+                        >
+                            <div className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-600/15 to-indigo-600/15 rounded-full border border-blue-600/30 mb-4">
+                                <FaStar className="text-yellow-500 mr-1.5 text-xs animate-pulse" />
+                                <span className="text-[9px] font-black tracking-widest uppercase text-blue-700">
                                     {t('heroBadge')}
                                 </span>
-                            </motion.div>
+                            </div>
 
-                            <motion.h1
-                                initial={{ opacity: 0, y: 30 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.2 }}
-                                className="text-3xl md:text-4xl lg:text-5xl font-black mb-3 md:mb-4 leading-[1.15] tracking-tight px-2 md:px-0"
-                            >
-                                <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
-                                    {t('newIntroTitle')}
+                            <h1 className="text-2xl font-black mb-3 leading-tight">
+                                <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                                    RoomXQR: Otelinize Özel Tasarlanmış Akıllı Yazılım Mimarisi
                                 </span>
-                            </motion.h1>
+                            </h1>
 
-                            <motion.p
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: 0.4 }}
-                                className="text-base md:text-lg lg:text-xl mb-6 md:mb-8 text-slate-700 leading-relaxed max-w-2xl font-medium px-2 md:px-0"
-                            >
-                                {t('newIntroDesc')}
-                            </motion.p>
+                            <p className="text-sm text-slate-600 font-medium mb-5 leading-relaxed">
+                                QR kod ile anında hizmet, AI destekli menü yönetimi ve %40'a varan gelir artışı. Otelinizi dijital çağa taşıyın.
+                            </p>
 
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.6 }}
-                                className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 md:gap-6 px-2 md:px-0"
-                            >
+                            <div className="flex flex-col gap-3">
                                 <button
                                     onClick={() => setShowDemoModal(true)}
-                                    className="px-6 md:px-12 py-3.5 md:py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl md:rounded-2xl font-black text-base md:text-xl transition-all hover:scale-105 active:scale-95 shadow-[0_15px_35px_rgba(37,99,235,0.4)] flex items-center justify-center gap-2 md:gap-4 text-center"
+                                    className="w-full px-6 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-black text-base shadow-lg flex items-center justify-center gap-2"
                                 >
-                                    <FaUsers className="text-lg md:text-2xl" /> 
-                                    <span className="hidden sm:inline">{t('requestDemo')}</span>
-                                    <span className="sm:hidden">Demo Al</span>
+                                    <FaUsers className="text-lg" /> 
+                                    <span>Ücretsiz Demo Al</span>
                                 </button>
                                 <a
                                     href="https://wa.me/436608682201"
                                     target="_blank"
-                                    className="px-6 md:px-12 py-3.5 md:py-5 bg-white hover:bg-slate-50 border-2 border-blue-600 backdrop-blur-md rounded-xl md:rounded-2xl font-black text-base md:text-xl transition-all hover:scale-105 active:scale-95 text-blue-600 flex items-center justify-center gap-2 md:gap-4 text-center shadow-lg"
+                                    className="w-full px-6 py-3.5 bg-white border-2 border-blue-600 text-blue-600 rounded-xl font-black text-base shadow-lg flex items-center justify-center gap-2"
                                 >
-                                    <FaRocket className="text-lg md:text-2xl text-emerald-500" /> 
-                                    <span className="hidden sm:inline">{t('startNow')}</span>
-                                    <span className="sm:hidden">Başla</span>
+                                    <FaRocket className="text-lg text-emerald-500" /> 
+                                    <span>Hemen Başlayın</span>
                                 </a>
+                            </div>
+                        </motion.div>
+                    </div>
+                </div>
+
+                {/* Desktop Hero - Original Design */}
+                <div className="hidden md:block w-full">
+                    <div className="absolute inset-0 z-0 opacity-40">
+                        <div className="absolute top-0 right-0 w-[700px] h-[700px] bg-gradient-to-br from-blue-400/20 to-indigo-400/20 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-purple-400/15 to-blue-400/15 blur-[140px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
+                    </div>
+
+                    <div className="container mx-auto px-4 md:px-6 relative z-10">
+                        <div className="flex flex-col lg:flex-row items-center gap-8 md:gap-16">
+                            {/* Hero Text */}
+                            <div className="lg:w-1/2 text-center lg:text-left">
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ duration: 0.4 }}
+                                    className="inline-flex items-center px-5 py-2 bg-gradient-to-r from-blue-600/15 to-indigo-600/15 backdrop-blur-2xl rounded-full border border-blue-600/30 mb-6 shadow-lg"
+                                >
+                                    <FaStar className="text-yellow-500 mr-2 text-sm animate-pulse" />
+                                    <span className="text-xs font-black tracking-widest uppercase text-blue-700">
+                                        {t('heroBadge')}
+                                    </span>
+                                </motion.div>
+
+                                <motion.h1
+                                    initial={{ opacity: 0, y: 30 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.2 }}
+                                    className="text-4xl lg:text-5xl font-black mb-4 leading-[1.15] tracking-tight"
+                                >
+                                    <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
+                                        {t('newIntroTitle')}
+                                    </span>
+                                </motion.h1>
+
+                                <motion.p
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: 0.4 }}
+                                    className="text-lg lg:text-xl mb-8 text-slate-700 leading-relaxed max-w-2xl font-medium"
+                                >
+                                    {t('newIntroDesc')}
+                                </motion.p>
+
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.6 }}
+                                    className="flex flex-col sm:flex-row justify-center lg:justify-start gap-6"
+                                >
+                                    <button
+                                        onClick={() => setShowDemoModal(true)}
+                                        className="px-12 py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-black text-xl transition-all hover:scale-105 active:scale-95 shadow-[0_15px_35px_rgba(37,99,235,0.4)] flex items-center justify-center gap-4 text-center"
+                                    >
+                                        <FaUsers className="text-2xl" /> 
+                                        <span>{t('requestDemo')}</span>
+                                    </button>
+                                    <a
+                                        href="https://wa.me/436608682201"
+                                        target="_blank"
+                                        className="px-12 py-5 bg-white hover:bg-slate-50 border-2 border-blue-600 backdrop-blur-md rounded-2xl font-black text-xl transition-all hover:scale-105 active:scale-95 text-blue-600 flex items-center justify-center gap-4 text-center shadow-lg"
+                                    >
+                                        <FaRocket className="text-2xl text-emerald-500" /> 
+                                        <span>{t('startNow')}</span>
+                                    </a>
+                                </motion.div>
+                            </div>
+
+                            {/* Hero Image */}
+                            <motion.div
+                                initial={{ opacity: 0, x: 50 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.8, delay: 0.3 }}
+                                className="lg:w-1/2 relative w-full max-w-md lg:max-w-none"
+                            >
+                                <div className="relative z-10 rounded-[3rem] overflow-hidden border-2 border-blue-200/50 shadow-2xl">
+                                    <img
+                                        src="/images/hero.png"
+                                        alt="RoomXQR Guest Experience"
+                                        className="w-full h-auto object-cover"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-blue-900/10 to-transparent"></div>
+                                </div>
+                                {/* Decorative Elements */}
+                                <div className="absolute -top-8 -right-8 w-64 h-64 bg-gradient-to-br from-blue-500/25 to-indigo-500/25 blur-[100px] rounded-full -z-10"></div>
+                                <div className="absolute -bottom-8 -left-8 w-64 h-64 bg-gradient-to-tr from-purple-500/20 to-blue-500/20 blur-[100px] rounded-full -z-10"></div>
                             </motion.div>
                         </div>
-
-                        {/* Hero Image */}
-                        <motion.div
-                            initial={{ opacity: 0, x: 50 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.8, delay: 0.3 }}
-                            className="lg:w-1/2 relative w-full max-w-sm lg:max-w-none mt-4 lg:mt-0 order-first lg:order-last"
-                        >
-                            <div className="relative z-10 rounded-2xl md:rounded-[3rem] overflow-hidden border-2 border-blue-200/50 shadow-2xl">
-                                <img
-                                    src="/images/hero.png"
-                                    alt="RoomXQR Guest Experience"
-                                    className="w-full h-auto object-cover"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-blue-900/10 to-transparent"></div>
-                            </div>
-                            {/* Decorative Elements */}
-                            <div className="absolute -top-8 -right-8 w-40 md:w-64 h-40 md:h-64 bg-gradient-to-br from-blue-500/25 to-indigo-500/25 blur-[80px] md:blur-[100px] rounded-full -z-10"></div>
-                            <div className="absolute -bottom-8 -left-8 w-40 md:w-64 h-40 md:h-64 bg-gradient-to-tr from-purple-500/20 to-blue-500/20 blur-[80px] md:blur-[100px] rounded-full -z-10"></div>
-                        </motion.div>
                     </div>
                 </div>
 

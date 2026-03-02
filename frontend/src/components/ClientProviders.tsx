@@ -6,6 +6,7 @@ import DataInitializer from '@/components/DataInitializer';
 import ThemeProvider from '@/components/ThemeProvider';
 import LocaleLoader from '@/components/LocaleLoader';
 import OfflineSyncManager from '@/components/OfflineSyncManager';
+import BrowserLanguageDetector from '@/components/BrowserLanguageDetector';
 
 interface ClientProvidersProps {
   children: React.ReactNode;
@@ -17,6 +18,7 @@ export default function ClientProviders({ children, roomId }: ClientProvidersPro
     <AuthProvider>
       <NotificationProvider roomId={roomId}>
         <ThemeProvider>
+          <BrowserLanguageDetector />
           <LocaleLoader />
           <DataInitializer />
           <OfflineSyncManager />
