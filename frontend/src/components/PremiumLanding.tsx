@@ -104,24 +104,24 @@ export default function PremiumLanding() {
 
 
             {/* Hero Section */}
-            <section className="relative min-h-[85vh] flex items-center pt-24 pb-16 overflow-hidden bg-gradient-to-br from-white via-blue-50/30 to-sky-50/50 text-slate-900">
-                <div className="absolute inset-0 z-0 opacity-20">
-                    <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-300/15 blur-[140px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-sky-300/15 blur-[130px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
+            <section className="relative min-h-[85vh] flex items-center pt-20 md:pt-24 pb-12 md:pb-16 overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 text-slate-900">
+                <div className="absolute inset-0 z-0 opacity-40">
+                    <div className="absolute top-0 right-0 w-[700px] h-[700px] bg-gradient-to-br from-blue-400/20 to-indigo-400/20 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                    <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-purple-400/15 to-blue-400/15 blur-[140px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
                 </div>
 
-                <div className="container mx-auto px-4 relative z-10">
-                    <div className="flex flex-col lg:flex-row items-center gap-16">
+                <div className="container mx-auto px-4 md:px-6 relative z-10">
+                    <div className="flex flex-col lg:flex-row items-center gap-8 md:gap-16">
                         {/* Hero Text */}
-                        <div className="lg:w-1/2 text-center lg:text-left">
+                        <div className="lg:w-1/2 text-center lg:text-left px-2 md:px-0">
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.4 }}
-                                className="inline-flex items-center px-5 py-2.5 bg-blue-600/10 backdrop-blur-2xl rounded-full border border-blue-600/20 mb-8 shadow-lg"
+                                className="inline-flex items-center px-4 md:px-5 py-2 md:py-2.5 bg-gradient-to-r from-blue-600/15 to-indigo-600/15 backdrop-blur-2xl rounded-full border border-blue-600/30 mb-6 md:mb-8 shadow-lg"
                             >
-                                <FaStar className="text-yellow-500 mr-2 text-sm animate-pulse" />
-                                <span className="text-xs font-black tracking-widest uppercase text-blue-700">
+                                <FaStar className="text-yellow-500 mr-2 text-xs md:text-sm animate-pulse" />
+                                <span className="text-[10px] md:text-xs font-black tracking-widest uppercase text-blue-700">
                                     {t('heroBadge')}
                                 </span>
                             </motion.div>
@@ -130,9 +130,9 @@ export default function PremiumLanding() {
                                 initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
-                                className="text-2xl md:text-4xl lg:text-5xl font-black mb-4 leading-tight tracking-tight"
+                                className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 md:mb-6 leading-[1.15] tracking-tight px-2 md:px-0"
                             >
-                                <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                                <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
                                     {t('newIntroTitle')}
                                 </span>
                             </motion.h1>
@@ -141,7 +141,7 @@ export default function PremiumLanding() {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.4 }}
-                                className="text-lg md:text-xl mb-10 text-slate-700 leading-relaxed max-w-2xl font-medium"
+                                className="text-base md:text-lg lg:text-xl mb-8 md:mb-10 text-slate-700 leading-relaxed max-w-2xl font-medium px-2 md:px-0"
                             >
                                 {t('newIntroDesc')}
                             </motion.p>
@@ -150,20 +150,24 @@ export default function PremiumLanding() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.6 }}
-                                className="flex flex-col sm:flex-row justify-center lg:justify-start gap-6"
+                                className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 md:gap-6 px-2 md:px-0"
                             >
                                 <button
                                     onClick={() => setShowDemoModal(true)}
-                                    className="px-12 py-5 bg-blue-600 text-white rounded-2xl font-black text-xl transition-all hover:scale-105 active:scale-95 shadow-[0_20px_40px_rgba(37,99,235,0.3)] flex items-center justify-center gap-4 text-center"
+                                    className="px-8 md:px-12 py-4 md:py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-black text-lg md:text-xl transition-all hover:scale-105 active:scale-95 shadow-[0_20px_40px_rgba(37,99,235,0.4)] flex items-center justify-center gap-3 md:gap-4 text-center"
                                 >
-                                    <FaUsers className="text-2xl" /> {t('requestDemo')}
+                                    <FaUsers className="text-xl md:text-2xl" /> 
+                                    <span className="hidden sm:inline">{t('requestDemo')}</span>
+                                    <span className="sm:hidden">Demo Al</span>
                                 </button>
                                 <a
                                     href="https://wa.me/436608682201"
                                     target="_blank"
-                                    className="px-12 py-5 bg-white hover:bg-slate-50 border-2 border-blue-600 backdrop-blur-md rounded-2xl font-black text-xl transition-all hover:scale-105 active:scale-95 text-blue-600 flex items-center justify-center gap-4 text-center"
+                                    className="px-8 md:px-12 py-4 md:py-5 bg-white hover:bg-slate-50 border-2 border-blue-600 backdrop-blur-md rounded-2xl font-black text-lg md:text-xl transition-all hover:scale-105 active:scale-95 text-blue-600 flex items-center justify-center gap-3 md:gap-4 text-center shadow-lg"
                                 >
-                                    <FaRocket className="text-2xl text-emerald-500" /> {t('startNow')}
+                                    <FaRocket className="text-xl md:text-2xl text-emerald-500" /> 
+                                    <span className="hidden sm:inline">{t('startNow')}</span>
+                                    <span className="sm:hidden">Başla</span>
                                 </a>
                             </motion.div>
                         </div>
@@ -173,19 +177,19 @@ export default function PremiumLanding() {
                             initial={{ opacity: 0, x: 50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.8, delay: 0.3 }}
-                            className="lg:w-1/2 relative"
+                            className="lg:w-1/2 relative w-full max-w-md lg:max-w-none mt-8 lg:mt-0"
                         >
-                            <div className="relative z-10 rounded-[3rem] overflow-hidden border border-slate-200 shadow-2xl">
+                            <div className="relative z-10 rounded-[2rem] md:rounded-[3rem] overflow-hidden border-2 border-blue-200/50 shadow-2xl">
                                 <img
                                     src="/images/hero.png"
                                     alt="RoomXQR Guest Experience"
                                     className="w-full h-auto object-cover"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent"></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-blue-900/10 to-transparent"></div>
                             </div>
                             {/* Decorative Elements */}
-                            <div className="absolute -top-10 -right-10 w-64 h-64 bg-blue-500/20 blur-[100px] rounded-full -z-10"></div>
-                            <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-indigo-500/20 blur-[100px] rounded-full -z-10"></div>
+                            <div className="absolute -top-10 -right-10 w-48 md:w-64 h-48 md:h-64 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 blur-[100px] rounded-full -z-10"></div>
+                            <div className="absolute -bottom-10 -left-10 w-48 md:w-64 h-48 md:h-64 bg-gradient-to-tr from-purple-500/15 to-blue-500/15 blur-[100px] rounded-full -z-10"></div>
                         </motion.div>
                     </div>
                 </div>
@@ -193,7 +197,7 @@ export default function PremiumLanding() {
                 <motion.div
                     animate={{ y: [0, 10, 0] }}
                     transition={{ repeat: Infinity, duration: 2 }}
-                    className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/30 text-xl hidden lg:block"
+                    className="absolute bottom-10 left-1/2 -translate-x-1/2 text-slate-400 text-xl hidden lg:block"
                 >
                     <FaChevronDown />
                 </motion.div>
