@@ -105,29 +105,14 @@ export default function PremiumLanding() {
 
             {/* Hero Section */}
             <section className="relative min-h-[70vh] md:min-h-[75vh] flex items-center pt-16 md:pt-20 pb-10 md:pb-12 overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 text-slate-900">
-                {/* Mobile Hero - Card Style */}
+                {/* Mobile Hero - Simple Card Style */}
                 <div className="md:hidden w-full relative z-10">
                     <div className="container mx-auto px-4">
-                        {/* Mobile Hero Image Card */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.6 }}
-                            className="relative rounded-3xl overflow-hidden shadow-2xl mb-6"
-                        >
-                            <img
-                                src="/images/hero-showcase.png"
-                                alt="RoomXQR"
-                                className="w-full h-auto object-cover"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-slate-900/20 to-transparent"></div>
-                        </motion.div>
-
                         {/* Mobile Hero Content Card */}
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.6, delay: 0.2 }}
+                            transition={{ duration: 0.6 }}
                             className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/50"
                         >
                             <div className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-600/15 to-indigo-600/15 rounded-full border border-blue-600/30 mb-4">
@@ -139,12 +124,12 @@ export default function PremiumLanding() {
 
                             <h1 className="text-2xl font-black mb-3 leading-tight">
                                 <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                                    RoomXQR: Otelinize Özel Tasarlanmış Akıllı Yazılım Mimarisi
+                                    {t('newIntroTitle')}
                                 </span>
                             </h1>
 
                             <p className="text-sm text-slate-600 font-medium mb-5 leading-relaxed">
-                                QR kod ile anında hizmet, AI destekli menü yönetimi ve %40'a varan gelir artışı. Otelinizi dijital çağa taşıyın.
+                                {t('newIntroDesc')}
                             </p>
 
                             <div className="flex flex-col gap-3">
@@ -153,7 +138,7 @@ export default function PremiumLanding() {
                                     className="w-full px-6 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-black text-base shadow-lg flex items-center justify-center gap-2"
                                 >
                                     <FaUsers className="text-lg" /> 
-                                    <span>Ücretsiz Demo Al</span>
+                                    <span>{t('requestDemo')}</span>
                                 </button>
                                 <a
                                     href="https://wa.me/436608682201"
@@ -161,7 +146,7 @@ export default function PremiumLanding() {
                                     className="w-full px-6 py-3.5 bg-white border-2 border-blue-600 text-blue-600 rounded-xl font-black text-base shadow-lg flex items-center justify-center gap-2"
                                 >
                                     <FaRocket className="text-lg text-emerald-500" /> 
-                                    <span>Hemen Başlayın</span>
+                                    <span>{t('startNow')}</span>
                                 </a>
                             </div>
                         </motion.div>
@@ -282,7 +267,6 @@ export default function PremiumLanding() {
                             alt="RoomXQR in Action"
                             className="w-full h-auto object-cover"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-blue-900/30 to-transparent"></div>
                     </motion.div>
                 </div>
             </section>
