@@ -87,6 +87,9 @@ export default function PremiumLanding() {
         { icon: FaClock, color: "yellow-500", question: t('faq6Q'), answer: t('faq6A') },
         { icon: FaUtensils, color: "indigo-500", question: t('faq7Q'), answer: t('faq7A') },
         { icon: FaChartLine, color: "pink-500", question: t('faq8Q'), answer: t('faq8A') },
+        { icon: FaLayerGroup, color: "indigo-600", question: t('faqStokQ'), answer: t('faqStokA') },
+        { icon: FaUserTie, color: "slate-900", question: t('faqPerfQ'), answer: t('faqPerfA') },
+        { icon: FaBalanceScale, color: "emerald-500", question: t('faqAnalizQ'), answer: t('faqAnalizA') },
         { icon: FaStar, color: "yellow-500", question: t('referralFaqQ'), answer: t('referralFaqA') }
     ];
 
@@ -147,20 +150,20 @@ export default function PremiumLanding() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.6 }}
-                                className="flex flex-col sm:flex-row justify-center lg:justify-start gap-5"
+                                className="flex flex-col sm:flex-row justify-center lg:justify-start gap-6"
                             >
                                 <button
                                     onClick={() => setShowDemoModal(true)}
-                                    className="px-10 py-4.5 bg-blue-600 rounded-2xl font-black text-lg transition-all hover:scale-105 active:scale-95 shadow-[0_20px_40px_rgba(37,99,235,0.3)] flex items-center justify-center gap-3"
+                                    className="px-12 py-5 bg-blue-600 rounded-2xl font-black text-xl transition-all hover:scale-105 active:scale-95 shadow-[0_20px_40px_rgba(37,99,235,0.3)] flex items-center justify-center gap-4 text-center"
                                 >
-                                    <FaUsers className="text-xl" /> {t('requestDemo')}
+                                    <FaUsers className="text-2xl" /> {t('requestDemo')}
                                 </button>
                                 <a
                                     href="https://wa.me/436608682201"
                                     target="_blank"
-                                    className="px-10 py-4.5 bg-white/5 hover:bg-white/10 border border-white/20 backdrop-blur-md rounded-2xl font-black text-lg transition-all hover:scale-105 active:scale-95 text-white flex items-center justify-center gap-3"
+                                    className="px-12 py-5 bg-white/5 hover:bg-white/10 border border-white/20 backdrop-blur-md rounded-2xl font-black text-xl transition-all hover:scale-105 active:scale-95 text-white flex items-center justify-center gap-4 text-center"
                                 >
-                                    <FaRocket className="text-xl text-emerald-400" /> {t('startNow')}
+                                    <FaRocket className="text-2xl text-emerald-400" /> {t('startNow')}
                                 </a>
                             </motion.div>
                         </div>
@@ -252,19 +255,19 @@ export default function PremiumLanding() {
                                 icon: FaLayerGroup,
                                 color: 'bg-indigo-600',
                                 title: 'Akıllı Stok Takibi',
-                                desc: 'Fire payını düşüren verimli stok yönetimi ile kârınızı koruyun ve operasyonel maliyetleri minimize edin.'
+                                desc: 'Hem restoran stoklarını (mutfak, bar) hem de otel envanterini (teknik servis malzemeleri, kat hizmetleri, temizlik ürünleri vb.) kapsayan tam kontrol sistemi. Giderleri net hesaplar, fireyi minimize eder.'
                             },
                             {
                                 icon: FaBalanceScale,
                                 color: 'bg-emerald-500',
                                 title: 'Gelişmiş Gelir-Gider Analizi',
-                                desc: 'Gerçek zamanlı maliyet takibi ve detaylı finansal raporlama ile işletmenizin nabzını her saniye tutun.'
+                                desc: 'Mutfak harcamaları ve genel envanter giderlerini satışlarla anlık karşılaştırak kârlılığı raporlayan finansal sistem.'
                             },
                             {
                                 icon: FaUserTie,
                                 color: 'bg-slate-900',
                                 title: 'Personel Performans Ölçümü',
-                                desc: 'Departman bazlı verimlilik analizi ile iş yükünü dengeleyin ve personel hatalarını sıfıra indirin.'
+                                desc: 'Taleplerin çözüm süresi ve personelin iş yükü analizi ile operasyonel verimliliği ve başarıyı somut verilerle ölçün.'
                             },
                             {
                                 icon: FaGlobe,
@@ -562,7 +565,7 @@ export default function PremiumLanding() {
                                 Otelinizi <span className="text-blue-600">Akıllıca Yönetin.</span>
                             </h2>
                             <p className="text-lg text-slate-600 font-medium leading-relaxed mb-10">
-                                RoomXQR, misafir memnuniyetini artırırken operasyonel yükü sıfırlayan tam entegre bir ekosistemdir. Dijital concierge, QR hizmet yönetimi ve anlık raporlama ile işletmenizin kâr potansiyelini maksimize edin.
+                                RoomXQR, misafir memnuniyetini artırırken operasyonel yükü sıfırlayan tam entegre bir ekosistemdir. Dijital concierge, QR hizmet yönetimi, restoran stokları ve genel otel envanteri (teknik, temizlik vb.) kontrolü ile işletmenizin kâr potansiyelini maksimize edin.
                             </p>
                             <div className="space-y-6 mb-12">
                                 {[
