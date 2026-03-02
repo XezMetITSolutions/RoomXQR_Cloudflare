@@ -129,7 +129,7 @@ export default function PremiumLanding() {
                             </h1>
 
                             <p className="text-sm text-slate-600 font-medium mb-5 leading-relaxed">
-                                {t('newIntroDesc')}
+                                Tek bir QR kod ile tüm otel operasyonlarınızı yönetin. AI destekli menü, anlık sipariş yönetimi ve %40 maliyet azaltma.
                             </p>
 
                             <div className="flex flex-col gap-3">
@@ -250,25 +250,6 @@ export default function PremiumLanding() {
                 >
                     <FaChevronDown />
                 </motion.div>
-            </section>
-
-            {/* Hero Showcase Image - Below Hero */}
-            <section className="py-12 md:py-16 bg-white">
-                <div className="container mx-auto px-4 max-w-6xl">
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8 }}
-                        className="relative rounded-3xl overflow-hidden shadow-2xl"
-                    >
-                        <img
-                            src="/images/hero-showcase.png"
-                            alt="RoomXQR in Action"
-                            className="w-full h-auto object-cover"
-                        />
-                    </motion.div>
-                </div>
             </section>
 
             {/* Neden RoomXQR? - Consolidation */}
