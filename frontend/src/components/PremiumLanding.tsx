@@ -104,7 +104,7 @@ export default function PremiumLanding() {
 
 
             {/* Hero Section */}
-            <section className="relative min-h-[85vh] flex items-center pt-20 md:pt-24 pb-12 md:pb-16 overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 text-slate-900">
+            <section className="relative min-h-[70vh] md:min-h-[75vh] flex items-center pt-16 md:pt-20 pb-10 md:pb-12 overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 text-slate-900">
                 <div className="absolute inset-0 z-0 opacity-40">
                     <div className="absolute top-0 right-0 w-[700px] h-[700px] bg-gradient-to-br from-blue-400/20 to-indigo-400/20 blur-[150px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
                     <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-purple-400/15 to-blue-400/15 blur-[140px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
@@ -118,7 +118,7 @@ export default function PremiumLanding() {
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.4 }}
-                                className="inline-flex items-center px-4 md:px-5 py-2 md:py-2.5 bg-gradient-to-r from-blue-600/15 to-indigo-600/15 backdrop-blur-2xl rounded-full border border-blue-600/30 mb-6 md:mb-8 shadow-lg"
+                                className="inline-flex items-center px-4 md:px-5 py-1.5 md:py-2 bg-gradient-to-r from-blue-600/15 to-indigo-600/15 backdrop-blur-2xl rounded-full border border-blue-600/30 mb-4 md:mb-6 shadow-lg"
                             >
                                 <FaStar className="text-yellow-500 mr-2 text-xs md:text-sm animate-pulse" />
                                 <span className="text-[10px] md:text-xs font-black tracking-widest uppercase text-blue-700">
@@ -130,7 +130,7 @@ export default function PremiumLanding() {
                                 initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
-                                className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 md:mb-6 leading-[1.15] tracking-tight px-2 md:px-0"
+                                className="text-3xl md:text-4xl lg:text-5xl font-black mb-3 md:mb-4 leading-[1.15] tracking-tight px-2 md:px-0"
                             >
                                 <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
                                     {t('newIntroTitle')}
@@ -141,7 +141,7 @@ export default function PremiumLanding() {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.4 }}
-                                className="text-base md:text-lg lg:text-xl mb-8 md:mb-10 text-slate-700 leading-relaxed max-w-2xl font-medium px-2 md:px-0"
+                                className="text-base md:text-lg lg:text-xl mb-6 md:mb-8 text-slate-700 leading-relaxed max-w-2xl font-medium px-2 md:px-0"
                             >
                                 {t('newIntroDesc')}
                             </motion.p>
@@ -154,18 +154,18 @@ export default function PremiumLanding() {
                             >
                                 <button
                                     onClick={() => setShowDemoModal(true)}
-                                    className="px-8 md:px-12 py-4 md:py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-black text-lg md:text-xl transition-all hover:scale-105 active:scale-95 shadow-[0_20px_40px_rgba(37,99,235,0.4)] flex items-center justify-center gap-3 md:gap-4 text-center"
+                                    className="px-6 md:px-12 py-3.5 md:py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl md:rounded-2xl font-black text-base md:text-xl transition-all hover:scale-105 active:scale-95 shadow-[0_15px_35px_rgba(37,99,235,0.4)] flex items-center justify-center gap-2 md:gap-4 text-center"
                                 >
-                                    <FaUsers className="text-xl md:text-2xl" /> 
+                                    <FaUsers className="text-lg md:text-2xl" /> 
                                     <span className="hidden sm:inline">{t('requestDemo')}</span>
                                     <span className="sm:hidden">Demo Al</span>
                                 </button>
                                 <a
                                     href="https://wa.me/436608682201"
                                     target="_blank"
-                                    className="px-8 md:px-12 py-4 md:py-5 bg-white hover:bg-slate-50 border-2 border-blue-600 backdrop-blur-md rounded-2xl font-black text-lg md:text-xl transition-all hover:scale-105 active:scale-95 text-blue-600 flex items-center justify-center gap-3 md:gap-4 text-center shadow-lg"
+                                    className="px-6 md:px-12 py-3.5 md:py-5 bg-white hover:bg-slate-50 border-2 border-blue-600 backdrop-blur-md rounded-xl md:rounded-2xl font-black text-base md:text-xl transition-all hover:scale-105 active:scale-95 text-blue-600 flex items-center justify-center gap-2 md:gap-4 text-center shadow-lg"
                                 >
-                                    <FaRocket className="text-xl md:text-2xl text-emerald-500" /> 
+                                    <FaRocket className="text-lg md:text-2xl text-emerald-500" /> 
                                     <span className="hidden sm:inline">{t('startNow')}</span>
                                     <span className="sm:hidden">Başla</span>
                                 </a>
@@ -204,20 +204,20 @@ export default function PremiumLanding() {
             </section>
 
             {/* Neden RoomXQR? - Consolidation */}
-            <section id="neden-roomxqr" className="py-20 bg-white overflow-hidden">
+            <section id="neden-roomxqr" className="py-12 md:py-16 bg-white overflow-hidden">
                 <div className="container mx-auto px-4 max-w-7xl">
-                    <div className="text-center mb-16">
-                        <span className="text-blue-600 font-black tracking-[0.2em] text-[10px] md:text-xs uppercase block mb-4">OTELİNİZE SAĞLADIĞI FAYDALAR</span>
-                        <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
+                    <div className="text-center mb-10 md:mb-12">
+                        <span className="text-blue-600 font-black tracking-[0.2em] text-[10px] md:text-xs uppercase block mb-3">OTELİNİZE SAĞLADIĞI FAYDALAR</span>
+                        <h2 className="text-2xl md:text-4xl font-black text-slate-900 mb-3 tracking-tight">
                             Neden RoomXQR?
                         </h2>
-                        <div className="h-1.5 w-24 bg-blue-600 mx-auto rounded-full mb-6"></div>
-                        <p className="text-xl md:text-2xl text-slate-900 font-black max-w-3xl mx-auto">
+                        <div className="h-1.5 w-20 bg-blue-600 mx-auto rounded-full mb-4"></div>
+                        <p className="text-lg md:text-xl text-slate-900 font-black max-w-3xl mx-auto">
                             Misafirinizin Her İhtiyacı, Tek QR'da
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
                         {[
                             {
                                 icon: FaQrcode,
@@ -298,13 +298,13 @@ export default function PremiumLanding() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.05 }}
-                                className="group bg-slate-50 border border-slate-100 p-6 rounded-[2rem] hover:bg-white hover:shadow-xl hover:border-blue-200 transition-all duration-300"
+                                className="group bg-slate-50 border border-slate-100 p-4 md:p-6 rounded-xl md:rounded-[2rem] hover:bg-white hover:shadow-xl hover:border-blue-200 transition-all duration-300"
                             >
-                                <div className={`${item.color} w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl mb-5 shadow-md group-hover:scale-110 transition-transform`}>
+                                <div className={`${item.color} w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl flex items-center justify-center text-white text-lg md:text-xl mb-3 md:mb-5 shadow-md group-hover:scale-110 transition-transform`}>
                                     <item.icon />
                                 </div>
-                                <h3 className="text-base font-black text-slate-900 mb-2 leading-tight">{item.title}</h3>
-                                <p className="text-slate-500 font-bold text-xs leading-relaxed">{item.desc}</p>
+                                <h3 className="text-xs md:text-base font-black text-slate-900 mb-1.5 md:mb-2 leading-tight">{item.title}</h3>
+                                <p className="text-slate-500 font-bold text-[10px] md:text-xs leading-relaxed">{item.desc}</p>
                             </motion.div>
                         ))}
                     </div>
@@ -312,7 +312,7 @@ export default function PremiumLanding() {
             </section>
 
             {/* Success Stories */}
-            <section className="py-16 md:py-24 bg-slate-50 relative overflow-hidden">
+            <section className="py-12 md:py-16 bg-slate-50 relative overflow-hidden">
                 <div className="container mx-auto px-4">
                     <div className="max-w-6xl mx-auto rounded-[2.5rem] md:rounded-[4rem] bg-slate-900 overflow-hidden shadow-2xl flex flex-col lg:flex-row border border-white/5 relative">
                         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-600/10 blur-[120px] -translate-y-1/2 translate-x-1/2"></div>
@@ -334,7 +334,7 @@ export default function PremiumLanding() {
                                     {t('customersSuccessDesc')}
                                 </p>
 
-                                <div className="grid grid-cols-2 gap-3 md:gap-4 mb-10 md:mb-12">
+                                <div className="grid grid-cols-2 gap-2 md:gap-4 mb-8 md:mb-12">
                                     {[
                                         { label: t('valPropSatisfy'), icon: FaStar, color: "text-pink-400" },
                                         { label: t('valPropProfit'), icon: FaChartLine, color: "text-emerald-400" },
@@ -343,9 +343,9 @@ export default function PremiumLanding() {
                                         { label: t('valPropDigital'), icon: FaDesktop, color: "text-purple-400" },
                                         { label: t('valPropTrust'), icon: FaShieldAlt, color: "text-cyan-400" }
                                     ].map((res, i) => (
-                                        <div key={i} className="flex items-center gap-3 bg-white/5 p-4 rounded-2xl border border-white/5 group hover:bg-white/10 transition-all">
-                                            <res.icon className={`${res.color} text-lg md:text-xl`} />
-                                            <span className="text-white font-bold text-xs md:text-sm tracking-tight">{res.label}</span>
+                                        <div key={i} className="flex items-center gap-2 md:gap-3 bg-white/5 p-3 md:p-4 rounded-xl md:rounded-2xl border border-white/5 group hover:bg-white/10 transition-all">
+                                            <res.icon className={`${res.color} text-base md:text-xl shrink-0`} />
+                                            <span className="text-white font-bold text-[10px] md:text-sm tracking-tight leading-tight">{res.label}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -398,7 +398,7 @@ export default function PremiumLanding() {
 
 
             {/* Power Section - Moved and Updated */}
-            <section className="py-20 bg-[#0B0F1A] text-white overflow-hidden relative">
+            <section className="py-12 md:py-16 bg-[#0B0F1A] text-white overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 blur-[150px] rounded-full"></div>
                 <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-600/10 blur-[120px] rounded-full"></div>
                 <div className="container mx-auto px-4 max-w-7xl relative z-10">
@@ -426,10 +426,10 @@ export default function PremiumLanding() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.07 }}
-                                className={`bg-gradient-to-br ${stat.color} rounded-[2rem] p-6 text-center shadow-2xl`}
+                                className={`bg-gradient-to-br ${stat.color} rounded-xl md:rounded-[2rem] p-4 md:p-6 text-center shadow-2xl`}
                             >
-                                <div className="text-2xl md:text-3xl font-black mb-2">{stat.number}</div>
-                                <div className="text-white/80 text-[10px] md:text-xs font-bold uppercase tracking-wide leading-tight">{stat.label}</div>
+                                <div className="text-xl md:text-3xl font-black mb-1 md:mb-2">{stat.number}</div>
+                                <div className="text-white/80 text-[9px] md:text-xs font-bold uppercase tracking-wide leading-tight">{stat.label}</div>
                             </motion.div>
                         ))}
                     </div>
@@ -439,7 +439,7 @@ export default function PremiumLanding() {
 
 
             {/* Management & Dashboard Section */}
-            <section className="py-24 bg-slate-50 overflow-hidden">
+            <section className="py-12 md:py-16 bg-slate-50 overflow-hidden">
                 <div className="container mx-auto px-4 max-w-7xl">
                     <div className="flex flex-col-reverse lg:flex-row items-center gap-16">
                         {/* Features on Left */}
@@ -454,7 +454,7 @@ export default function PremiumLanding() {
                                 {t('mgmtNoTechRequired')} 📊
                             </p>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-2 gap-3 md:gap-6">
                                 {[
                                     { icon: FaCogs, title: t('mgmtMenuUpdate'), color: "text-blue-600", bg: "bg-blue-50" },
                                     { icon: FaMagic, title: t('mgmtStockHide'), color: "text-emerald-600", bg: "bg-emerald-50" },
@@ -464,12 +464,12 @@ export default function PremiumLanding() {
                                     <motion.div
                                         key={i}
                                         whileHover={{ y: -5 }}
-                                        className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 flex items-center gap-4"
+                                        className="bg-white p-4 md:p-6 rounded-xl md:rounded-[2rem] shadow-sm border border-slate-100 flex flex-col md:flex-row items-center md:gap-4 gap-2 text-center md:text-left"
                                     >
-                                        <div className={`${item.bg} ${item.color} w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0`}>
+                                        <div className={`${item.bg} ${item.color} w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl flex items-center justify-center text-lg md:text-xl shrink-0`}>
                                             <item.icon />
                                         </div>
-                                        <h4 className="text-base font-black text-slate-900 leading-tight">{item.title}</h4>
+                                        <h4 className="text-xs md:text-base font-black text-slate-900 leading-tight">{item.title}</h4>
                                     </motion.div>
                                 ))}
                             </div>
@@ -501,7 +501,7 @@ export default function PremiumLanding() {
 
 
             {/* Zero Error Section */}
-            <section className="py-16 md:py-24 bg-slate-900 text-white overflow-hidden">
+            <section className="py-12 md:py-16 bg-slate-900 text-white overflow-hidden">
                 <div className="container mx-auto px-4">
                     <div className="max-w-4xl mx-auto text-center mb-16 px-4">
                         <span className="text-orange-400 font-black tracking-[0.2em] text-[10px] md:text-xs uppercase block mb-6">{t('zeroErrorSectionTitle')}</span>
@@ -510,7 +510,7 @@ export default function PremiumLanding() {
                             Talepler resepsiyonu meşgul etmeden doğrudan ilgili departmana (Kat Hizmetleri, Teknik Servis, Restoran vb.) aktarılır.
                         </p>
                     </div>
-                    <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-4 relative justify-center">
+                    <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 relative justify-center">
                         {[
                             { step: "01", title: 'Hızlı QR Erişim', icon: FaQrcode, color: "bg-blue-600", sub: 'Misafir tek tıkla talebi iletir' },
                             { step: "02", title: 'Doğru Departman', icon: FaCogs, color: "bg-orange-600", sub: 'Mutfak, Kat, Teknik, Resepsiyon' },
@@ -524,12 +524,12 @@ export default function PremiumLanding() {
                                 viewport={{ once: true, margin: "-50px" }}
                                 transition={{ delay: i * 0.05 }}
                                 whileHover={{ scale: 1.05 }}
-                                className="relative z-10 bg-slate-800/50 backdrop-blur-md border border-white/5 p-8 rounded-[2.5rem] flex flex-col items-center text-center"
+                                className="relative z-10 bg-slate-800/50 backdrop-blur-md border border-white/5 p-4 md:p-8 rounded-xl md:rounded-[2.5rem] flex flex-col items-center text-center"
                             >
-                                <span className="absolute top-4 left-6 text-white/10 text-5xl font-black font-mono italic">{item.step}</span>
-                                <div className={`${item.color} w-16 h-16 rounded-2xl mb-4 flex items-center justify-center text-3xl shadow-2xl`}><item.icon /></div>
-                                <h4 className="text-base md:text-lg font-black leading-tight mb-2">{item.title}</h4>
-                                <p className="text-slate-400 text-xs font-bold">{item.sub}</p>
+                                <span className="absolute top-2 left-3 md:top-4 md:left-6 text-white/10 text-3xl md:text-5xl font-black font-mono italic">{item.step}</span>
+                                <div className={`${item.color} w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl mb-3 md:mb-4 flex items-center justify-center text-xl md:text-3xl shadow-2xl`}><item.icon /></div>
+                                <h4 className="text-xs md:text-lg font-black leading-tight mb-1 md:mb-2">{item.title}</h4>
+                                <p className="text-slate-400 text-[10px] md:text-xs font-bold">{item.sub}</p>
                             </motion.div>
                         ))}
                     </div>
@@ -537,7 +537,7 @@ export default function PremiumLanding() {
             </section>
 
             {/* Revenue & Experience Section */}
-            <section className="py-24 bg-white overflow-hidden">
+            <section className="py-12 md:py-16 bg-white overflow-hidden">
                 <div className="container mx-auto px-4 max-w-7xl">
                     <div className="flex flex-col lg:flex-row items-center gap-16">
                         {/* Image Left */}
@@ -571,15 +571,15 @@ export default function PremiumLanding() {
                             <p className="text-lg text-slate-600 font-medium leading-relaxed mb-10">
                                 RoomXQR, misafir memnuniyetini artırırken operasyonel yükü sıfırlayan tam entegre bir ekosistemdir. Dijital concierge, QR hizmet yönetimi, restoran stokları ve genel otel envanteri (teknik, temizlik vb.) kontrolü ile işletmenizin kâr potansiyelini maksimize edin.
                             </p>
-                            <div className="space-y-6 mb-12">
+                            <div className="space-y-4 md:space-y-6 mb-8 md:mb-12">
                                 {[
                                     { icon: FaChartLine, text: 'Restoran ve Oda Servisi satışlarında %40\'a varan artış.' },
                                     { icon: FaGlobe, text: 'Transfer, Tur ve Aktivite yönlendirmelerinden komisyon kazancı.' },
                                     { icon: FaBell, text: 'QR reklam alanları ile yerel işletmelerden reklam geliri.' }
                                 ].map((item, i) => (
-                                    <div key={i} className="flex items-center gap-5 text-slate-800 font-bold text-lg">
-                                        <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
-                                            <item.icon />
+                                    <div key={i} className="flex items-center gap-3 md:gap-5 text-slate-800 font-bold text-sm md:text-lg">
+                                        <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                                            <item.icon className="text-sm md:text-base" />
                                         </div>
                                         {item.text}
                                     </div>
@@ -594,7 +594,7 @@ export default function PremiumLanding() {
             </section>
 
             {/* Trust Section + Hardware */}
-            <section className="py-16 md:py-24 bg-slate-50 overflow-hidden">
+            <section className="py-12 md:py-16 bg-slate-50 overflow-hidden">
                 <div className="container mx-auto px-4 max-w-6xl">
                     <div className="bg-gradient-to-br from-blue-700 to-indigo-900 rounded-[3rem] p-10 md:p-16 text-white text-center relative shadow-2xl">
                         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
@@ -632,7 +632,7 @@ export default function PremiumLanding() {
             </section>
 
             {/* Pricing Section */}
-            <section className="py-24 bg-white overflow-hidden">
+            <section className="py-12 md:py-16 bg-white overflow-hidden">
                 <div className="container mx-auto px-4 max-w-7xl">
                     <div className="text-center mb-16 px-4">
                         <motion.span
@@ -772,19 +772,19 @@ export default function PremiumLanding() {
                         className="bg-[#0B1628] rounded-[2.5rem] p-10 md:p-14 text-white relative overflow-hidden shadow-2xl"
                     >
                         <div className="absolute top-0 right-0 w-40 h-40 bg-blue-600/10 blur-[60px] rounded-full"></div>
-                        <h3 className="text-2xl md:text-3xl font-black text-center mb-12 relative z-10">Yatırım Geri Dönüş (ROI) Tahmini</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10 relative z-10">
-                            <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 text-center backdrop-blur-sm">
-                                <div className="text-4xl md:text-5xl font-black text-emerald-400 mb-2">+%37</div>
-                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Hizmet Geliri Artışı</div>
+                        <h3 className="text-xl md:text-3xl font-black text-center mb-8 md:mb-12 relative z-10">Yatırım Geri Dönüş (ROI) Tahmini</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 mb-8 md:mb-10 relative z-10">
+                            <div className="bg-white/5 border border-white/10 rounded-xl md:rounded-[2rem] p-5 md:p-8 text-center backdrop-blur-sm">
+                                <div className="text-3xl md:text-5xl font-black text-emerald-400 mb-1 md:mb-2">+%37</div>
+                                <div className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 leading-tight">Hizmet Geliri Artışı</div>
                             </div>
-                            <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 text-center backdrop-blur-sm">
-                                <div className="text-4xl md:text-5xl font-black text-blue-400 mb-2">%50</div>
-                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Telefon Trafiği Azalması</div>
+                            <div className="bg-white/5 border border-white/10 rounded-xl md:rounded-[2rem] p-5 md:p-8 text-center backdrop-blur-sm">
+                                <div className="text-3xl md:text-5xl font-black text-blue-400 mb-1 md:mb-2">%50</div>
+                                <div className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 leading-tight">Telefon Trafiği Azalması</div>
                             </div>
-                            <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 text-center backdrop-blur-sm">
-                                <div className="text-4xl md:text-5xl font-black text-pink-400 mb-2">Sıfır</div>
-                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Operasyonel Hata</div>
+                            <div className="bg-white/5 border border-white/10 rounded-xl md:rounded-[2rem] p-5 md:p-8 text-center backdrop-blur-sm col-span-2 md:col-span-1">
+                                <div className="text-3xl md:text-5xl font-black text-pink-400 mb-1 md:mb-2">Sıfır</div>
+                                <div className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 leading-tight">Operasyonel Hata</div>
                             </div>
                         </div>
                         <p className="text-center text-slate-400 italic text-sm font-medium relative z-10">
@@ -795,7 +795,7 @@ export default function PremiumLanding() {
             </section>
 
             {/* Fast Setup - Redesigned to match Image 2 */}
-            <section className="py-20 bg-blue-600 relative overflow-hidden">
+            <section className="py-12 md:py-16 bg-blue-600 relative overflow-hidden">
                 <div className="container mx-auto px-4 max-w-5xl relative z-10">
                     <div className="bg-white rounded-[2.5rem] p-10 md:p-16 shadow-2xl relative">
                         <div className="mx-auto max-w-3xl text-center">
@@ -830,7 +830,7 @@ export default function PremiumLanding() {
             </section>
 
             {/* Blog Section */}
-            <section className="py-24 bg-slate-50 relative overflow-hidden">
+            <section className="py-12 md:py-16 bg-slate-50 relative overflow-hidden">
                 <div className="container mx-auto px-4 max-w-7xl">
                     <div className="text-center mb-16">
                         <motion.span
@@ -924,7 +924,7 @@ export default function PremiumLanding() {
 
 
             {/* FAQ */}
-            <section className="py-24 bg-white px-4">
+            <section className="py-12 md:py-16 bg-white px-4">
                 <div className="container mx-auto max-w-6xl">
                     <div className="text-center mb-12 md:mb-16">
                         <h2 className="text-3xl md:text-5xl font-black mb-4 text-slate-900">{t('faq')}</h2>
