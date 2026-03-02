@@ -655,26 +655,48 @@ export default function PremiumLanding() {
                         {[
                             {
                                 title: t('planBasicTitle'),
-                                price: t('planBasicPrice'),
+                                price: t('planBasicPriceTL'),
                                 desc: t('planBasicDesc'),
-                                features: [t('planBasicFeat1'), t('planBasicFeat2'), t('planBasicFeat3')],
+                                features: [
+                                    t('planBasicFeat1'),
+                                    t('planBasicFeat2'),
+                                    t('planBasicFeat3'),
+                                    t('planBasicFeat4'),
+                                    t('planBasicFeat5'),
+                                    t('planBasicFeat6')
+                                ],
                                 color: "blue",
                                 badge: "POPULAR"
                             },
                             {
                                 title: t('planProTitle'),
-                                price: t('planProPrice'),
+                                price: t('planProPriceTL'),
                                 desc: t('planProDesc'),
-                                features: [t('planProFeat1'), t('planProFeat2'), t('planProFeat3')],
+                                features: [
+                                    t('planProFeat1'),
+                                    t('planProFeat2'),
+                                    t('planProFeat3'),
+                                    t('planProFeat4'),
+                                    t('planProFeat5'),
+                                    t('planProFeat6')
+                                ],
                                 color: "emerald",
                                 badge: "BEST VALUE",
                                 featured: true
                             },
                             {
                                 title: t('planEntTitle'),
-                                price: t('planEntPrice'),
+                                price: t('planEntPriceTL'),
                                 desc: t('planEntDesc'),
-                                features: [t('planEntFeat1'), t('planEntFeat2'), t('planEntFeat3')],
+                                features: [
+                                    t('planEntFeat1'),
+                                    t('planEntFeat2'),
+                                    t('planEntFeat3'),
+                                    t('planEntFeat4'),
+                                    t('planEntFeat5'),
+                                    t('planEntFeat6'),
+                                    t('planEntFeat7')
+                                ],
                                 color: "slate",
                                 badge: "CORPORATE"
                             }
