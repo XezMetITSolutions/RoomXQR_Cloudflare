@@ -1,0 +1,22 @@
+# RoomXQR Browser Language Redirect
+RewriteEngine On
+RewriteBase /
+
+# 1. Turkish (tr)
+RewriteCond %{HTTP:Accept-Language} ^tr [NC]
+RewriteRule ^$ /tr [R=302,L]
+
+# 2. German (de)
+RewriteCond %{HTTP:Accept-Language} ^de [NC]
+RewriteRule ^$ /de [R=302,L]
+
+# 3. Russian (ru)
+RewriteCond %{HTTP:Accept-Language} ^ru [NC]
+RewriteRule ^$ /ru [R=302,L]
+
+# 4. Arabic (ar)
+RewriteCond %{HTTP:Accept-Language} ^ar [NC]
+RewriteRule ^$ /ar [R=302,L]
+
+# 5. Default to English (en) for others
+RewriteRule ^$ /en [R=302,L]

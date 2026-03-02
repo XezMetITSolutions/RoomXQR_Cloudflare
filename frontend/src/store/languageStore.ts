@@ -12,8 +12,8 @@ export interface Translations {
   [key: string]: string;
 }
 
-// Müşteriye sunulan diller: sadece Türkçe, Almanca, İngilizce, Rusça (DeepL ile; karışmasın)
-export const CUSTOMER_LANGUAGES = ['tr', 'de', 'en', 'ru'] as const;
+// Müşteriye sunulan diller: Türkçe, Almanca, İngilizce, Rusça, Arapça
+export const CUSTOMER_LANGUAGES = ['tr', 'de', 'en', 'ru', 'ar'] as const;
 export type CustomerLanguageCode = typeof CUSTOMER_LANGUAGES[number];
 
 // Dil tanımları (müşteri seçenekleri önce)

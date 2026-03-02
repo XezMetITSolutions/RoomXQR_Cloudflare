@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const supportedLocales = ['tr', 'de', 'en', 'ru'];
+const supportedLocales = ['tr', 'de', 'en', 'ru', 'ar'];
 
 export function middleware(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
@@ -35,7 +35,22 @@ export function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
-    // Root page and all other pages should stay as they are, no redirect needed
+    // If it's the root page, redirect based on browser language
+    if (pathname === '/') {
+        const acceptLanguage = request.headers.get('accept-language');
+        let targetLocale = 'en'; // Default to English
+
+        if (acceptLanguage) {
+            if (acceptLanguage.includes('tr')) targetLocale = 'tr';
+            else if (acceptLanguage.includes('de')) targetLocale = 'de';
+            else if (acceptLanguage.includes('ru')) targetLocale = 'ru';
+            else if (acceptLanguage.includes('ar')) targetLocale = 'ar';
+        }
+
+        const url = new URL(`/${targetLocale}`, request.url);
+        return NextResponse.redirect(url);
+    }
+
     return NextResponse.next();
 }
 
