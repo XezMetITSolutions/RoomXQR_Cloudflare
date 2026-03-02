@@ -7,7 +7,7 @@ import {
     FaChartLine, FaUsers, FaClock, FaCheckCircle, FaRocket,
     FaShieldAlt, FaStar, FaPhone, FaChevronDown,
     FaBrain, FaGlobe, FaDesktop, FaLaptop, FaPrint, FaCreditCard as FaCreditCardIcon,
-    FaArrowRight, FaCogs, FaCreditCard, FaLayerGroup, FaWhatsapp, FaEnvelope, FaTimes
+    FaArrowRight, FaCogs, FaCreditCard, FaLayerGroup, FaWhatsapp, FaEnvelope, FaTimes, FaWifi
 } from 'react-icons/fa';
 import { useLanguageStore } from '@/store/languageStore';
 
@@ -319,21 +319,23 @@ export default function PremiumLanding() {
                             <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-3xl mb-8 shadow-lg">
                                 <FaUsers />
                             </div>
-                            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-6 leading-tight">
+                            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-4 leading-tight">
                                 {t('guestExperienceTitle')}
                             </h2>
-                            <p className="text-lg text-slate-600 font-bold mb-8 italic">
-                                {t('guestExperienceSubtitle')}
+                            <p className="text-base text-slate-500 font-bold mb-8 italic">
+                                Uygulama indirme derdi olmadan; odadaki tek bir QR kodla:
                             </p>
-                            <div className="space-y-6">
+                            <div className="space-y-4">
                                 {[
-                                    { icon: FaShoppingCart, text: t('guestExp1'), color: "text-blue-500" },
-                                    { icon: FaLayerGroup, text: t('guestExp2'), color: "text-purple-500" },
-                                    { icon: FaBell, text: t('guestExp3'), color: "text-orange-500" }
+                                    { icon: FaQrcode, color: 'text-blue-500', text: 'Otel bilgilerine, WiFi şifresine ve tüm otel hizmetlerine tek tıkla anında ulaşır.' },
+                                    { icon: FaShoppingCart, color: 'text-orange-500', text: 'Oda servisi siparişini menüden içerikler, alerjenler ve adet seçerek kolayca verir — restoran kullanımı otomatik artar.' },
+                                    { icon: FaBell, color: 'text-purple-500', text: 'Happy hour, SPA fırsatı, güncel etkinlik gibi anlık duyurulardan haberdar olur; otelin tüm imkânlarını aktif kullanır.' },
+                                    { icon: FaLayerGroup, color: 'text-emerald-500', text: 'Dijital Concierge ile transfer, tur ve aktivite taleplerini doğrudan iletir.' },
+                                    { icon: FaStar, color: 'text-yellow-500', text: 'Memnuniyetini veya sorununu kolayca iletir; sizi Google\'da öne çıkaran yorum yapmaya ve sosyal medyada organik trafik oluşturmaya yönlendirilir.' }
                                 ].map((item, i) => (
-                                    <div key={i} className="flex gap-4 items-start bg-white p-6 rounded-2xl border border-slate-100 shadow-sm transition-all hover:scale-[1.02]">
-                                        <item.icon className={`${item.color} text-2xl mt-1 shrink-0`} />
-                                        <p className="text-slate-700 font-medium text-lg leading-relaxed">{item.text}</p>
+                                    <div key={i} className="flex gap-4 items-start bg-white p-5 rounded-2xl border border-slate-100 shadow-sm transition-all hover:scale-[1.02]">
+                                        <item.icon className={`${item.color} text-xl mt-0.5 shrink-0`} />
+                                        <p className="text-slate-700 font-medium text-sm md:text-base leading-relaxed">{item.text}</p>
                                     </div>
                                 ))}
                             </div>
@@ -351,21 +353,22 @@ export default function PremiumLanding() {
                                 <div className="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center text-white text-3xl mb-8 shadow-lg shadow-emerald-500/20">
                                     <FaChartLine />
                                 </div>
-                                <h2 className="text-3xl md:text-4xl font-black mb-6 leading-tight">
+                                <h2 className="text-3xl md:text-4xl font-black mb-4 leading-tight">
                                     {t('businessBenefitsTitle')}
                                 </h2>
-                                <p className="text-lg text-slate-400 font-bold mb-8 italic">
-                                    {t('businessBenefitsDesc')}
+                                <p className="text-base text-slate-400 font-bold mb-8 italic">
+                                    Otel kullanımı maksimuma çıkar, size yüksek kâr getirir.
                                 </p>
-                                <div className="space-y-6">
+                                <div className="space-y-4">
                                     {[
-                                        { icon: FaRocket, text: t('businessBenefit1'), color: "text-emerald-400" },
-                                        { icon: FaStar, text: t('businessBenefit2'), color: "text-blue-400" },
-                                        { icon: FaCheckCircle, text: t('businessBenefit3'), color: "text-cyan-400" }
+                                        { icon: FaRocket, color: 'text-emerald-400', text: 'Operasyonel Hafiflik: Resepsiyon ve servis üzerindeki iş yükünü %50 oranında azaltır — telefon trafiği sıfıra iner.' },
+                                        { icon: FaCogs, color: 'text-blue-400', text: 'Menü Yönetimi: Tek tıkla oluşturun, güncelleyin, fiyatlandırın. Stok tükenince ürün otomatik gizlenir — sıfır manuel takip.' },
+                                        { icon: FaStar, color: 'text-yellow-400', text: 'Ek Gelir Kanalları: QR reklam alanları ve concierge komisyonlarıyla oda dışı gelirlerinizi %40 artırın.' },
+                                        { icon: FaCheckCircle, color: 'text-cyan-400', text: 'Tam Denetim: Satış analizi, fire takibi, gider raporu, personel performansı — her şey tek panelde, her yerden.' }
                                     ].map((item, i) => (
-                                        <div key={i} className="flex gap-4 items-start bg-white/5 p-6 rounded-2xl border border-white/5 backdrop-blur-sm transition-all hover:scale-[1.02]">
-                                            <item.icon className={`${item.color} text-2xl mt-1 shrink-0`} />
-                                            <p className="text-slate-200 font-medium text-lg leading-relaxed">{item.text}</p>
+                                        <div key={i} className="flex gap-4 items-start bg-white/5 p-5 rounded-2xl border border-white/5 backdrop-blur-sm transition-all hover:scale-[1.02]">
+                                            <item.icon className={`${item.color} text-xl mt-0.5 shrink-0`} />
+                                            <p className="text-slate-200 font-medium text-sm md:text-base leading-relaxed">{item.text}</p>
                                         </div>
                                     ))}
                                 </div>
@@ -442,118 +445,65 @@ export default function PremiumLanding() {
             {/* Dijital Concierge Section */}
             <section className="py-16 md:py-24 bg-white relative overflow-hidden">
                 <div className="container mx-auto px-4">
-                    <div className="max-w-6xl mx-auto">
+                    <div className="max-w-5xl mx-auto">
                         {/* Header */}
                         <div className="text-center mb-12">
                             <span className="inline-block bg-emerald-100 text-emerald-700 px-5 py-2 rounded-full text-xs font-black tracking-[0.2em] uppercase mb-4">DİJİTAL CONCİERGE</span>
                             <h2 className="text-3xl md:text-5xl font-black text-slate-900 mb-4 leading-tight">
                                 Misafirinizin Her İhtiyacı, <span className="text-emerald-600">Tek QR'da</span>
                             </h2>
-                            <p className="text-lg text-slate-500 font-medium max-w-3xl mx-auto">
-                                Gerçek bir concierge gibi çalışan dijital asistan: Otel içi hizmetlerden otel dışı turizm imkânlarına kadar her şeyi kapsar — ve her yönlendirme size <strong className="text-emerald-600">yeni bir gelir kapısı</strong> açar.
+                            <p className="text-lg text-slate-500 font-medium max-w-2xl mx-auto">
+                                QR kod ile erişilen dijital concierge, misafirinizin otel içindeki ve dışındaki tüm ihtiyaçlarını karşılarken size yeni <strong className="text-emerald-600">komisyon gelirleri</strong> yaratır.
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            {/* Otel İçi */}
-                            <motion.div
-                                initial={{ opacity: 0, x: -30 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                                className="bg-slate-900 rounded-[2.5rem] p-8 md:p-10 text-white relative overflow-hidden"
-                            >
-                                <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-500/10 blur-[60px] rounded-full"></div>
-                                <div className="relative z-10">
-                                    <div className="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center text-2xl mb-6 shadow-lg shadow-emerald-500/20">
-                                        <FaBell />
+                        {/* Features Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
+                            {[
+                                { icon: FaShoppingCart, color: 'bg-blue-500', title: 'Oda Servisi & Sipariş', desc: 'Menüden oda servisi siparişi, özel not ve alerjen seçeneğiyle — tek tıkla mutfağa düşer.' },
+                                { icon: FaMagic, color: 'bg-purple-500', title: 'Temizlik & Ekstra Malzeme', desc: 'Havlu, ek yatak, temizlik gibi talepler kat hizmetlerine anında iletilir.' },
+                                { icon: FaCogs, color: 'bg-orange-500', title: 'Teknik Destek', desc: 'Arıza ve sorunlar teknik servise doğrudan aktarılır, misafir beklemez.' },
+                                { icon: FaGlobe, color: 'bg-emerald-500', title: 'Transfer & Tur Rezervasyonu', desc: 'Havalimanı transferi, şehir turu ve aktivite rezervasyonu — hepsi otelinizden.' },
+                                { icon: FaStar, color: 'bg-yellow-500', title: 'SPA, Masaj & Wellness', desc: 'Otel içi veya anlaşmalı işletmelere SPA ve masaj yönlendirmesi.' },
+                                { icon: FaBell, color: 'bg-pink-500', title: 'Etkinlik & Eğlence', desc: 'Konser, tiyatro, günce kadar etkinlik bilet yönlendirmesi — komisyon kazancıyla.' }
+                            ].map((item, i) => (
+                                <motion.div
+                                    key={i}
+                                    initial={{ opacity: 0, y: 15 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: i * 0.05 }}
+                                    className="bg-slate-50 border border-slate-100 rounded-[1.8rem] p-6 flex flex-col gap-4 hover:shadow-lg hover:border-emerald-200 transition-all group"
+                                >
+                                    <div className={`${item.color} w-12 h-12 rounded-xl flex items-center justify-center text-white text-xl shadow group-hover:scale-110 transition-transform`}>
+                                        <item.icon />
                                     </div>
-                                    <h3 className="text-2xl font-black mb-2">Otel İçi Hizmetler</h3>
-                                    <p className="text-slate-400 font-medium mb-6 text-sm">Operasyonel yükünüzü %50 azaltır</p>
-                                    <div className="space-y-3">
-                                        {[
-                                            { icon: FaShoppingCart, text: 'Oda servisi & menü siparişi — tek tıkla mutfağa', highlight: true },
-                                            { icon: FaMagic, text: 'Havlu, temizlik, ek malzeme talepleri — kat hizmetlerine anında', highlight: false },
-                                            { icon: FaCogs, text: 'Teknik arıza bildirimi — teknik servise direkt', highlight: false },
-                                            { icon: FaBell, text: 'Resepsiyona çevrimiçi mesaj — telefon trafiği sıfıra iner', highlight: true },
-                                            { icon: FaStar, text: 'Otel etkinlikleri & kampanya duyuruları — anında tüm odalara', highlight: false },
-                                            { icon: FaCheckCircle, text: 'Memnuniyet anketi & Google yorum yönlendirme', highlight: false },
-                                        ].map((item, i) => (
-                                            <div key={i} className={`flex items-start gap-3 p-3 rounded-xl ${item.highlight ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-white/5'}`}>
-                                                <item.icon className={`mt-0.5 shrink-0 text-sm ${item.highlight ? 'text-emerald-400' : 'text-slate-400'}`} />
-                                                <span className={`text-sm font-bold ${item.highlight ? 'text-white' : 'text-slate-300'}`}>{item.text}</span>
-                                            </div>
-                                        ))}
+                                    <div>
+                                        <h4 className="font-black text-slate-900 mb-1">{item.title}</h4>
+                                        <p className="text-slate-500 text-sm font-medium leading-relaxed">{item.desc}</p>
                                     </div>
-                                </div>
-                            </motion.div>
-
-                            {/* Otel Dışı & Gelir */}
-                            <motion.div
-                                initial={{ opacity: 0, x: 30 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                                className="flex flex-col gap-6"
-                            >
-                                {/* Dış Concierge */}
-                                <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[2.5rem] p-8 text-white relative overflow-hidden flex-1">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-[40px] rounded-full"></div>
-                                    <div className="relative z-10">
-                                        <div className="w-14 h-14 bg-white/20 backdrop-blur rounded-2xl flex items-center justify-center text-2xl mb-5">
-                                            <FaGlobe />
-                                        </div>
-                                        <h3 className="text-xl font-black mb-1">Otel Dışı Turizm Yönlendirme</h3>
-                                        <p className="text-blue-200 text-sm font-bold mb-5">Her yönlendirme = Komisyon geliri</p>
-                                        <div className="space-y-2">
-                                            {[
-                                                '🚗 Havalimanı & şehir içi transfer rezervasyonu',
-                                                '🗺️ Şehir turu & aktivite organizasyonu',
-                                                '🍽️ Restoran rezervasyonu (komisyon ile)',
-                                                '💆 SPA, masaj, wellness yönlendirme',
-                                                '🎭 Etkinlik & eğlence bilet yönlendirme',
-                                            ].map((item, i) => (
-                                                <div key={i} className="flex items-center gap-2 text-sm text-white/90 font-bold">
-                                                    <span>{item}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Gelir Vurgusu */}
-                                <div className="bg-amber-50 border-2 border-amber-200 rounded-[2rem] p-6">
-                                    <div className="flex items-start gap-4">
-                                        <div className="w-12 h-12 bg-amber-400 rounded-2xl flex items-center justify-center text-white text-xl shrink-0">
-                                            <FaChartLine />
-                                        </div>
-                                        <div>
-                                            <h4 className="font-black text-slate-900 mb-1">Yeni Komisyon Gelir Kanalı</h4>
-                                            <p className="text-slate-600 text-sm font-medium leading-relaxed">
-                                                Misafiri dışarıya kaçırmadan tutun. Her turizm yönlendirmesi, transfer ve aktivite rezervasyonundan otomatik komisyon kazanın — <strong>ek personel gerekmez.</strong>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </motion.div>
+                                </motion.div>
+                            ))}
                         </div>
 
-                        {/* Bottom CTA */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            className="mt-10 bg-emerald-600 rounded-[2rem] p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6"
-                        >
-                            <div>
-                                <p className="font-black text-xl mb-1">Hizmet akışınızı dijitalleştirin</p>
-                                <p className="text-emerald-100 font-medium text-sm">Misafir taleplerini saniyeler içinde ilgili birime aktarın, operasyonel yükü kökten azaltın.</p>
+                        {/* Revenue Banner */}
+                        <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-[2rem] p-7 flex flex-col md:flex-row items-center justify-between gap-5 text-white">
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-2xl shrink-0"><FaChartLine /></div>
+                                <div>
+                                    <h4 className="font-black text-lg mb-1">Her Yönlendirme = Komisyon Geliri</h4>
+                                    <p className="text-emerald-100 text-sm font-medium">
+                                        Transfer, tur ve aktivite yönlendirmelerinden otomatik komisyon kazanın. Ek personel gerekmez — sistem kendiliğinden çalışır.
+                                    </p>
+                                </div>
                             </div>
                             <button
                                 onClick={() => setShowDemoModal(true)}
-                                className="shrink-0 px-8 py-4 bg-white text-emerald-700 font-black rounded-2xl hover:scale-105 transition-all shadow-lg text-sm uppercase tracking-widest"
+                                className="shrink-0 px-7 py-3.5 bg-white text-emerald-700 font-black rounded-2xl hover:scale-105 transition-all shadow-lg text-sm uppercase tracking-widest"
                             >
                                 Demo Al
                             </button>
-                        </motion.div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -638,54 +588,41 @@ export default function PremiumLanding() {
                 </div>
             </section>
 
-            {/* Trust Section */}
+            {/* Trust Section + Hardware */}
             <section className="py-16 md:py-24 bg-slate-50 overflow-hidden">
                 <div className="container mx-auto px-4 max-w-6xl">
-                    <div className="bg-gradient-to-br from-blue-700 to-indigo-900 rounded-[3rem] p-10 md:p-20 text-white text-center relative shadow-2xl">
+                    <div className="bg-gradient-to-br from-blue-700 to-indigo-900 rounded-[3rem] p-10 md:p-16 text-white text-center relative shadow-2xl">
                         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
                         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.5 }} className="relative z-10">
                             <span className="text-blue-200 font-black tracking-[0.3em] text-[10px] md:text-xs uppercase block mb-6">{t('noChangeTitle')}</span>
-                            <h2 className="text-3xl md:text-6xl font-black mb-6 md:mb-8 leading-tight">{t('noChangeSubtitle')}</h2>
-                            <p className="text-lg md:text-2xl text-blue-100/80 mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed">{t('noChangeDesc')}</p>
-                            <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl text-lg md:text-xl font-black shadow-2xl">
+                            <h2 className="text-3xl md:text-5xl font-black mb-4 md:mb-6 leading-tight">{t('noChangeSubtitle')}</h2>
+                            <p className="text-lg md:text-xl text-blue-100/80 mb-8 md:mb-12 max-w-3xl mx-auto leading-relaxed">{t('noChangeDesc')}</p>
+                            <div className="inline-flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl text-base md:text-lg font-black shadow-2xl mb-10">
                                 <FaRocket className="text-emerald-400" /> {t('finalSlogan')}
+                            </div>
+
+                            <div className="border-t border-white/10 pt-10">
+                                <p className="text-white font-black text-lg mb-6">
+                                    Donanım ihtiyacınız mı var? İhtiyaç duyduğunuzda tam paket sunuyoruz.
+                                </p>
+                                <div className="flex flex-wrap justify-center gap-4">
+                                    {[
+                                        { icon: FaLaptop, label: 'POS Bilgisayarları' },
+                                        { icon: FaPrint, label: 'Adisyon & Fiş Yazıcıları' },
+                                        { icon: FaCreditCardIcon, label: 'Ödeme Cihazları' }
+                                    ].map((item, i) => (
+                                        <div
+                                            key={i}
+                                            className="flex items-center gap-3 px-5 py-3 bg-white/5 border border-white/10 hover:bg-white hover:text-blue-700 transition-all cursor-pointer rounded-xl font-bold text-sm"
+                                            onClick={() => setShowDemoModal(true)}
+                                        >
+                                            <item.icon /> {item.label}
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </motion.div>
                     </div>
-                </div>
-            </section>
-
-            {/* Hardware Section */}
-            <section className="py-16 md:py-20 bg-blue-50 overflow-hidden">
-                <div className="container mx-auto px-4 max-w-5xl">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-50px" }}
-                        className="text-center mb-10"
-                    >
-                        <p className="text-blue-700 font-black text-lg md:text-xl mb-6">
-                            Donanım ihtiyacınız mı var? İhtiyaç duyduğunuzda tam paket sunuyoruz.
-                        </p>
-                        <div className="flex flex-wrap justify-center gap-4">
-                            {[
-                                { icon: FaLaptop, label: 'POS Bilgisayarları' },
-                                { icon: FaPrint, label: 'Adisyon & Fiş Yazıcıları' },
-                                { icon: FaCreditCardIcon, label: 'Ödeme Cihazları' }
-                            ].map((item, i) => (
-                                <motion.button
-                                    key={i}
-                                    onClick={() => setShowDemoModal(true)}
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.97 }}
-                                    className="flex items-center gap-3 px-6 py-3.5 bg-white border-2 border-blue-200 hover:border-blue-500 hover:bg-blue-600 hover:text-white text-blue-900 font-black rounded-2xl shadow-sm transition-all text-sm md:text-base"
-                                >
-                                    <item.icon className="text-lg" />
-                                    {item.label}
-                                </motion.button>
-                            ))}
-                        </div>
-                    </motion.div>
                 </div>
             </section>
 
@@ -801,6 +738,38 @@ export default function PremiumLanding() {
                             </div>
                         </div>
                     </div>
+                </div>
+            </section>
+
+            {/* ROI Calculator Section */}
+            <section className="py-12 bg-white">
+                <div className="container mx-auto px-4 max-w-4xl">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 10 }}
+                        viewport={{ once: true }}
+                        className="bg-[#0B1628] rounded-[2.5rem] p-10 md:p-14 text-white relative overflow-hidden shadow-2xl"
+                    >
+                        <div className="absolute top-0 right-0 w-40 h-40 bg-blue-600/10 blur-[60px] rounded-full"></div>
+                        <h3 className="text-2xl md:text-3xl font-black text-center mb-12 relative z-10">Yatırım Geri Dönüş (ROI) Tahmini</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10 relative z-10">
+                            <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 text-center backdrop-blur-sm">
+                                <div className="text-4xl md:text-5xl font-black text-emerald-400 mb-2">+%37</div>
+                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Hizmet Geliri Artışı</div>
+                            </div>
+                            <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 text-center backdrop-blur-sm">
+                                <div className="text-4xl md:text-5xl font-black text-blue-400 mb-2">%50</div>
+                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Telefon Trafiği Azalması</div>
+                            </div>
+                            <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 text-center backdrop-blur-sm">
+                                <div className="text-4xl md:text-5xl font-black text-pink-400 mb-2">Sıfır</div>
+                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Operasyonel Hata</div>
+                            </div>
+                        </div>
+                        <p className="text-center text-slate-400 italic text-sm font-medium relative z-10">
+                            &quot; Mevcut müşteri verilerine göre: RoomXQR kullanımı ile operasyonel verimlilik artarken, aylık kâr ortalama %22 yükselmektedir. &quot;
+                        </p>
+                    </motion.div>
                 </div>
             </section>
 
@@ -1044,25 +1013,25 @@ export default function PremiumLanding() {
 
             {/* FAQ */}
             <section className="py-24 bg-white px-4">
-                <div className="container mx-auto max-w-4xl">
+                <div className="container mx-auto max-w-6xl">
                     <div className="text-center mb-12 md:mb-16">
                         <h2 className="text-3xl md:text-5xl font-black mb-4 text-slate-900">{t('faq')}</h2>
                         <p className="text-lg text-slate-500 font-medium">{t('faqDesc')}</p>
                     </div>
-                    <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {faqs.map((faq, i) => (
                             <div key={i} className="border border-slate-100 rounded-[2rem] bg-slate-50 overflow-hidden transition-all hover:shadow-md">
                                 <button onClick={() => toggleFAQ(i)} className="w-full p-6 text-left flex items-center justify-between hover:bg-white transition-colors">
                                     <div className="flex items-center gap-4">
                                         <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 text-lg"><faq.icon /></div>
-                                        <span className="font-bold text-lg text-slate-900">{faq.question}</span>
+                                        <span className="font-bold text-base md:text-lg text-slate-900 leading-tight">{faq.question}</span>
                                     </div>
                                     <FaChevronDown className={`text-slate-400 transition-transform duration-300 ${openFAQ === i ? 'rotate-180' : ''}`} />
                                 </button>
                                 <AnimatePresence>
                                     {openFAQ === i && (
-                                        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden bg-white px-6 pb-6 text-slate-600 font-medium text-base leading-relaxed border-t border-slate-50">
-                                            <div className="pt-4 px-10">{faq.answer}</div>
+                                        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden bg-white px-6 pb-6 text-slate-600 font-medium text-sm md:text-base leading-relaxed border-t border-slate-50">
+                                            <div className="pt-4 px-4 md:px-10">{faq.answer}</div>
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
