@@ -150,6 +150,20 @@ export default function PremiumLanding() {
                                 </a>
                             </div>
                         </motion.div>
+
+                        {/* Mobile Hero Image - Below Content */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, delay: 0.3 }}
+                            className="mt-6 rounded-3xl overflow-hidden shadow-2xl"
+                        >
+                            <img
+                                src="/images/hero-mobile-showcase.png"
+                                alt="RoomXQR Showcase"
+                                className="w-full h-auto object-cover"
+                            />
+                        </motion.div>
                     </div>
                 </div>
 
