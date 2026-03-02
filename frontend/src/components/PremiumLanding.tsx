@@ -122,13 +122,15 @@ export default function PremiumLanding() {
                             </div>
 
                             <h1 className="text-3xl font-black mb-4 leading-[1.15] text-slate-900 drop-shadow-sm">
+                                <span className="text-slate-900">{t('heroTitle1')} </span>
+                                <span className="text-slate-900">{t('heroTitle2')} </span>
                                 <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                                    {t('newIntroTitle')}
+                                    {t('heroTitle3')}
                                 </span>
                             </h1>
 
                             <p className="text-base text-slate-600 font-semibold leading-relaxed px-2">
-                                {t('newIntroDesc')}
+                                {t('heroSubtitle1')} {t('heroSubtitle2')}
                             </p>
                         </motion.div>
 
