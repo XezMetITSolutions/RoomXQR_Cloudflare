@@ -37,10 +37,10 @@ export default function RootLayout({
         <meta property="twitter:image" content="https://roomxqr.com/logo.png" />
 
         <link rel="canonical" href="https://roomxqr.com/" />
-        <link rel="icon" type="image/png" href="/favicon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+        <link rel="icon" type="image/png" href="/logo.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/logo.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/logo.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/logo.png" />
 
         {/* Structured Data (JSON-LD) for SEO */}
         <script

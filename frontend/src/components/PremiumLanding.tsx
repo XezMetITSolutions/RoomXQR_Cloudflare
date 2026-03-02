@@ -105,64 +105,76 @@ export default function PremiumLanding() {
 
             {/* Hero Section */}
             <section className="relative min-h-[70vh] md:min-h-[75vh] flex items-center pt-16 md:pt-20 pb-10 md:pb-12 overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 text-slate-900">
-                {/* Mobile Hero - Simple Card Style */}
-                <div className="md:hidden w-full relative z-10">
-                    <div className="container mx-auto px-4">
-                        {/* Mobile Hero Content Card */}
+                {/* Mobile Hero - Premium Integrated Style */}
+                <div className="md:hidden w-full relative z-10 pt-4 pb-0">
+                    <div className="container mx-auto px-4 flex flex-col items-center">
                         <motion.div
-                            initial={{ opacity: 0, y: 30 }}
+                            initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6 }}
-                            className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/50"
+                            className="text-center mb-8 w-full"
                         >
-                            <div className="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-blue-600/15 to-indigo-600/15 rounded-full border border-blue-600/30 mb-4">
-                                <FaStar className="text-yellow-500 mr-1.5 text-xs animate-pulse" />
-                                <span className="text-[9px] font-black tracking-widest uppercase text-blue-700">
+                            <div className="inline-flex items-center px-4 py-2 bg-blue-600/10 rounded-full border border-blue-600/20 mb-6 mx-auto">
+                                <FaStar className="text-yellow-500 mr-2 text-[10px] animate-pulse" />
+                                <span className="text-[10px] font-black tracking-widest uppercase text-blue-700">
                                     {t('heroBadge')}
                                 </span>
                             </div>
 
-                            <h1 className="text-2xl font-black mb-3 leading-tight">
+                            <h1 className="text-3xl font-black mb-4 leading-[1.15] text-slate-900 drop-shadow-sm">
                                 <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
                                     {t('newIntroTitle')}
                                 </span>
                             </h1>
 
-                            <p className="text-sm text-slate-600 font-medium mb-5 leading-relaxed">
-                                Tek bir QR kod ile tüm otel operasyonlarınızı yönetin. AI destekli menü, anlık sipariş yönetimi ve %40 maliyet azaltma.
+                            <p className="text-base text-slate-600 font-semibold leading-relaxed px-2">
+                                {t('newIntroDesc')}
                             </p>
+                        </motion.div>
 
-                            <div className="flex flex-col gap-3">
-                                <button
-                                    onClick={() => setShowDemoModal(true)}
-                                    className="w-full px-6 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-black text-base shadow-lg flex items-center justify-center gap-2"
-                                >
-                                    <FaUsers className="text-lg" /> 
-                                    <span>{t('requestDemo')}</span>
-                                </button>
-                                <a
-                                    href="https://wa.me/436608682201"
-                                    target="_blank"
-                                    className="w-full px-6 py-3.5 bg-white border-2 border-blue-600 text-blue-600 rounded-xl font-black text-base shadow-lg flex items-center justify-center gap-2"
-                                >
-                                    <FaRocket className="text-lg text-emerald-500" /> 
-                                    <span>{t('startNow')}</span>
-                                </a>
+                        {/* Large Integrated Image Section */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                            className="w-full relative mb-10 group"
+                        >
+                            {/* Decorative Glow */}
+                            <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 blur-3xl -z-10 rounded-full opacity-60"></div>
+
+                            <div className="rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white relative">
+                                <img
+                                    src="/images/hero.png" // Using the original image from web design
+                                    alt="RoomXQR Mobile Showcase"
+                                    className="w-full h-auto object-cover"
+                                />
+                                {/* Bottom soft overlay for better integration */}
+                                <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/20 to-transparent"></div>
                             </div>
                         </motion.div>
 
-                        {/* Mobile Hero Image - Below Content */}
+                        {/* Call to Action Buttons - Placed under the image as requested */}
                         <motion.div
-                            initial={{ opacity: 0, y: 30 }}
+                            initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.6, delay: 0.3 }}
-                            className="mt-6 rounded-3xl overflow-hidden shadow-2xl"
+                            transition={{ duration: 0.6, delay: 0.4 }}
+                            className="w-full flex flex-col gap-4 px-2"
                         >
-                            <img
-                                src="/images/hero-mobile-showcase.png"
-                                alt="RoomXQR Showcase"
-                                className="w-full h-auto object-cover"
-                            />
+                            <button
+                                onClick={() => setShowDemoModal(true)}
+                                className="w-full py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-[1.25rem] font-black text-lg shadow-[0_10px_30px_rgba(37,99,235,0.3)] flex items-center justify-center gap-3 active:scale-95 transition-all"
+                            >
+                                <FaUsers className="text-xl" />
+                                <span>{t('requestDemo')}</span>
+                            </button>
+                            <a
+                                href="https://wa.me/436608682201"
+                                target="_blank"
+                                className="w-full py-5 bg-white border-2 border-blue-600 text-blue-600 rounded-[1.25rem] font-black text-lg shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-all"
+                            >
+                                <FaRocket className="text-xl text-emerald-500" />
+                                <span>{t('startNow')}</span>
+                            </a>
                         </motion.div>
                     </div>
                 </div>
@@ -220,7 +232,7 @@ export default function PremiumLanding() {
                                         onClick={() => setShowDemoModal(true)}
                                         className="px-12 py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-black text-xl transition-all hover:scale-105 active:scale-95 shadow-[0_15px_35px_rgba(37,99,235,0.4)] flex items-center justify-center gap-4 text-center"
                                     >
-                                        <FaUsers className="text-2xl" /> 
+                                        <FaUsers className="text-2xl" />
                                         <span>{t('requestDemo')}</span>
                                     </button>
                                     <a
@@ -228,7 +240,7 @@ export default function PremiumLanding() {
                                         target="_blank"
                                         className="px-12 py-5 bg-white hover:bg-slate-50 border-2 border-blue-600 backdrop-blur-md rounded-2xl font-black text-xl transition-all hover:scale-105 active:scale-95 text-blue-600 flex items-center justify-center gap-4 text-center shadow-lg"
                                     >
-                                        <FaRocket className="text-2xl text-emerald-500" /> 
+                                        <FaRocket className="text-2xl text-emerald-500" />
                                         <span>{t('startNow')}</span>
                                     </a>
                                 </motion.div>
