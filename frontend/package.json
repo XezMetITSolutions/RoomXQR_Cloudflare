@@ -12,7 +12,8 @@
     "check": "npm run type-check && npm run lint && npm run build",
     "prebuild": "echo 'Starting build process...'",
     "postbuild": "echo 'Build completed successfully!'",
-    "translate-ui": "node scripts/translate-ui-with-deepl.js"
+    "translate-ui": "node scripts/translate-ui-with-deepl.js",
+    "pages:build": "npx @cloudflare/next-on-pages"
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -47,6 +48,8 @@
     "zustand": "^4.5.7"
   },
   "devDependencies": {
+    "@cloudflare/next-on-pages": "^1.13.16",
+    "@cloudflare/workers-types": "^4.20260307.1",
     "@playwright/test": "^1.40.0",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
@@ -69,6 +72,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "prettier": "^3.1.1",
     "sharp": "^0.34.5",
+    "wrangler": "^4.71.0",
     "zod": "^3.22.4"
   }
 }
