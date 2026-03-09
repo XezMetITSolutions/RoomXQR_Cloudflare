@@ -1,0 +1,31 @@
+{
+    "name": "roomxqr-workers-backend",
+    "version": "1.0.0",
+    "description": "RoomXQR Backend API - Cloudflare Workers with Hono.js",
+    "private": true,
+    "scripts": {
+        "dev": "wrangler dev",
+        "deploy": "wrangler deploy",
+        "generate": "prisma generate",
+        "db:push": "prisma db push"
+    },
+    "dependencies": {
+        "@prisma/client": "^6.19.0",
+        "@prisma/adapter-pg": "^6.19.0",
+        "hono": "^4.7.0",
+        "pg": "^8.18.0",
+        "bcryptjs": "^2.4.3",
+        "jsonwebtoken": "^9.0.2",
+        "uuid": "^9.0.1"
+    },
+    "devDependencies": {
+        "@cloudflare/workers-types": "^4.20260307.1",
+        "prisma": "^6.19.0",
+        "wrangler": "^4.71.0",
+        "typescript": "^5.3.3",
+        "@types/pg": "^8.11.0",
+        "@types/bcryptjs": "^2.4.6",
+        "@types/jsonwebtoken": "^9.0.5",
+        "@types/uuid": "^9.0.8"
+    }
+}

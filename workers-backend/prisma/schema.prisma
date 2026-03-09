@@ -1,0 +1,480 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL")
+}
+
+model Tenant {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  domain      String?  @unique
+  isActive    Boolean  @default(true)
+  settings    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  hotels      Hotel[]
+  users       User[]
+  rooms       Room[]
+  guests      Guest[]
+  menuItems   MenuItem[]
+  orders      Order[]
+  guestRequests GuestRequest[]
+  notifications Notification[]
+  features    TenantFeature[]
+  surveys     Survey[]
+  analytics   AnalyticsEvent[]
+  campaigns   Campaign[]
+  devices     DeviceStatus[]
+  facilities  HotelFacility[]
+
+  @@map("tenants")
+}
+
+model TenantFeature {
+  id          String   @id @default(cuid())
+  featureKey  String
+  enabled     Boolean  @default(false)
+  config      Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, featureKey])
+  @@map("tenant_features")
+}
+
+model Hotel {
+  id          String   @id @default(cuid())
+  name        String
+  address     String
+  phone       String
+  email       String
+  website     String?
+  logo        String?
+  settings    Json?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  rooms       Room[]
+  users       User[]
+  menuItems   MenuItem[]
+  orders      Order[]
+  guests      Guest[]
+  guestRequests GuestRequest[]
+  notifications Notification[]
+  surveys     Survey[]
+  analytics   AnalyticsEvent[]
+  campaigns   Campaign[]
+  devices     DeviceStatus[]
+  facilities  HotelFacility[]
+
+  @@map("hotels")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  password    String
+  firstName   String
+  lastName    String
+  role        UserRole @default(STAFF)
+  isActive    Boolean  @default(true)
+  lastLogin   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  hotelId     String
+  hotel       Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  permissions UserPermission[]
+
+  @@map("users")
+}
+
+model UserPermission {
+  id        String   @id @default(cuid())
+  pageName  String
+  grantedAt DateTime @default(now())
+
+  // Relations
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, pageName])
+  @@map("user_permissions")
+}
+
+model Room {
+  id          String   @id @default(cuid())
+  number      String
+  name        String?  // Opsiyonel oda adı (örn. "Kalan", "Manzara")
+  floor       Int
+  type        RoomType
+  capacity    Int
+  qrCode      String   @unique
+  isOccupied  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  
+  // New operational statuses
+  dnd         Boolean  @default(false) // Do Not Disturb
+  makeupRoom  Boolean  @default(false) // Clean My Room
+  lastCleaned DateTime?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  hotelId     String
+  hotel       Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  guests      Guest[]
+  orders      Order[]
+  notifications Notification[]
+  requests      GuestRequest[]
+  surveys       Survey[]
+  analytics     AnalyticsEvent[]
+  device        DeviceStatus?
+
+  @@map("rooms")
+}
+
+model Guest {
+  id           String   @id @default(cuid())
+  firstName    String
+  lastName     String
+  email        String?
+  phone        String?
+  language     String   @default("tr")
+  accessToken  String?  // QR/link ile eşleşir; checkout'ta iptal edilir
+  checkIn      DateTime
+  checkOut     DateTime?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  hotelId     String
+  hotel       Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  roomId      String
+  room        Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  orders      Order[]
+  surveys     Survey[]
+  analytics   AnalyticsEvent[]
+
+  @@map("guests")
+}
+
+model MenuItem {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  category    String
+  image       String?
+  allergens   String[]
+  calories    Int?
+  isAvailable Boolean  @default(true)
+  isActive    Boolean  @default(true)
+  translations Json?   // Çeviriler: { en: { name: "...", description: "..." }, de: {...}, ... }
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  hotelId     String
+  hotel       Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  orderItems  OrderItem[]
+
+  @@map("menu_items")
+}
+
+model Order {
+  id             String      @id @default(cuid())
+  orderNumber    String      @unique
+  status         OrderStatus @default(PENDING)
+  totalAmount    Decimal     @db.Decimal(10, 2)
+  notes          String?
+  paymentMethod  String?     // 'card' | 'cash' | 'room_charge' (çıkışta öde)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  // Relations
+  tenantId    String
+  tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  hotelId     String
+  hotel       Hotel       @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  roomId      String
+  room        Room        @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  guestId     String
+  guest       Guest       @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  items       OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  quantity  Int
+  price     Decimal @db.Decimal(10, 2)
+  notes     String?
+
+  // Relations
+  orderId   String
+  order     Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItemId String
+  menuItem  MenuItem  @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+
+  @@map("order_items")
+}
+
+model GuestRequest {
+  id          String            @id @default(cuid())
+  type        RequestType
+  priority    RequestPriority
+  status      RequestStatus     @default(PENDING)
+  description String
+  notes       String?
+  isActive    Boolean           @default(true)
+  resolvedAt  DateTime?         // Talebin tamamlanma zamanı
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  // Relations
+  tenantId    String
+  tenant      Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  hotelId     String
+  hotel       Hotel             @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  roomId      String
+  room        Room              @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@map("guest_requests")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean          @default(false)
+  metadata  Json?            // For storing announcement extra data (category, icon, translations, etc.)
+  createdAt DateTime         @default(now())
+
+  // Relations
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  hotelId  String
+  hotel    Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  roomId   String?
+  room     Room?    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+// --- NEW ANALYTICS & REPORTS MODELS ---
+
+model Survey {
+  id          String   @id @default(cuid())
+  npsScore    Int?     // 0-10
+  cleanliness Int?     // 1-5
+  staff       Int?     // 1-5
+  comfort     Int?     // 1-5
+  facilities  Int?     // 1-5
+  wifi        Int?     // 1-5
+  food        Int?     // 1-5
+  comment     String?  @db.Text
+  status      String   @default("NEW") // NEW, REVIEWED, RESOLVED
+  
+  // Relations
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  hotelId     String
+  hotel       Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  roomId      String?  
+  room        Room?    @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  guestId     String?
+  guest       Guest?   @relation(fields: [guestId], references: [id], onDelete: SetNull)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("surveys")
+}
+
+model AnalyticsEvent {
+  id          String   @id @default(cuid())
+  eventType   String   // VIEW_PAGE, CLICK_BUTTON, OPEN_APP
+  eventCategory String // MENU, SERVICES, WIFI, SPA
+  eventLabel  String?  // "Burger Menu", "Connect WiFi"
+  eventValue  Int?     // Duration in seconds, etc.
+  metadata    Json?
+
+  // Relations
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  hotelId     String
+  hotel       Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  roomId      String?
+  room        Room?    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  guestId     String?
+  guest       Guest?   @relation(fields: [guestId], references: [id], onDelete: SetNull)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt // Added for consistency
+
+  @@map("analytics_events")
+}
+
+model Campaign {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  image       String?
+  targetUrl   String?
+  startDate   DateTime?
+  endDate     DateTime?
+  isActive    Boolean  @default(true)
+  type        String   @default("GENERAL") // GENERAL, FOOD, DRINK, SPA, EVENT
+  translations Json?
+  priority    Int      @default(0)
+  
+  // Stats
+  views       Int      @default(0)
+  clicks      Int      @default(0)
+
+  // Relations
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  hotelId     String
+  hotel       Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("campaigns")
+}
+
+model DeviceStatus {
+  id          String   @id @default(cuid())
+  batteryLevel Int?
+  isCharging   Boolean?
+  appVersion   String?
+  wifiSignal   Int?     // RSSI or percentage
+  lastHeartbeat DateTime @default(now())
+  status       String   @default("ONLINE") // ONLINE, OFFLINE, ERROR
+
+  // Relations
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  hotelId     String
+  hotel       Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  roomId      String   @unique // One device per room usually
+  room        Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  updatedAt   DateTime @updatedAt
+
+  @@map("device_statuses")
+}
+
+model HotelFacility {
+  id              String   @id @default(cuid())
+  name            String
+  description     String?  @db.Text
+  image           String?
+  location        String?  // e.g. "Floor -1", "Next to Lobby"
+  openingHours    String?  // e.g. "09:00 - 22:00"
+  reservationInfo String?  // e.g. "Requires booking 2 hours in advance"
+  contactInfo     String?  // e.g. "Phone: 1005"
+  isActive        Boolean  @default(true)
+  translations    Json?    // e.g. { en: { name: "Spa", description: "..." }, ru: {...} }
+  
+  // Relations
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  hotelId         String
+  hotel           Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("hotel_facilities")
+}
+
+// --- ENUMS ---
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  MANAGER
+  STAFF
+  RECEPTION
+  KITCHEN
+  WAITER
+}
+
+enum RoomType {
+  SINGLE
+  DOUBLE
+  TWIN
+  SUITE
+  FAMILY
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY
+  DELIVERED
+  CANCELLED
+}
+
+enum RequestType {
+  HOUSEKEEPING
+  MAINTENANCE
+  CONCIERGE
+  GENERAL
+  FOOD_ORDER
+}
+
+enum RequestPriority {
+  URGENT
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum RequestStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum NotificationType {
+  ORDER
+  REQUEST
+  PAYMENT
+  SYSTEM
+  PROMOTION
+}

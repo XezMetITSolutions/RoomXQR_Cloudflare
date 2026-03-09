@@ -1,0 +1,16 @@
+name = "roomxqr-api"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+# Environment variables - set via `wrangler secret put` or Cloudflare Dashboard
+# DATABASE_URL, JWT_SECRET, SMTP_HOST, SMTP_USER, SMTP_PASS, etc.
+
+[vars]
+ENVIRONMENT = "production"
+
+# Hyperdrive - PostgreSQL veritabanına hızlı bağlantı
+# Cloudflare Dashboard'dan Hyperdrive oluşturulduktan sonra ID buraya yazılacak
+# [[hyperdrive]]
+# binding = "HYPERDRIVE"
+# id = "<HYPERDRIVE_ID>"  # Cloudflare Dashboard'dan alınacak
