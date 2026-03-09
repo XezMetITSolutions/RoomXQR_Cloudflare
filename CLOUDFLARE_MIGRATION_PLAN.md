@@ -33,3 +33,19 @@ En stabil "Tam Cloudflare" çözümü için iki opsiyonunuz mevcuttur:
 - Eğer frontend hızını artırmak ve CDN'den faydalanmak istiyorsanız, Cloudflare Pages ile Next.js uygulamasını deploy edin ve API isteklerini Render'daki mevcut sunucuya yönlendirin (`api.roomapp.com`).
 
 Projenizi yeni Cloudflare reponuza push edeceğim. Lütfen backend'i taşımak için yukarıdaki adımlar ışığında bir "Yeniden Yazım" (Refactor) yapmamızı isteyip istemediğinize karar verin.
+
+---
+
+## ⚠️ Sorun Giderme: Build Hataları (ERESOLVE)
+
+Eğer Cloudflare Pages deployment sırasında `npm error ERESOLVE` hatası alıyorsanız (Next.js versiyon çakışması):
+
+1. **Çözüm (Önerilen)**: Cloudflare Dashboard üzerinden **Pages Projesi > Settings > Environment Variables** bölümüne giderek şu değişkeni ekleyin:
+   - Variable Name: `NPM_CONFIG_LEGACY_PEER_DEPS`
+   - Value: `true`
+   
+   Veya:
+   - Variable Name: `NPM_FLAGS`
+   - Value: `--legacy-peer-deps`
+
+2. **Otomatik Çözüm**: Projenin `frontend/` klasörüne otomatik olarak `.npmrc` dosyası ekledim. Bu dosya `npm install` komutunun çakışmaları göz ardı etmesini sağlar.
