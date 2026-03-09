@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",
-    "build": "npx @cloudflare/next-on-pages",
+    "build": "next build",
     "build:safe": "next build",
     "start": "next start",
     "type-check": "tsc --noEmit",
