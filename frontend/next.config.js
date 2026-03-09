@@ -93,7 +93,6 @@ const path = require('path');
 
 module.exports = withPWA({
   reactStrictMode: false,
-  swcMinify: true,
   trailingSlash: false,
   async redirects() {
     return [
@@ -121,7 +120,16 @@ module.exports = withPWA({
     return config;
   },
   images: {
-    domains: ['api.roomapp.com', 'images.unsplash.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'api.roomapp.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+    ],
     formats: ['image/webp', 'image/avif']
   },
   experimental: {
